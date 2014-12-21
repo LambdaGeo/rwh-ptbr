@@ -1,0 +1,1761 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Capítulo 2. Tipos e Funções</title>
+  
+  <link rel="stylesheet" href="support/styles.css" type="text/css">
+  <meta name="generator" content="Bluefish 1.0.7">
+  <link rel="start" href="index.html" title="Real World Haskell">
+  <link rel="up" href="index.html" title="Real World Haskell">
+  <link rel="prev" href="getting-started.html" title="Chapter 1. Getting Started">
+  <link rel="next" href="defining-types-streamlining-functions.html" title="Chapter 3. Defining Types, Streamlining Functions">
+  <link rel="alternate" type="application/atom+xml" title="Comments" href="/feeds/comments/">
+  <link rel="shortcut icon" type="image/png" href="support/figs/favicon.png">
+  <script type="text/javascript" src="support/jquery-min.js"></script>
+  <script type="text/javascript" src="support/form.js"></script>
+  <script type="text/javascript" src="support/hsbook.js"></script></head><body style="color: black; background-color: white;" alink="#0000ff" link="#0000ff" vlink="#840084">
+<div class="navheader">
+<h2 class="booktitle"><a href="/">Real World Haskell</a><span class="authors">por Bryan O'Sullivan, Don Stewart e John Goerzen</span></h2>
+</div>
+
+<div class="navheader">
+<table summary="Navigation header" width="100%">
+  <tbody>
+    <tr>
+      <th colspan="3" align="center">Capítulo 2. Tipos e Funções<br>
+</th>
+    </tr>
+    <tr>
+      <td align="left" width="20%"><a accesskey="p" href="getting-started.html">Anterior</a>&nbsp;</td>
+      <th align="center" width="60%">&nbsp;<br>
+</th>
+      <td align="right" width="20%">&nbsp;<a accesskey="n" href="defining-types-streamlining-functions.html">Próximo</a></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="chapter" id="funcstypes" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title">Capítulo 2. Tipos e Funções</h2>
+</div>
+</div>
+</div>
+<div class="toc">
+<p><b>Índice analítico</b></p>
+<dl>
+  <dt><span class="sect1"><a href="types-and-functions.html#id577672">Por
+que se preocupar com os tipos?</a></span><br>
+</dt>
+  <dt><span class="sect1"><a href="types-and-functions.html#funcstypes.types">O sistema de tipo de
+Haskell</a></span><br>
+</dt>
+  <dd>
+    <dl>
+      <dt><span class="sect2"><a href="types-and-functions.html#id577786">Tipos fortes</a></span><br>
+</dt>
+      <dt><span class="sect2"><a href="types-and-functions.html#id577931">Tipos estáticos</a></span><br>
+</dt>
+      <dt><span class="sect2"><a href="types-and-functions.html#id578066">Inferência de tipo</a></span><br>
+</dt>
+    </dl>
+  <br>
+</dd>
+  <dt><span class="sect1"><a href="types-and-functions.html#id578095">O
+que esperar do sistema tipo</a></span><br>
+</dt>
+  <dt><span class="sect1"><a href="types-and-functions.html#funcstypes.basic">Alguns tipos básicos
+comuns</a></span><br>
+</dt>
+  <dt><span class="sect1"><a href="types-and-functions.html#funcstypes.calling">Aplicação de função</a></span><br>
+</dt>
+  <dt><span class="sect1"><a href="types-and-functions.html#funcstypes.composite">Tipos de dados
+compostas uteis: listas e tuplas</a></span><br>
+</dt>
+  <dd>
+    <dl>
+      <dt><span class="sect2"><a href="types-and-functions.html#funcstypes.composite.exercises">Exercícios</a></span><br>
+</dt>
+    </dl>
+  <br>
+</dd>
+  <dt><span class="sect1"><a href="types-and-functions.html#id579120">Funções
+sobre listas e tuplas</a></span><br>
+</dt>
+  <dd>
+    <dl>
+      <dt><span class="sect2"><a href="types-and-functions.html#funcstypes.calling.expr">Passando uma
+expressão para uma função</a></span><br>
+</dt>
+    </dl>
+  <br>
+</dd>
+  <dt><span class="sect1"><a href="types-and-functions.html#funcstypes.sigs">Tipos de função e
+pureza</a></span><br>
+</dt>
+  <dt><span class="sect1"><a href="types-and-functions.html#funcstypes.srcfile">Arquivos fonte
+Haskell, e escrever funções simples</a></span><br>
+</dt>
+  <dd>
+    <dl>
+      <dt><span class="sect2"><a href="types-and-functions.html#funcstypes.variable">Apenas o que é uma
+variável, afinal?</a></span><br>
+</dt>
+      <dt><span class="sect2"><a href="types-and-functions.html#funcstypes.if">Avaliação condicional</a></span><br>
+</dt>
+    </dl>
+  <br>
+</dd>
+  <dt><span class="sect1"><a href="types-and-functions.html#id580425">Compreender
+a avaliação por exemplo</a></span><br>
+</dt>
+  <dd>
+    <dl>
+      <dt><span class="sect2"><a href="types-and-functions.html#id580456">Avaliação preguiçosa</a></span><br>
+</dt>
+      <dt><span class="sect2"><a href="types-and-functions.html#id580594">Um exemplo mais envolvido</a></span><br>
+</dt>
+      <dt><span class="sect2"><a href="types-and-functions.html#id580915">Recursão</a></span><br>
+</dt>
+      <dt><span class="sect2"><a href="types-and-functions.html#id581112">Acabar com a recursividade</a></span><br>
+</dt>
+      <dt><span class="sect2"><a href="types-and-functions.html#id581267">Retornando da recursão</a></span><br>
+</dt>
+      <dt><span class="sect2"><a href="types-and-functions.html#id581397">O que aprendemos?</a></span><br>
+</dt>
+    </dl>
+  <br>
+</dd>
+  <dt><span class="sect1"><a href="types-and-functions.html#funcstypes.polymorphism">Polimorfismo
+em Haskell</a></span><br>
+</dt>
+  <dd>
+    <dl>
+      <dt><span class="sect2"><a href="types-and-functions.html#id581696">Raciocínio sobre funções
+polimórficas</a></span><br>
+</dt>
+      <dd>
+        <dl>
+          <dt><span class="sect3"><a href="types-and-functions.html#id581793">Outras leituras</a></span><br>
+</dt>
+        </dl>
+      <br>
+</dd>
+    </dl>
+  <br>
+</dd>
+  <dt><span class="sect1"><a href="types-and-functions.html#id581829">O
+tipo de uma função de mais de um argumento</a></span><br>
+</dt>
+  <dt><span class="sect1"><a href="types-and-functions.html#funcstypes.sigs.exercises">Exercícios</a></span><br>
+</dt>
+  <dt><span class="sect1"><a href="types-and-functions.html#id582031">Por
+que a confusão sobre a pureza?</a></span><br>
+</dt>
+  <dt><span class="sect1"><a href="types-and-functions.html#funcstypes.end">Conclusão</a></span><br>
+</dt>
+</dl>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="id577672">Por que se preocupar com tipos?</h2>
+</div>
+</div>
+</div>
+<p id="x_p2"><a name="x_p2"></a> Cada expressão e função em Haskell tem
+um <span class="emphasis"><em>tipo</em></span>. Por exemplo, o valor <code class="literal">True</code> tem o tipo <span class="type">Bool</span>,
+enquanto o valor <code class="literal">"foo"</code> tem o tipo <span class="type">String</span>.
+O tipo de um valor indica que ele compartilha certas propriedades com
+outros valores do mesmo tipo. Por exemplo, podemos adicionar os
+números, e podemos concatenar as listas, que são propriedades desses
+tipos. Dizemos que uma expressão “<span class="quote">tem tipo <code class="code">X</code></span>”, ou “<span class="quote">é do tipo <code class="code">X</code></span>”. </p>
+<p id="x_ol"><a name="x_ol"></a>Antes de lançar-se uma discussão mais
+aprofundada do sistema de tipos
+do Haskell, vamos falar sobre o motivo pelo qual devemos nos preocupar
+com tipos: o que são <span class="emphasis"><em>e para que servem</em></span>?
+No nível mais baixo, um computador está preocupado com bytes, com quase
+nenhuma estrutura adicional. O que o sistema de tipos nos dá é a <span class="emphasis"><em>abstração</em></span>. Um tipo acrescenta
+significado de bytes simples: ela nos permite dizer que “<span class="quote">estes bytes são texto</span>”, “<span class="quote">os
+bytes são uma reserva de linha aérea</span>”,
+e assim por diante. Normalmente, um sistema de tipo vai além do que
+isso nos impede de mistura acidental de tipos acima: por exemplo, um
+sistema de tipo geralmente não nos deixa tratar uma reserva de hotel
+como se fosse um carro de recibo de aluguel. </p>
+<p id="x_pl"><a name="x_pl"></a> O benefício da introdução de
+abstração é que ela nos deixa esquecer ou ignorar os detalhes de baixo
+nível. Se eu sei que um valor no meu programa é uma seqüência, eu não
+tenho que saber os detalhes íntimos de como as strings são
+implementadas: eu só posso supor que a minha string vai se comportar
+como todos os outros textos que eu já usei. </p>
+<p id="x_ql"><a name="x_ql"></a> O que faz do sistemas de tipo
+interessante é que eles não são todos iguais. Na verdade, sistemas de
+tipo diferentes frequentemente não estão sequer preocupado com os
+mesmos tipos de problemas. O sistema de tipos de uma linguagem de
+programação aprofunda a nossa forma de pensar, e escrever o código, em
+que a linguagem. </p>
+<p id="x_rl"><a name="x_rl"></a> O sistema de tipos do Haskell
+nos permite pensar em um nível muito abstrato: ela nos permite
+escrever&nbsp; progrmas concisos e poderosos. </p>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="funcstypes.types">O sistema
+de tipo do Haskell</h2>
+</div>
+</div>
+</div>
+<p id="x_o2"><a name="x_o2"></a> Há três aspectos interessantes sobre
+tipos em Haskell: eles são <span class="emphasis"><em>fortes</em></span>,
+eles são <span class="emphasis"><em>estáticos</em></span>, e podem ser
+automaticamente <span class="emphasis"><em>inferidos</em></span>.
+Vamos falar mais detalhadamente sobre cada uma dessas idéias. Quando
+possível, nós vamos apresentar semelhanças entre os conceitos do tipo
+de sistema de Haskell e idéias relacionadas em outras linguagens.
+Iremos também abordar os pontos fortes e fracos de cada uma dessas
+propriedades. </p>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id577786">Tipos fortes</h3>
+</div>
+</div>
+</div>
+<p id="x_q2"><a name="x_q2"></a> Quando dizemos que Haskell tem um
+sistema do tipo <span class="emphasis"><em>forte</em></span>,
+queremos dizer que o sistema garante que um tipo de programa não pode
+incluir certos tipos de erros. Esses erros vêm surgem da tentativa de
+escrever expressões que não fazem sentido, como a utilização de um
+número inteiro como uma função. Por exemplo, se uma função espera para
+trabalhar com números inteiros, e passar-lhe uma string, o compilador
+Haskell irá rejeitá-lo. </p>
+<p id="x_Yd"><a name="x_Yd"></a> Chamamos uma expressão que obedece a
+regras dos tipos da linguagem como <span class="emphasis"><em>bem
+tipada</em></span>. Uma expressão que desobedece as regras de tipo é <span class="emphasis"><em>mal tipado</em></span>, e causará um <span class="emphasis"><em>erro de tipo</em></span>. </p>
+<p id="x_BN"><a name="x_BN"></a>Outro aspecto da visão do Haskell de
+tipagem forte é que ela não irá
+automaticamente coagir (fazer uma coertção) dos valores de um tipo para
+outro. (Coerção também é conhecido como o vazamento ou conversão). Por
+exemplo, um compilador C automaticamente e silenciosamente coagi um
+valor do tipo <span class="type">int</span> em um <span class="type">float</span>
+em nosso código, se uma função espera um parâmetro do tipo <span class="type">float</span>,
+mas um compilador Haskell vai dar um erro de compilação em uma situação
+similar. Temos que explicitar a coerção dos tipos nas aplicação das
+funções. Neste caso dizemos que estamos fazendo um cast.<br>
+ </p>
+<p id="x_sl"><a name="x_sl"></a> Tipagem forte pode tornar mais
+difícil escrevermos certos tipos de código. Por exemplo, uma forma
+clássica de escrever código de baixo nível na linguagem C, é dado um
+array de bytes, realizar um <span style="font-style: italic;">cast</span>
+com ele para tratar os bytes como realmente sendo uma estrutura de
+dados complexa. Isto é muito eficiente, uma vez que não nos obrigam a
+copiar os bytes ao redor. O sistema de tipos do Haskell não permite
+este tipo de coerção. A fim de obter a mesma visão estruturada dos
+dados, seria preciso fazer algumas cópias, o que custaria um pouco no
+desempenho. </p>
+<p id="x_tl"><a name="x_tl"></a> A grande vantagem da tipagem
+forte é que ela captura bugs real em nosso código antes que possam
+causar problemas. Por exemplo, em uma linguagem fortemente tipada, não
+podemos acidentalmente utilizar uma cadeia onde um inteiro é esperado. </p>
+<div class="note">
+<table summary="Note: Weaker and stronger types" border="0">
+  <tbody>
+    <tr>
+      <td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
+      <th align="left">Os tipos mais fracos e os tipos mais fortes</th>
+    </tr>
+    <tr>
+      <td align="left" valign="top">
+      <p id="x_r2"><a name="x_r2"></a> É útil ter consciência de que
+muitas comunidades linguísticas têm suas próprias definições de um “<span class="quote">tipo forte</span>”. No entanto, vamos falar brevemente e
+em termos gerais sobre a noção de força nos sistemas do tipo. </p>
+      <p id="x_ul"><a name="x_ul"></a> Em ciência da computação
+acadêmica, os significados de “<span class="quote">forte</span>” e “<span class="quote">fraco</span>” têm um sentido técnico estrito: refere-se
+à força de <span class="emphasis"><em>como permissivo</em></span> um
+sistema de tipo é. Um sistema de tipo mais fraco trata mais expressões
+como válida do que um sistema de tipo mais forte. </p>
+      <p id="x_vl"><a name="x_vl"></a> Por exemplo, em Perl, a
+expressão <code class="code">"foo" + 2</code> avalia o número 2, mas a
+expressão <code class="code">"13foo" + 2</code> avalia o número 15.
+Haskell rejeita ambas as expressões como inválido, porque o <code class="function">(+)</code>
+operador exige tanto de seus operandos ser numéricos. Por causa do tipo
+de sistema de Perl ser mais permissivo do que Haskell, dizemos que ela
+é
+mais fraca nos termos do presente técnica de interpretação restrita. </p>
+      <p id="x_wl"><a name="x_wl"></a> Todo "barulho" em torno de
+sistemas do tipo têm suas raízes no&nbsp; Inglês coloquial, onde as
+pessoas atribuem noções de <span class="emphasis"><em>valor</em></span>
+para as expressões “<span class="quote">fraco</span>” e “<span class="quote">forte</span>”:
+geralmente pensamos que força é melhor do que fraqueza. De um lado,
+programadores que falam mais o Inglês coloquial e do outro os&nbsp;
+acadêmicos que usam mais os jargões acadêmicos<span class="emphasis"><em>
+jogam pedras&nbsp; </em></span>em qualquer sistema de tipo que não
+satisfiça as suas expectativas. O resultado é sempre um passatempo
+popular na Internet,
+uma verdeira guerra. </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id577931">Tipos estáticos</h3>
+</div>
+</div>
+</div>
+<p id="x_t2"><a name="x_t2"></a>Ter um sistema do tipo <span class="emphasis"><em>estático</em></span>
+significa que o compilador sabe o tipo de cada valor e de expressão em
+tempo de compilação, antes que qualquer código seja executado. Um
+compilador ou intérpretador Haskell irá detectar quando tentarmos usar
+expressões cujos tipos não coincidem, e rejeitar o nosso código com uma
+mensagem de erro antes de executá-lo. </p>
+<a name="ch02.basics.ghci:error"></a>
+<pre id="ch02.basics.ghci:error" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>True &amp;&amp; "false"</code></strong><br><br>&lt;interactive&gt;:1:8:<br>    Couldn't match expected type `Bool' against inferred type `[Char]'<br>    In the second argument of `(&amp;&amp;)', namely `"false"'<br>    In the expression: True &amp;&amp; "false"<br>    In the definition of `it': it = True &amp;&amp; "false"<br></pre>
+<p id="x_CN"><a name="x_CN"></a> Esta mensagem de erro é do tipo que já
+vimos antes. O compilador tem inferido que o tipo da expressão <code class="literal">"false"</code> é <span class="type">[Char]</span>. O <code class="function">(&amp;&amp;)</code> exige que cada operador de seus
+operandos como sendo do tipo <span class="type">Bool</span>, e seu
+operando à esquerda de fato tem este tipo. Desde que o real tipo de <code class="literal">"false"</code> não corresponde ao tipo necessário, o
+compilador rejeita esta expressão como mal escrita.
+</p>
+<p id="x_xl"><a name="x_xl"></a> Tipagem estática pode ocasionalmente
+dificultar a escrita de alguns tipos de código útil. Em linguagens como
+Python “<span class="quote">duck typing</span>” é comum, quando um
+objeto age parecido como um outro para ser utilizado como um substituto
+para ele <sup>[<a name="id578004" href="#ftn.id578004" class="footnote">2</a>]</sup>.
+Felizmente, o sistema de <span class="emphasis"><em>typeclasses</em></span>
+do Haskell, que iremos cobrir em <a class="xref" href="using-typeclasses.html" title="Capítulo&nbsp;6.&nbsp;Utilizar Typeclasses">Capítulo&nbsp;6,
+<i>Utilizar Typeclasses</i></a>,
+fornece quase todos os benefícios de tipagem dinâmica, de uma forma
+segura e conveniente. Haskell tem algum suporte para a programação
+com tipos dinâmicos reais, embora não seja tão fácil como em um
+linguagem que inteiramente encorpora à noção de tipos dinâmicos.
+</p>
+<p id="x_u2"><a name="x_u2"></a> A combinação de tipagem forte e
+estática, torna impossível a ocorrência de erros de tipo em
+tempo de execução. Enquanto isso significa que irar requerem mais do
+pensamento “<span class="quote">a frente</span>”,
+ele também elimina muitos erros simples que podem de outra maneira ser
+extremamente difíceis de encontrar. É um truísmo na comunidade Haskell
+que uma vez que o código compila, é mais provável que funcione
+corretamente do que em outras linguagens. (Talvez uma
+maneira mais realista de colocar isso é que o código Haskell muitas
+vezes tem menos
+bugs trivial).
+</p>
+<p id="x_yl"><a name="x_yl"></a> Programas escritos em linguagens
+com tipagem dinâmica requer grandes conjuntos de testes para dar alguma
+garantia de que os erros de tipo simples, não pode ocorrer. Conjunto de
+teste não podem oferecer cobertura completa: algumas tarefas comuns,
+tais como refactorar um programa para torná-lo mais modular, pode
+introduzir erros de tipo novo que um conjunto de testes não pode expor.
+</p>
+<p id="x_zl"><a name="x_zl"></a> Em Haskell, o compilador comprova
+a ausência de erros de tipo para nós: um programa que compila Haskell
+não sofrem de erros tipo quando ele é executado. Refactoring é
+geralmente uma questão de se mover em torno do código, em seguida,
+recompilar e arrumar algumas vezes até que o compilador dá-nos a “<span class="quote">tudo limpo</span>”.
+</p>
+<p id="x_eB1"><a name="x_eB1"></a> Uma analogia útil para entender
+o valor de tipagem estática é olhar para ela como a colocação de peças
+em um quebra-cabeças. Em Haskell, se uma parte tem a forma errada, ela
+simplesmente não vai caber. Numa linguagem com tipagem dinâmica, todas
+as
+peças são quadrados 1x1 e sempre em forma, então você tem que analisar
+constantemente a imagem resultante e verificar (através de testes) se é
+correta. </p>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id578066">Inferência de tipo</h3>
+</div>
+</div>
+</div>
+<p id="x_v2"><a name="x_v2"></a> Finalmente, um compilador Haskell pode
+automaticamente deduzir os tipos de quase<sup>[<a name="id578076" href="#ftn.id578076" class="footnote">3</a>]</sup> todas as expressões
+de um programa. Esse processo é conhecido como <span class="emphasis"><em>inferência
+de tipo</em></span>.
+Haskell permite declarar explicitamente o tipo de qualquer valor, mas a
+presença de inferência de tipo significa que este é quase sempre
+opcional, não algo que somos obrigados a fazer.
+</p>
+</div>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="id578095">O que esperar do
+sistema tipo</h2>
+</div>
+</div>
+</div>
+<p id="x_Bm"><a name="x_Bm"></a>Nossa exploração dos recursos e
+benefícios importantes do sistema de
+tipo no Haskell terá a duração de uma série de capítulos. No início,
+você pode achar uma tarefa lidar com tipos em Haskell.
+</p>
+<p id="x_Cm"><a name="x_Cm"></a> Por exemplo, em vez de
+simplesmente escrever algum código e executá-lo para ver se ele
+funciona como se poderia esperar em Python ou Ruby, primeiro você
+precisa ter certeza de que seu programa passa pelo controle de
+verificação de tipo. Por que alongar a curva de aprendizagem?
+</p>
+<p id="x_DN"><a name="x_DN"></a> While tipagem forte e estática
+torna o Haskell seguro, inferência de tipos o torna conciso. O
+resultado é
+potente: vamos acabar com uma linguagem que é tanto mais seguro do que
+linguagens populares estaticamente tipada, e muitas vezes mais
+expressiva do que linguagens dinamicamente tipadas. Esta é uma
+afirmação forte a fazer, e vamos apoiá-lo com provas ao longo do
+livro.
+</p>
+<p id="x_Dm"><a name="x_Dm"></a> Corrigindo os erros de tipo podemos
+inicialmente sentir mais trabalho do que se estivessemos usando uma
+linguagem dinâmica. Pode ajudar ao olhar isso como verificar depuração <span class="emphasis"><em>a frente</em></span>.
+O compilador mostra a você muitas das falhas lógicas em seu código, em
+vez
+de deixá-lo tropeçar em problemas durante a execução.
+</p>
+<p id="x_Em"><a name="x_Em"></a> Além disso, dado que Haskell pode
+inferir os tipos de suas expressões e funções, você ganha os benefícios
+de tipagem estáticas <span class="emphasis"><em>sem</em></span> o
+fardo de “<span class="quote">ficar tipando</span>”. Em
+outras linguagens, o sistema de tipo atende às necessidades do
+compilador. Em Haskell, ele <span class="emphasis"><em>serve</em></span>
+você. A desvantagem é que você tem de aprender a trabalhar no âmbito
+que ele proporciona.
+</p>
+<p id="x_Fm"><a name="x_Fm"></a> Vamos introduzir novos usos de
+tipos Haskell ao longo deste livro, para nos ajudar a escrever e testar
+códigos práticos. Como resultado, o entendimento completo do "por que o
+sistema
+de tipo" vale a pena surgirão gradualmente.<br>
+</p>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="funcstypes.basic">Alguns
+tipos básicos comuns</h2>
+</div>
+</div>
+</div>
+<p id="x_x2"><a name="x_x2"></a> Na <a class="xref" href="getting-started.html#starting.types" title="Primeiros passos com os tipos">seção intitulada “Primeiros
+passos com os tipos”</a>, apresentamos alguns tipos. Aqui estão mais
+alguns de tipos básicos mais comuns. </p>
+<div class="itemizedlist">
+<ul type="disc">
+  <li>
+    <p id="x_y2"><a name="x_y2"></a> Um valor <span class="type">Char</span>
+representa um caractere Unicode. </p>
+  </li>
+  <li>
+    <p id="x_z2"><a name="x_z2"></a> Um valor <span class="type">Bool</span>
+representa um valor na lógica booleana. Os valores possíveis do tipo <span class="type">Bool</span> são <code class="code">True</code> e <code class="code">False</code>. </p>
+  </li>
+  <li>
+    <p id="x_A3"><a name="x_A3"></a> O tipo <span class="type">Int</span>
+é usada para inteiros com sinal e tamnho fixo. A faixa exata de valores
+representável como <span class="type">Int</span> depende do sistema do
+inteiro “<span class="quote">nativo</span>”: em uma Máquina de 32 bits,
+um <span class="type">Int</span>
+é geralmente 32 bits de largura, enquanto a-máquina de 64 bits,
+normalmente é 64 bits de largura. O padrão Haskell apenas garante que
+um <span class="type">Int</span> é maior do que 28 bits. (Existem
+tipos numéricos que são exatamente 8, 16, e assim por diante bits,
+assinado em formatos com e sem sinal; nós vamos chegar nelas mais
+tarde.) </p>
+  </li>
+  <li>
+    <p id="x_B3"><a name="x_B3"></a> Um valor <span class="type">Integer</span>
+é um inteiro de tamanho ilimitado. <span class="type">Integer</span>s
+não são usadas tão frequentemente como <span class="type">Int</span>s,
+porque eles são mais caros, tanto em desempenho quanto em consumo do
+espaço. Por outro lado, os cálculos não são terminados com<span class="type">Integer</span> overflow, então eles dão de forma mais
+confiável os acertos. </p>
+  </li>
+  <li>
+    <p id="x_C3"><a name="x_C3"></a> Os valores de tipo <span class="type">Double</span> são usados para números de ponto flutuante.
+Um valor <span class="type">Double</span> é normalmente 64 bits de
+largura, e usa o sistema nativo de ponto flutuante de representação. (O
+tipo <span class="type">Float</span>, também existe, mas seu uso não é
+recomendado; o compilador Haskell concentra-se em tornar o <span class="type">Double </span>mais eficiente, de modo que o <span class="type">Float</span> é muito mais lento). </p>
+  </li>
+</ul>
+</div>
+<p id="x_w2"><a name="x_w2"></a> Já fizemos uma breve visita da notação
+para os tipos em Haskell <a class="xref" href="getting-started.html#starting.types" title="Primeiros passos com os tipos">na seção chamada “Primeiros
+passos com os tipos”</a>. Quando escrevemos um tipo explicitamente,
+usamos a notação de <code class="code">expression :: MyType <span class="type"></span></code> para dizer que a <code class="code">expression</code>
+tem o tipo <span class="type">MyType</span>. Se omitirmos o <code class="code">::</code> e o tipo que se segue, o compilador Haskell irá
+inferir o tipo da expressão. </p>
+<a name="ch02.basics.ghci:types"></a>
+<pre id="ch02.basics.ghci:types" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:type 'a'</code></strong><br>'a' :: Char<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>'a' :: Char</code></strong><br>'a'<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>[1,2,3] :: Int</code></strong><br><br>&lt;interactive&gt;:1:0:<br>    Couldn't match expected type `Int' against inferred type `[a]'<br>    In the expression: [1, 2, 3] :: Int<br>    In the definition of `it': it = [1, 2, 3] :: Int<br></pre>
+<p id="x_fB1"><a name="x_fB1"></a>A combinação de <code class="code">::</code>
+e depois o tipo é chamado um <span class="emphasis"><em>assinatura de
+tipo</em></span>. </p>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="funcstypes.calling">Aplicação
+de função</h2>
+</div>
+</div>
+</div>
+<p id="x_Gm"><a name="x_Gm"></a>Agora que já completamos, por enquanto,
+algumas informações sobre os
+tipos de dados. Podemos voltar a nossa atenção de como <span class="emphasis"><em>trabalhar</em></span> com alguns dos tipos que já
+estavamos aplicando. Para isso iremos usar algumas funções. </p>
+<p id="x_R3"><a name="x_R3"></a> Para aplicar uma função em Haskell,
+podemos escrever o nome da função seguido por seus argumentos. </p>
+<a name="func.ghci:odd"></a>
+<pre id="func.ghci:odd" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>odd 3</code></strong><br>True<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>odd 6</code></strong><br>False<br></pre>
+<p id="x_kd"><a name="x_kd"></a> Nós não usamos parênteses ou
+vírgulas para separar o grupo ou argumentos para uma função, apenas
+escrevemos o nome da função, seguido por cada argumento em ordem, é o
+suficiente. Como exemplo, vamos aplicar a função <code class="function">compare</code>,
+que leva dois argumentos. </p>
+<a name="func.ghci:compare"></a>
+<pre id="func.ghci:compare" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>compare 2 3</code></strong><br>LT<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>compare 3 3</code></strong><br>EQ<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>compare 3 2</code></strong><br>GT<br></pre>
+<p id="x_U3"><a name="x_U3"></a> Se você está acostumado com a sintaxe
+de chamada de função em outros linguagens, pode demorar um
+pouco para se acostumar com esta notação , mas ela é simples e
+uniforme. </p>
+<p id="x_Hm"><a name="x_Hm"></a> Aplicação de função tem
+precedência maior do que usando os operadores. Por exemplo, as
+seguintes
+expressões têm o mesmo significado. </p>
+<a name="func.ghci:precedence"></a>
+<pre id="func.ghci:precedence" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>(compare 2 3) == LT</code></strong><br>True<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>compare 2 3 == LT</code></strong><br>True<br></pre>
+<p id="x_Im"><a name="x_Im"></a> Os parênteses acima não fazem mal
+nenhum, mas adiciona um pouco de ruído visual. Às vezes, porém, <span class="emphasis"><em>devemos</em></span> usar parênteses para indicar
+a forma como queremos que uma expressão complicada seja analisada. </p>
+<a name="func.ghci:precedence2"></a>
+<pre id="func.ghci:precedence2" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>compare (sqrt 3) (sqrt 6)</code></strong><br>LT<br></pre>
+<p id="x_Jm"><a name="x_Jm"></a> Isto é, aplica-se o <code class="function">compare</code> com os resultados da aplicação <code class="code">sqrt 3</code> e <code class="code">sqrt 6</code>,
+respectivamente. Se omitir os parênteses, parece que estamos tentando
+passar quatro argumentos para <code class="function">compare</code>,
+em vez dos dois que ele aceita. </p>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="funcstypes.composite">Tipos
+de dados compostos uteis: listas e tuplas</h2>
+</div>
+</div>
+</div>
+<p id="x_D3"><a name="x_D3"></a>Um tipo de dados composto é construído
+a partir de outros tipos. Os
+tipos mais comuns de dados compostos em Haskell são listas e tuplas. </p>
+<p id="x_E3"><a name="x_E3"></a> Nós já vimos o tipo de lista na <a class="xref" href="getting-started.html#starting.string" title="Strings e caracteres">seção chamada “Strings e caracteres”</a>,
+onde descobrimos que Haskell representa uma seqüência de texto como uma
+lista de valores <span class="type">Char</span>, e que o tipo de “<span class="quote">lista de <span class="type">Char</span></span>” é
+escrito <span class="type">[Char]</span>. </p>
+<p id="x_Km"><a name="x_Km"></a> A função <code class="function">head</code>
+(“<span class="quote">cabeça</span>”) retorna o primeiro elemento de
+uma lista. </p>
+<a name="func.ghci:head"></a>
+<pre id="func.ghci:head" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>head [1,2,3,4]</code></strong><br>1<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>head ['a','b','c']</code></strong><br>'a'<br></pre>
+<p id="x_S3"><a name="x_S3"></a> Por outro lado a função, <code class="function">tail</code> (“<span class="quote">cauda</span>”),
+retorna todos elementos, <span class="emphasis"><em>menos</em></span>
+a cabeça de uma lista. </p>
+<a name="func.ghci:tail"></a>
+<pre id="func.ghci:tail" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>tail [1,2,3,4]</code></strong><br>[2,3,4]<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>tail [2,3,4]</code></strong><br>[3,4]<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>tail [True,False]</code></strong><br>[False]<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>tail "lista"</code></strong><br>"ista"<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>tail []</code></strong><br>*** Exception: Prelude.tail: empty list<br></pre>
+<p id="x_F3"><a name="x_F3"></a> Como você pode ver, podemos aplicar <code class="function">head</code> e <code class="function">tail</code> na
+lista de tipos diferentes. Aplicando <code class="function">head</code>
+para um valor <span class="type">[Char]</span> retorna um valor <span class="type">Char</span>, ao aplicar a um valor <span class="type">[Bool]</span>
+retorna um valor <span class="type">Bool</span>. Para a função <code class="function">head</code> não importa o tipo dos elementos da
+lista. </p>
+<p id="x_Lm"><a name="x_Lm"></a> Como os valores de uma lista podem
+possuir qualquer tipo, chamamos a lista de tipo <span class="emphasis"><em>polimórfico</em></span><sup>[<a name="id578737" href="#ftn.id578737" class="footnote">4</a>]</sup>.
+Quando queremos escrever um tipo polimórfico, usamos uma <span class="emphasis"><em>variável de tipo</em></span>,
+que deve começar com uma letra minúscula. Uma variável tipo é um espaço
+reservado, onde eventualmente vamos substitui-lá por um tipo real. </p>
+<p id="x_Nm"><a name="x_Nm"></a> Podemos escrever o tipo de “<span class="quote">lista de <code class="varname">a</code></span>”
+colocando a variável tipo entre colchetes: <span class="type">[a]</span>.
+Isso equivale a dizer: “<span class="quote">Eu não me importo com o
+tipo que eu tenho, posso fazer uma lista com ele</span>”. </p>
+<div class="note">
+<table summary="Note: Distinguishing type names and type variables" border="0">
+  <tbody>
+    <tr>
+      <td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
+      <th align="left">Distinguir nomes de tipo e as variáveis tipo</th>
+    </tr>
+    <tr>
+      <td align="left" valign="top">
+      <p id="x_Om"><a name="x_Om"></a>Agora podemos ver porque um nome
+do tipo deve começar com uma letra
+maiúscula: o que torna diferente uma variável do tipo, é que ela deve
+começar com uma letra minúscula. </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p id="x_bd"><a name="x_bd"></a>Quando falamos que uma lista tem
+valores de um tipo específico, nós estamos substituindo o tipo pelo
+nosso tipo. Assim, por
+exemplo, o tipo <span class="type">[Int]</span> é uma lista de valores
+do tipo <span class="type">Int</span>, pois substituimos <code class="varname">a</code> <span class="type">por Int</span>. Da mesma
+forma,&nbsp; <code class="varname">[MyPersonalType]</code> é uma lista
+de valores do tipo&nbsp;<code class="varname">MyPersonalType</code><span class="type">.</span> Podemos realizar esta substituição
+recursivamente, também: <code class="varname">[[Int]]</code><span class="type"></span><span class="type"></span> é uma lista de valores
+do tipo <code class="varname">[Int]</code><span class="type"></span>,
+ou seja, uma lista de listas de <code class="varname">Int.</code> </p>
+<a name="usingtypes.ghci:listlist"></a>
+<pre id="usingtypes.ghci:listlist" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:type [[True],[False,False]]</code></strong><br>[[True],[False,False]] :: [[Bool]]<br></pre>
+<p id="x_gB1"><a name="x_gB1"></a> O tipo da expressão acima é uma
+lista de listas de <span class="type">Bool</span>. </p>
+<div class="note">
+<table summary="Note: Lists are special" border="0">
+  <tbody>
+    <tr>
+      <td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
+      <th align="left">As listas são especiais</th>
+    </tr>
+    <tr>
+      <td align="left" valign="top">
+      <p id="x_G3"><a name="x_G3"></a> As listas são o “<span class="quote">pão e a manteiga</span>”
+de coleções Haskell. Em uma linguagem imperativa, poderíamos realizar
+uma tarefa com muitos itens iteragindo através de um loop. Isso é algo
+que nós frequentemente , fazemos em Haskell através do percorrimento em
+uma lista, seja por
+recursão ou usando uma função que faça a recursão para nós. Listas são
+a forma mais fácil&nbsp; que temos para usar dados que
+estruturem o nosso programa e o seu fluxo de controle. Nós vamos
+gastar muito mais tempo para discutir as listas no <a class="xref" href="functional-programming.html" title="Chapter&nbsp;4.&nbsp;Functional programming">Capítulo 4, <i>A
+programação funcional</i></a>. </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p id="x_H3"><a name="x_H3"></a>Uma tupla é uma coleção de tamanho fixo
+de valores, onde cada valor
+pode ter um tipo diferente. Isto distingue-os de uma lista, que pode
+ter qualquer tamanho, mas cujos elementos devem ter todos o mesmo tipo.
+</p>
+<p id="x_Pm"><a name="x_Pm"></a> Para ajudar a entender a
+diferença, vamos dizer que queremos controlar dois pedaços de
+informação sobre um livro. Tem um ano de publicação, que é um número e
+um título, que é uma seqüência de caracteres. Nós não podemos manter
+estes dois pedaços de informação em uma lista, porque eles têm
+tipos diferentes. Em vez disso, usamos uma tupla. </p>
+<a name="tuple.ghci:book"></a>
+<pre id="tuple.ghci:book" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>(1964, "Labirintos")</code></strong><br>(1964,"Labirintos")<br></pre>
+<p id="x_dd"><a name="x_dd"></a> Nós escrevemos uma tupla
+colocando seus elementos entre parênteses e separando-os com vírgulas.
+Nós usamos a mesma notação para escrever seu tipo. </p>
+<a name="tuple.ghci:tuple"></a>
+<pre id="tuple.ghci:tuple" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:type (True, "Olá")</code></strong><br>(True, "Olá") :: (Bool, [Char])<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>(4, ['a', 'm'], (16, True))</code></strong><br>(4,"am",(16,True))<br></pre>
+<p id="x_ed"><a name="x_ed"></a> Há um tipo especial, <span class="type">()</span>, que atua como uma tupla de zero elementos.
+Esse tipo tem apenas um valor, também por escrito <code class="code">()</code>.
+Tanto o tipo e o valor são normalmente pronunciado “<span class="quote">unit</span>”.
+Se você estiver familiarizado com C, <span class="type">()</span> é
+similar ao <span class="type">void</span>. </p>
+<p id="x_fd"><a name="x_fd"></a>Haskell não tem uma noção de tupla de
+um elemento. Tuplas são
+frequentemente designadas de acordo com o número de elementos como um
+prefixo. A-tupla que tem 2 dois elementos, é normalmente chamado de <span class="emphasis"><em>pair</em></span>. A “<span class="quote">3-tupla</span>”
+(algumas vezes chamado de <span class="emphasis"><em>triplo</em></span>)
+tem três elementos, um 5-tuplo tem cinco, e assim por diante. Na
+prática, trabalhar com tuplas que contenham muitos elementos torna o
+código pesado, de modo tuplas com muitos
+elementos raramente são utilizados. </p>
+<p id="x_gd"><a name="x_gd"></a> Um tipo de uma tupla
+representa o número, posições e tipos de seus elementos. Isto significa
+que tuplas contendo diferentes números e tipos de elementos têm tipos
+distintos, como fazem as tuplas cujos tipos aparecem em ordens
+diferentes. </p>
+<a name="tuple.ghci:type1"></a>
+<pre id="tuple.ghci:type1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:type (False, 'a')</code></strong><br>(False, 'a') :: (Bool, Char)<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:type ('a', False)</code></strong><br>('a', False) :: (Char, Bool)<br></pre>
+<p id="x_hd"><a name="x_hd"></a> Neste exemplo, a expressão <code class="code">(False, 'a')</code> tem o tipo <span class="type">(Bool,
+Char)</span>, que é diferente do tipo de <code class="code">('a',
+False)</code>.
+Mesmo que o número de elementos e seus tipos são os mesmos, estes dois
+tipos são distintos, porque as posições dos tipos de elemento são
+diferentes. </p>
+<a name="tuple.ghci:type2"></a>
+<pre id="tuple.ghci:type2" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:type (False, 'a', 'b')</code></strong><br>(False, 'a', 'b') :: (Bool, Char, Char)<br></pre>
+<p id="x_id"><a name="x_id"></a> Este tipo, <span class="type">(Bool,
+Char, Char)</span>, é diferente de <span class="type">(Bool, Char)</span>
+pois contém três elementos, e não dois. </p>
+<p id="x_K3"><a name="x_K3"></a>Muitas vezes usamos tuplas para
+devolver múltiplos valores de uma
+função. Nós também podemos usá-los a qualquer momento, quando
+precisamos de
+uma coleção de tamanho fixo de valores, se as circunstâncias não exigem
+um tipo <span style="font-style: italic;">container</span>
+personalizado. </p>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="funcstypes.composite.exercises">Exercícios</h3>
+</div>
+</div>
+</div>
+<div class="qandaset">
+<table summary="Q and A Set" border="0">
+  <col align="left" width="1%"><tbody>
+    <tr class="question">
+      <td align="left" valign="top"><a name="id579072"></a><a name="id579074"></a>
+      <p><b>1.</b></p>
+      </td>
+      <td align="left" valign="top">
+      <p id="x_L3"><a name="x_L3"></a> Quais são os tipos das seguintes
+expressões? </p>
+      <div class="itemizedlist">
+      <ul type="disc">
+        <li>
+          <p id="x_M3"><a name="x_M3"></a><code class="code">False</code></p>
+        </li>
+        <li>
+          <p id="x_N3"><a name="x_N3"></a><code class="code">(["foo",
+"bar"], 'a')</code></p>
+        </li>
+        <li>
+          <p id="x_O3"><a name="x_O3"></a><code class="code">[(True,
+[]), (False, [['a']])]</code></p>
+        </li>
+      </ul>
+      </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="id579120">Funções sobre
+listas e tuplas</h2>
+</div>
+</div>
+</div>
+<p id="x_Q3"><a name="x_Q3"></a>Nossa discussão de listas e tuplas
+mencionou como podemos
+construí-los, mas pouco sobre como podemos trabalhar com eles depois.
+Nós só introduzimos duas funções de lista até agora, <code class="function">head</code> e <code class="function">tail</code>. </p>
+<p id="x_T3"><a name="x_T3"></a> Um par de funções relacionadas com
+lista, <code class="function">take</code> e <code class="function">drop</code>,
+toma dois argumentos. Dado um número <code class="varname">n</code> e
+uma lista, <code class="function">take</code> o primeiro retorna <code class="varname">n</code> elementos da lista, enquanto a <code class="function">drop</code> retorna todos, <span class="emphasis"><em>menos</em></span>
+os primeiros <code class="varname">n</code>
+elementos da lista. (Como estas funções possuem dois argumentos, note
+que nós separar cada função e seus argumentos utilizando o
+espaço em branco). </p>
+<a name="func.ghci:takeDrop"></a>
+<pre id="func.ghci:takeDrop" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>take 2 [1,2,3,4,5]</code></strong><br>[1,2]<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>drop 3 [1,2,3,4,5]</code></strong><br>[4,5]<br></pre>
+<p id="x_ld"><a name="x_ld"></a> Para tuplas, as funções <code class="function">fst</code> e <code class="function">snd</code>
+retornam o primeiro e segundo elemento do par, respectivamente. </p>
+<a name="tuple.ghci:fst"></a>
+<pre id="tuple.ghci:fst" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>fst (1,'a')</code></strong><br>1<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>snd (1,'a')</code></strong><br>'a'<br></pre>
+<p id="x_Qm"><a name="x_Qm"></a> Se o seu <span style="font-style: italic;">background</span>&nbsp;
+for em uma outra linguagem de programação, estes exemploes&nbsp; podem
+ser parecidos com uma chamada de uma função de dois argumentos. Nos
+termos da convenção
+Haskell para a aplicação da função, cada uma é uma aplicação de uma
+função a um único parametro, que um par de elementos. </p>
+<div class="note">
+<table summary="Note: Haskell tuples aren't immutable lists" border="0">
+  <tbody>
+    <tr>
+      <td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
+      <th align="left">Tuplas Haskell não são listas imutáveis</th>
+    </tr>
+    <tr>
+      <td align="left" valign="top">
+      <p id="x_md"><a name="x_md"></a>Se você está vindo do mundo do
+Python, você provavelmente tem usado
+listas e tuplas como conceitos quase intercambiáveis. Embora os
+elementos
+de uma tupla Python são imutáveis, que podem ser indexados e iterada
+usando os mesmos métodos como uma lista. Este não é o caso em Haskell,
+portanto, não tente levar essa idéia com você em território
+linguístico desconhecido. </p>
+      <p id="x_nd"><a name="x_nd"></a> Como exemplo, dê uma olhada no
+tipo de assinaturas <code class="function">fst</code> e <code class="function">snd</code>:
+eles são definidos apenas para os pares, e não pode ser usado com
+tuplas de outros tamanhos. O sistema de tipos do haskell torna
+complicado&nbsp; escrever uma função generalizada que pegue<span class="quote"> o segundo elemento de qualquer tupla, não importa quão
+grande seja</span>”. </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="funcstypes.calling.expr">Passando uma expressão
+para uma função</h3>
+</div>
+</div>
+</div>
+<p id="x_X3"><a name="x_X3"></a> Em Haskell, a aplicação de função é
+associativa a esquerda. Isto é melhor ilustrado por exemplo: a
+expressão <code class="code">a b c d</code> é equivalente a <code class="code">(((a b) c) d)</code>.
+Se quisermos usar uma expressão com um argumento de uma outra, temos de
+usar parênteses para dizer explicitamente ao analisador o que realmente
+significa. Aqui está um exemplo. </p>
+<a name="func.ghci:headDrop"></a>
+<pre id="func.ghci:headDrop" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>head (drop 4 "azerty")</code></strong><br>'t'<br></pre>
+<p id="x_Y3"><a name="x_Y3"></a> Podemos ler isto como “<span class="quote">passe a expressão <code class="code">drop 4 "azerty"</code>
+como argumento de <code class="function">head</code></span>”. Se
+tivéssemos deixado de fora os parênteses, a expressão seria semelhante
+a passar três argumentos para <code class="function">head</code>.
+Compilação falhará com um erro do tipo, <code class="function">head</code>
+requer um único argumento, uma lista. </p>
+</div>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="funcstypes.sigs">Tipos de
+função e pureza</h2>
+</div>
+</div>
+</div>
+<p id="x_Z3"><a name="x_Z3"></a> Vamos dar uma olhada no tipo de uma
+função. </p>
+<a name="func.ghci:lines.type"></a>
+<pre id="func.ghci:lines.type" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:type lines</code></strong><br>lines :: String -&gt; [String]<br></pre>
+<p id="x_a3"><a name="x_a3"></a> Podemos ler o <code class="literal">-&gt;</code>
+acima como “<span class="quote">para</span>”, que se traduz vagamente
+como “<span class="quote">retorna</span>”. A assinatura como um
+todo,&nbsp; lê como “<span class="quote"><code class="function">lines</code>
+tem o tipo <span class="type">String</span> para lista-de-<span class="type">String</span></span>”. Vamos tentar aplicar a função. </p>
+<a name="func.ghci:lines"></a>
+<pre id="func.ghci:lines" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>lines "the quick\nbrown fox\njumps"</code></strong><br>["the quick","brown fox","jumps"]<br></pre>
+<p id="x_b3"><a name="x_b3"></a> A função <code class="function">lines</code>divide
+uma string em limites de linha. Observe que a sua assinatura nos deu
+uma dica sobre o que a função pode realmente fazer: ela pega uma <span class="type">String</span>, e retorna muitas. Esta é uma valiosa
+propriedade incrível de tipos em uma linguagem funcional. </p>
+<p id="x_ce"><a name="x_ce"></a> Um <span class="emphasis"><em>efeito
+colateral</em></span>
+introduz uma dependência entre o estado global do sistema e o
+comportamento de uma função. Por exemplo, vamos deixar de lado o
+Haskell, por
+um momento e pensar em uma linguagem de programação imperativa.
+Considere uma função que lê e retorna o valor de uma variável global.
+Se algum outro código pode modificar a variável global, então o
+resultado de uma particular chamada de nossa função depende do valor
+atual
+da variável global. A função tem um efeito colateral, mesmo que ele
+nunca modifica a própria variável. </p>
+<p id="x_Rm"><a name="x_Rm"></a> Os efeitos colaterais são
+essencialmente entradas ou saídas invisíveis as funções. Em Haskell, o
+padrão é para as funções <span class="emphasis"><em></em></span>não
+terem efeitos colaterais: o resultado de uma função depende apenas das
+entradas providas explicitamente. Chamamos essas funções de <span class="emphasis"><em>puras</em></span>; funções com efeitos colaterais
+são <span class="emphasis"><em>impuras</em></span>. </p>
+<p id="x_Sm"><a name="x_Sm"></a>Se uma função tem efeitos colaterais,
+podemos dizer a partir da leitura de sua
+assinatura: o tipo do resultado da função começará com <span class="type">IO</span>. </p>
+<a name="ch02.basics.ghci:readFile"></a>
+<pre id="ch02.basics.ghci:readFile" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t readFile</code></strong><br>readFile :: FilePath -&gt; IO String<br></pre>
+<p id="x_Tm"><a name="x_Tm"></a> O sistema de tipo de Haskell nos
+impede acidentalmente misturar códigos impuro e puro. </p>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="funcstypes.srcfile">Arquivos
+fonte Haskell, e escrevendo funções simples</h2>
+</div>
+</div>
+</div>
+<p id="x_h3"><a name="x_h3"></a>Agora que sabemos como aplicar as
+funções, é hora de voltamos nossa
+atenção para como escrevê-las. Podemos escrever funções em <span class="command"><strong>ghci</strong></span>, entretanto ele
+não é um bom ambiente para isso. Ele só aceita um subconjunto muito
+limitado do Haskell: e o mais importante, a sintaxe que é utilizada para a
+definição de funções não é o mesma quando usamos um arquivo fonte
+Haskell<sup>[<a name="id579534" href="#ftn.id579534" class="footnote">5</a>]</sup>.
+Em vez disso, vamos finalmente mudar a forma que usamos até então e criar um arquivo de fonte. </p>
+<p id="x_i3"><a name="x_i3"></a> Arquivos fonte em Haskell geralmente são
+identificadas com um sufixo <code class="filename">.hs</code>. Aqui
+está a definição de uma função simples: crie um arquivo chamado <code class="filename">soma.hs</code>, e adicionar este conteúdo a ele. </p>
+<a name="add.hs:add"></a>
+<pre id="add.hs:add" class="programlisting">-- arquivo: ca03/soma.hs<br>soma a b = a + b</pre>
+<p id="x_j3"><a name="x_j3"></a> No lado esquerdo do <code class="literal">=</code> temos o nome da função, seguido pelos argumentos da função. Do lado
+direito temos o corpo da função. Com o nosso arquivo fonte salvo,
+podemos carregá-lo em <span class="command"><strong>ghci</strong></span>
+com <span class="command"><strong>:load</strong></span> ou <span class="command"><strong>:l</strong></span>, e usar nosso nova função <code class="function">soma</code> imediatamente. (O prompt que é exibido pelo <span class="command"><strong>ghci</strong></span> vai mudar depois que você
+carregar o arquivo.) </p>
+<a name="add.ghci:add"></a>
+<pre id="add.ghci:add" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:l soma.hs</code></strong><br>[1 of 1] Compiling Main             ( soma.hs, interpreted )<br>Ok, modules loaded: Main.<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>add 1 2</code></strong><br>3<br></pre>
+<div class="note">
+<table summary="Note: What if ghci cannot find your source file?" border="0">
+  <tbody>
+    <tr>
+      <td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
+      <th align="left">E se ghci não conseguir encontrar o arquivo fonte?</th>
+    </tr>
+    <tr>
+      <td align="left" valign="top">
+      <p id="x_od"><a name="x_od"></a> Quando você executar <span class="command"><strong>ghci</strong></span>
+pode não ser capaz de encontrar o seu arquivo fonte. Ele irá
+procurar por arquivos fonte em qualquer diretório que ele foi
+executado. Se este não é o diretório que seu arquivo fonte esta, na
+verdade, você pode usar o comando <span class="command"><strong>:cd</strong></span>
+do <span class="command"><strong>ghci</strong></span> para alterar o
+seu diretório de trabalho. </p>
+      <a name="cd.ghci:cd"></a>
+      <pre id="cd.ghci:cd" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:cd /tmp</code></strong><br>      </pre>
+      <p id="x_pd"><a name="x_pd"></a> Alternativamente, você pode
+fornecer o caminho para o arquivo fonte Haskell como argumento de <span class="command"><strong>:l</strong></span>. Esse caminho pode ser
+absoluto ou relativo à o diretório atual do <span class="command"><strong>ghci</strong></span>.
+      </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p id="x_k3"><a name="x_k3"></a> Quando aplicamos <code class="function">soma</code> aos valores <code class="literal">1</code>
+e <code class="literal">2</code>, as variáveis de <code class="varname">a</code> e <code class="varname">b</code> do lado esquerdo de nossa definição é dada (ou “<span class="quote">ligada</span>”) aos valores <code class="literal">1</code> e <code class="literal">2</code>, assim, o resultado é a expressão <code class="code">1 + 2</code>. </p>
+<p id="x_l3"><a name="x_l3"></a> Haskell não possui uma palavra-chave
+de <span class="command"><strong>return</strong></span>,
+como uma função é uma expressão simples, e não uma seqüência de
+instruções. O valor da expressão é o resultado da função. (Haskell possui uma função chamada <code class="function">return</code>, mas
+não vamos discutir isso por um tempo, mas ela tem um significado diferente do que nas linguagens imperativas). </p>
+<p id="x_qd"><a name="x_qd"></a> Quando você vê um simbolo <code class="literal">=</code> no Haskell ele tem o seguinte “<span class="quote">sentido</span>”:
+o nome do lado esquerdo é definido como sendo a expressão do lado
+direito. </p>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="funcstypes.variable">Apenas o que é uma variável,
+afinal?</h3>
+</div>
+</div>
+</div>
+<p id="x_sK"><a name="x_sK"></a> Em Haskell, uma variável fornece uma
+maneira de dar um nome a uma expressão. Uma vez que uma variável é <span class="emphasis"><em>vinculada</em></span>
+(ou seja, associada a) uma expressão particular, o seu valor não muda:
+sempre podemos usar o nome da variável em vez de escrever a expressão e
+obter o mesmo resultado de qualquer maneira. </p>
+<p id="x_rK"><a name="x_rK"></a> Se você está acostumado a
+linguagens de programação imperativa, é provável que você vê uma
+variável como uma forma de identificar uma <span class="emphasis"><em>locação
+de memória </em></span>(ou
+algo equivalente), que pode conter valores diferentes em momentos
+diferentes. Em uma linguagem imperativa, podemos mudar o valor de uma
+variável a qualquer momento, de modo que analisar o local da memória
+várias vezes pode potencialmente dar resultados diferentes cada vez. </p>
+<p id="x_rd"><a name="x_rd"></a> A diferença fundamental entre
+essas duas noções de uma variável é que, em Haskell, uma vez que temos
+uma variável ligada a uma expressão, nós sabemos que sempre podemos
+substituí-lo por essa expressão, porque não vai mudar. Em uma linguagem
+imperativa, esta noção de substituição não se sustenta. </p>
+<p id="x_Um"><a name="x_Um"></a> Por exemplo, se executar o seguinte
+script Python minúsculo, ele irá imprimir o número 11. </p>
+<a name="assign.py:assign"></a>
+<pre id="assign.py:assign" class="programlisting">x = 10<br>x = 11<br># value of x is now 11<br>print x</pre>
+<p id="x_Vm"><a name="x_Vm"></a> Em contraste, tentando o equivalente
+em Haskell resultará em um erro. </p>
+<a name="Assign.hs:assign"></a>
+<pre id="Assign.hs:assign" class="programlisting">-- arquivo: ca02/Atribuição.hs<br>x = 10<br>x = 11</pre>
+<p id="x_Wm"><a name="x_Wm"></a> Nós não podemos atribuir um valor para
+<code class="varname">x</code> duas vezes. </p>
+<a name="assign.ghci:load"></a>
+<pre id="assign.ghci:load" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:load Atribuição</code></strong><br>[1 of 1] Compiling Main             ( Atribuição.hs, interpreted )<br><br>Atribuição.hs:4:0:<br>    Multiple declarations of `Main.x'<br>    Declared at: Atribuição.hs:3:0<br>                 Atribuição.hs:4:0<br>Failed, modules loaded: none.<br></pre>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="funcstypes.if">Avaliação condicional</h3>
+</div>
+</div>
+</div>
+<p id="x_m3"><a name="x_m3"></a> Como muitas outras linguagens, em Haskell
+temos uma expressão<code class="code"> if</code> . Vamos vê-la em ação, então iremos explicar o que está
+acontecendo. Por exemplo, vamos escrever nossa própria versão da função <code class="function">drop</code>. Antes de começar, vamos aprofundar um pouco sobre como
+<code class="function">drop</code> de funções. Antes de começar, vamos
+aprofundar um pouco sobre como o <code class="function">drop</code> se
+comporta, para que possamos reproduzir seu comportamento. </p>
+<a name="myDrop.ghci:drop"></a>
+<pre id="myDrop.ghci:drop" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>drop 2 "foobar"</code></strong><br>"obar"<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>drop 4 "foobar"</code></strong><br>"ar"<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>drop 4 [1,2]</code></strong><br>[]<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>drop 0 [1,2]</code></strong><br>[1,2]<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>drop 7 []</code></strong><br>[]<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>drop (-2) "foo"</code></strong><br>"foo"<br></pre>
+<p id="x_n3"><a name="x_n3"></a> Do exposto, parece que a <code class="function">drop</code>
+retorna a lista original, se o número a remover é inferior ou igual a
+zero. Caso contrário, ele remove os elementos até que se esgote ou
+atingir o número indicado. Aqui está uma função <code class="function">meuDrop</code>
+que tem o mesmo comportamento, e usa a expressão Haskell <code class="code">if </code>para decidir o que fazer. A função <code class="function">null</code> abaixo verifica se a lista está vazia. </p>
+<a name="myDrop.hs:myDrop"></a>
+<pre id="myDrop.hs:myDrop" class="programlisting">-- arquivo: ca02/meuDrop.hs<br>meuDrop n xs = if n &lt;= 0 || null xs<br>               then xs<br>               else meuDrop (n - 1) (tail xs)</pre>
+<p id="x_Ym"><a name="x_Ym"></a> Em Haskell, a indentação é importante: ele <span class="emphasis"><em>continua</em></span> uma definição existente, em
+vez de começar um novo. Não omita a identação! </p>
+<p id="x_iB1"><a name="x_iB1"></a> Você pode perguntar de onde o nome da
+variável <code class="varname">xs</code> vem na função Haskell. Este é
+um padrão de nomenclatura comum para a lista: você pode ler o <code class="code">s</code> como um sufixo, por isso o nome é essencialmente
+“<span class="quote">plural de <code class="varname">x</code></span>”.
+</p>
+<p id="x_o3"><a name="x_o3"></a> Vamos salvar nossa função Haskell em
+um arquivo chamado <code class="filename">meuDrop.hs</code>, em
+seguida, carregá-lo em <span class="command"><strong>ghci</strong></span>.
+</p>
+<a name="myDrop.ghci:myDrop"></a>
+<pre id="myDrop.ghci:myDrop" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:l meuDrop.hs</code></strong><br>[1 of 1] Compiling Main             ( meuDrop.hs, interpreted )<br>Ok, modules loaded: Main.<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>meuDrop 2 "foobar"</code></strong><br>"obar"<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>meuDrop 4 "foobar"</code></strong><br>"ar"<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>meuDrop 4 [1,2]</code></strong><br>[]<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>meuDrop 0 [1,2]</code></strong><br>[1,2]<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>meuDrop 7 []</code></strong><br>[]<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>meuDrop (-2) "foo"</code></strong><br>"foo"<br></pre>
+<p id="x_p3"><a name="x_p3"></a> Agora que vimos <code class="function">meuDrop</code>
+em ação, vamos voltar ao código fonte e olhar todas as novidades que
+temos apresentado. </p>
+<p id="x_wd"><a name="x_wd"></a> Em primeiro lugar, nós introduzimos <code class="code">--</code>, o início de um comentário de uma única linha. Este
+comentário se estende até o final da linha. </p>
+<p id="x_q3"><a name="x_q3"></a> Seguinte é a palavra chave <code class="code">if</code>
+de em si. Ela introduz uma expressão que tem três
+componentes. </p>
+<div class="itemizedlist">
+<ul type="disc">
+  <li>
+    <p id="x_xd"><a name="x_xd"></a> Uma expressão do tipo <span class="type">Bool</span>, imediatamente após o <code class="literal">if</code>.
+Referimo-nos a isso como um <span class="emphasis"><em>predicado</em></span>.
+    </p>
+  </li>
+  <li>
+    <p id="x_yd"><a name="x_yd"></a> Uma&nbsp;<code class="code"></code>palavra-chave <code class="code">then</code>, seguido por outra expressão. Esta expressão será
+utilizada como o valor do <code class="literal">if</code> se a avaliação da expressão predicado  for <code class="code">True</code>. </p>
+  </li>
+  <li>
+    <p id="x_zd"><a name="x_zd"></a> Uma palavra-chave <code class="code">else</code>, seguido por outra expressão. Esta expressão será
+utilizada quando o valor do <code class="literal">if</code> se a avaliação da expressão predicado for <code class="code">False</code>. </p>
+  </li>
+</ul>
+</div>
+<p id="x_Ae"><a name="x_Ae"></a> Iremos nos referir às expressões após
+as palavras-chave <code class="code">then</code> e <code class="code">else</code>&nbsp; como “<span class="quote">ramos</span>”. Os ramos devem
+ter os mesmos tipos, a expressão <code class="literal">if</code> terá também seu tipo. Uma expressão como <code class="code">if True
+then 1 else "foo"</code> tem diferentes tipos para seus ramos, por isso ela está errada e será rejeitada por um compilador ou interpretador. </p>
+<p id="x_Zm"><a name="x_Zm"></a></p>
+<p id="x_s3"><a name="x_s3"></a> Lembre-se que o Haskell é uma
+linguagem funcional baseada em expressões. Em uma linguagem imperativa,
+pode fazer sentido omitir o ramo <code class="code">else</code>&nbsp; de um <code class="code">if</code>, porque estamos trabalhando com as <span class="emphasis"><em>declarações</em></span>, não expressões. No
+entanto, quando estamos trabalhando com expressões, um <code class="code">if</code> que está faltando um <code class="code">else</code>
+não teria um resultado ou tipo, se o predicado avaliar para <code class="function">False</code>, por isso seria absurdo. </p>
+<p id="x_t3"><a name="x_t3"></a> Nosso predicado contém algumas
+novidades a mais. A função <code class="function">null</code> indica se
+a lista é vazia, enquanto o <code class="function">(||)</code>
+realiza um operador lógico “<span class="quote">ou</span>” de seus
+argumentos do tipo <span class="type">Bool</span>. </p>
+<a name="myDrop.ghci:null"></a>
+<pre id="myDrop.ghci:null" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:type null</code></strong><br>null :: [a] -&gt; Bool<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:type (||)</code></strong><br>(||) :: Bool -&gt; Bool -&gt; Bool<br></pre>
+<div class="tip">
+<table summary="Tip: Operators are not special" border="0">
+  <tbody>
+    <tr>
+      <td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="support/figs/tip.png"></td>
+      <th align="left">Os operadores não são especiais</th>
+    </tr>
+    <tr>
+      <td align="left" valign="top">
+      <p id="x_Be"><a name="x_Be"></a> Observe que fomos capazes de
+encontrar o tipo de <code class="function">(||)</code> por
+envolvimento em parênteses. O operador <code class="function">(||)</code>
+não é “<span class="quote">incorporado</span>” a linguagem: é uma
+função comum. </p>
+      <p id="x_am"><a name="x_am"></a> O operador <code class="function">(||)</code> é “<span class="quote">curto-circuito</span>”:
+se o operando da esquerda é avaliado como <code class="code">True</code>,
+ela não avalia o operando direito. Na maioria das linguagens, a
+avaliação de curto-circuito requer um apoio especial, mas não em
+Haskell. Vamos ver porque em breve. </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p id="x_u3"><a name="x_u3"></a>Em seguida, aplica-se a nossa função de
+forma recursiva. Este é o nosso
+primeiro exemplo de recursão, que falaremos em detalhes em breve. </p>
+<p id="x_v3"><a name="x_v3"></a> Finalmente, o nosso <code class="code">if</code>
+abrange várias linhas de expressão. Nós alinhamos os ramos <code class="code">then</code>
+e <code class="code">else</code>&nbsp; no âmbito do <code class="code">if</code>
+para clareza. Enquanto nós usamos algum recuo, o valor exato não é
+importante. Se quisermos, podemos escrever a expressão inteira em uma
+única linha. </p>
+<a name="myDrop.hs:myDrop2"></a>
+<pre id="myDrop.hs:myDrop2" class="programlisting">-- arquivo: ca02/meuDrop.hs<br>meuDropX n xs = if n &lt;= 0 || null xs then xs else meuDropX (n - 1) (tail xs)</pre>
+<p id="x_jB1"><a name="x_jB1"></a> O tamanho desta versão o torna mais
+difícil de ler. Nós geralmente fazemos uma quabra na expressão <code class="literal">if</code>&nbsp; através de várias linhas para manter o predicado e cada um
+dos ramos mais fácil de identificar. </p>
+<p id="x_kB1"><a name="x_kB1"></a> Para comparação, aqui é um
+equivalente Python da função Haskell <code class="function">meuDrop</code>.
+Os dois são estruturados de forma semelhante: decremento um contador a cada remoção de um elemento da cabeça da lista. </p>
+<a name="myDrop.py:myDrop"></a>
+<pre id="myDrop.py:myDrop" class="programlisting">def meuDrop(n, elts):<br>    while n &gt; 0 and elts:<br>        n = n - 1<br>        elts = elts[1:]<br>    return elts</pre>
+</div>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="id580425">Compreender a
+avaliação através de exemplos</h2>
+</div>
+</div>
+</div>
+<p id="x_Ce"><a name="x_Ce"></a> Na nossa descrição do <code class="function">meuDrop</code>,
+nós temos até agora focado nas características superfíciais.
+Precisamos aprofundar e desenvolver um modelo mental útil de como
+funciona a aplicação de função. Para fazer isso, iremos trabalhar
+através de alguns simples exemplos, até que possamos caminhar através
+da
+avaliação da expressão <code class="code">meuDrop 2 "abcd"</code>. </p>
+<p id="x_De"><a name="x_De"></a>Já falamos várias vezes sobre a
+substituição de uma expressão para uma
+variável, e nós vamos fazer uso deste recurso aqui. Nosso procedimento
+implicará em reescrever expressões repetidas, substituindo as expressões
+para as variáveis até chegar a um resultado final. Este seria um bom
+momento para buscar um lápis e papel, de modo que você possa acompanhar
+nossas descrições, e tenta-lás sozinho. </p>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id580456">Avaliação preguiçosa</h3>
+</div>
+</div>
+</div>
+<p id="x_bm"><a name="x_bm"></a> Vamos começar olhando para a
+definição de uma função simples não-recursiva. </p>
+<a name="RoundToEven.hs:odd"></a>
+<pre id="RoundToEven.hs:odd" class="programlisting">-- arquivo: ch02/RoundToEven.hs<br>isOdd n = mod n 2 == 1</pre>
+<p id="x_cm"><a name="x_cm"></a> Aqui, <code class="function">mod</code>
+é um função padrão que retorna o resto de uma divisão inteira. O grande primeiro passo para entender como a
+avaliação funciona em Haskell é descobrir qual será o resultado da
+avaliação da expressão <code class="code">isOdd (1 + 2)</code>. </p>
+<p id="x_dm"><a name="x_dm"></a>Antes de explicar como procede a
+avaliação em Haskell, vamos
+recapitular o tipo de estratégia de avaliação utilizados por algumas familias de
+linguagens. Em primeiro lugar, avaliamos a subexpressão <code class="code">1 + 2</code>, que dará <code class="code">3</code>. Em
+seguida, aplique a função <code class="function">odd</code> com <code class="varname">n</code> e substituido por <code class="code">3</code>.
+Finalmente, avaliamos <code class="code">mod 3 2</code> que dará <code class="code">1</code>, e <code class="code">1 == 1</code> dando <code class="code">True</code>. </p>
+<p id="x_em"><a name="x_em"></a> Em uma linguagem que utiliza avaliação
+<span class="emphasis"><em>estrita</em></span>, os argumentos para uma
+função são avaliados antes da função ser aplicada. Haskell escolhe um
+outro caminho: avaliação <span class="emphasis"><em>não-estrita</em></span>. </p>
+<p id="x_fm"><a name="x_fm"></a> Em Haskell, a subexpressão <code class="code">1 + 2</code> <span class="emphasis"><em>não</em></span>
+será reduzido para o valor <code class="code">3</code>. Em vez disso,
+criamos uma “<span class="quote">promessa</span>” que, quando o valor
+da expressão <code class="code">isOdd (1 + 2)</code>
+é requerida, nós vamos ser capazes de calcular isso. O registro que
+nós usamos para controlar a expressão não avaliada é referida como uma <span class="emphasis"><em>thunk</em></span>. Isto é <span class="emphasis"><em>tudo</em></span>
+o que acontece: vamos criar um thunk, e adiar a avaliação propriamente
+dita, até que é realmente sejá necessário. Se o resultado desta expressão
+nunca for posteriormente utilizado, não vamos calcular o seu valor. </p>
+<p id="x_gm"><a name="x_gm"></a> Avaliação não-estrita é muitas vezes
+referida como a <span class="emphasis"><em>avaliação preguiçosa</em></span><sup>[<a name="id580576" href="#ftn.id580576" class="footnote">6</a>]</sup>. </p>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id580594">Um exemplo mais amplo<br>
+</h3>
+</div>
+</div>
+</div>
+<p id="x_om"><a name="x_om"></a> Vamos agora olhar para a avaliação da
+expressão <code class="code">meuDrop 2 "abcd"</code>, onde usamos o <code class="function">print</code> para garantir que ele será avaliado. </p>
+<a name="myDrop.ghci:print"></a>
+<pre id="myDrop.ghci:print" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>print (meuDrop 2 "abcd")</code></strong><br>"cd"<br></pre>
+<p id="x_pm"><a name="x_pm"></a> Nosso primeiro passo é tentar aplicar <code class="function">print</code>, que necessita que o seu argumento seja avaliado.
+Para fazer isso, nós aplicamos a função <code class="function">meuDrop</code>
+com os valores <code class="code">2</code> e <code class="code">"abcd"</code>.
+Nós ligamos a variável <code class="varname">n</code> para o valor <code class="code">2</code>, e <code class="varname">xs</code> para <code class="code">"abcd"</code>. Se substituirmos esses valores em
+predicado de <code class="function">meuDrop</code>, obtemos a seguinte
+expressão. </p>
+<a name="myDrop.ghci:myDrop1"></a>
+<pre id="myDrop.ghci:myDrop1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t  2 &lt;= 0 || null "abcd"</code></strong><br>2 &lt;= 0 || null "abcd" :: Bool<br></pre>
+<p id="x_Fe"><a name="x_Fe"></a> Em seguida, avaliamos o predicado suficiente para descobrir qual o seu valor. Isso requer que podemos
+avaliar a expressão <code class="function">(||)</code>. Para
+determinar o seu valor, o operador <code class="function">(||)</code>
+deve examinar o valor de seu operando à esquerda em primeiro lugar. </p>
+<a name="myDrop.ghci:myDrop2"></a>
+<pre id="myDrop.ghci:myDrop2" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 &lt;= 0</code></strong><br>False<br></pre>
+<p id="x_Ge"><a name="x_Ge"></a> Substituindo esse valor para a expressão <code class="function">(||)</code>&nbsp; levará à seguinte expressão. </p>
+<a name="myDrop.ghci:myDrop2a"></a>
+<pre id="myDrop.ghci:myDrop2a" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t  False || null "abcd"</code></strong><br>False || null "abcd" :: Bool<br></pre>
+<p id="x_He"><a name="x_He"></a> Se o operando esquerdo avaliou
+para <code class="literal">True</code>, o operador <code class="function">(||)</code>
+não precisaria avaliar seu operando à direita, uma vez que não irá
+afetar o resultado da expressão. Uma vez que a avaliação der <code class="literal">False</code>, o operador <code class="function">(||)</code> deve
+avaliar o operando direito. </p>
+<a name="myDrop.ghci:myDrop3"></a>
+<pre id="myDrop.ghci:myDrop3" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>null "abcd"</code></strong><br>False<br></pre>
+<p id="x_Ie"><a name="x_Ie"></a> Nos agora substituimos este valor de retorno para a expressão <code class="function">(||)</code>. Uma vez que
+ambos os operandos são avaliadas como <code class="literal">False</code>, a expressão <code class="function">(||)</code> tambem, portanto o
+predicado é avaliado como <code class="literal">False</code>. </p>
+<a name="myDrop.ghci:myDrop4"></a>
+<pre id="myDrop.ghci:myDrop4" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>False || False</code></strong><br>False<br></pre>
+<p id="x_Je"><a name="x_Je"></a> Isso faz com que ramo <code class="code">else</code> da expressão <code class="literal">if</code> será avaliada. Este
+ramo contém uma aplicação recursiva da função <code class="function">meuDrop</code>.
+</p>
+<div class="note">
+<table summary="Note: Short circuiting for free" border="0">
+  <tbody>
+    <tr>
+      <td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
+      <th align="left">Curtos-circuitos de graça</th>
+    </tr>
+    <tr>
+      <td align="left" valign="top">
+      <p id="x_qm"><a name="x_qm"></a>Muitas linguagens necessitam tratar o operador lógico "ou"
+especialmente para que os curto-circuitos aconteça, se seu operando à esquerda é
+avaliada como <code class="code">True</code>. Em Haskell, <code class="function">(||)</code> é uma função comum: a avaliação não-estrita
+constrói essa capacidade para a linguagem. </p>
+      <p id="x_mB1"><a name="x_mB1"></a> Em Haskell, podemos facilmente
+definir uma nova função que sejá curto-circuito. </p>
+      <a name="shortCircuit.hs:newOr"></a>
+      <pre id="shortCircuit.hs:newOr" class="programlisting">-- arquivo: ca02/curtoCircuito.hs<br><code class="code">newOr</code> a b = if a then a else b</pre>
+      <p id="x_nB1"><a name="x_nB1"></a> Se escrevermos uma expressão
+como <code class="code">newOr</code><code class="code"> True (length [1..] &gt; 0)</code>,
+não irá avaliar o seu segundo argumento. (Isto é: essa
+expressão tenta calcular o comprimento de uma lista infinita. Se fosse
+avaliada, iria travar o <span class="command"><strong>ghci</strong></span>, executando um loop infinitamente, até que mate o processo.) </p>
+      <p id="x_oB1"><a name="x_oB1"></a>Se fôssemos escrever uma função
+comparável, digamos, Python, avaliação
+rigorosa complicaria nós: ambos os argumentos serão avaliados antes de
+serem passados para <code class="code">newOr</code><code class="code"></code>, e nós não
+seriamos capaz de evitar o loop infinito no segundo argumento. </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id580915">Recursão</h3>
+</div>
+</div>
+</div>
+<p id="x_Ke"><a name="x_Ke"></a> Quando aplicamos <code class="function">meuDrop</code> recursivamente, <code class="varname">n</code>
+é obrigado a thunk <code class="code">2 - 1</code>, e <code class="varname">xs</code> a <code class="code">tail "abcd"</code>. </p>
+<p id="x_Le"><a name="x_Le"></a> Estamos avaliando agora <code class="function">meuDrop</code> desde o início novamente. Nós
+substituímos os novos valores de <code class="varname">n</code> e <code class="varname">xs</code> no predicado. </p>
+<a name="myDrop.ghci:myDrop5"></a>
+<pre id="myDrop.ghci:myDrop5" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t (2 - 1) &lt;= 0 || null (tail "abcd")</code></strong><br>(2 - 1) &lt;= 0 || null (tail "abcd") :: Bool<br></pre>
+<p id="x_Me"><a name="x_Me"></a> Aqui está uma versão condensada da
+avaliação do operando à esquerda. </p>
+<a name="myDrop.ghci:myDrop6"></a>
+<pre id="myDrop.ghci:myDrop6" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t (2 - 1) &lt;= 0</code></strong><br>(2 - 1) &lt;= 0 :: Bool<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 - 1</code></strong><br>1<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>1 &lt;= 0</code></strong><br>False<br></pre>
+<p id="x_Ne"><a name="x_Ne"></a> Como devemos agora esperar, não
+avaliamos a expressão <code class="code">2 - 1</code> até que nós
+precisávamos do seu valor. Também avaliamos o operando direito
+preguiçosamente, adiando <code class="code">tail "abcd"</code> até precisarmos&nbsp; do seu valor. </p>
+<a name="myDrop.ghci:myDrop7"></a>
+<pre id="myDrop.ghci:myDrop7" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t null (tail "abcd")</code></strong><br>null (tail "abcd") :: Bool<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>tail "abcd"</code></strong><br>"bcd"<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>null "bcd"</code></strong><br>False<br></pre>
+<p id="x_Oe"><a name="x_Oe"></a> O predicado novamente é avaliado como <code class="literal">False</code>, fazendo com que a clausula <code class="code">else</code>&nbsp; seja avaliada mais uma vez. </p>
+<p id="x_Pe"><a name="x_Pe"></a> Porque nós avaliamos as
+expressões para <code class="varname">n</code> e <code class="varname">xs</code>
+para avaliar o predicado, agora sabemos que nessa aplicação do <code class="function">meuDrop</code>, <code class="varname">n</code> tem o
+valor <code class="code">1</code> e <code class="varname">xs</code>
+tem o valor <code class="code">"bcd"</code>. </p>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id581112">Finalizando a recursividade</h3>
+</div>
+</div>
+</div>
+<p id="x_Qe"><a name="x_Qe"></a> Na próxima aplicação recursiva de <code class="function">meuDrop</code>, ligamos <code class="varname">n</code>
+para <code class="code">1 - 1</code> a <code class="varname">xs</code>
+a <code class="function">tail "bcd"</code>. </p>
+<a name="myDrop.ghci:myDrop9"></a>
+<pre id="myDrop.ghci:myDrop9" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t (1 - 1) &lt;= 0 || null (tail "bcd")</code></strong><br>(1 - 1) &lt;= 0 || null (tail "bcd") :: Bool<br></pre>
+<p id="x_Re"><a name="x_Re"></a> Mais uma vez, para o <code class="function">(||)</code>
+é necessário avaliar seu operando à esquerda em primeiro lugar. </p>
+<a name="myDrop.ghci:myDrop10"></a>
+<pre id="myDrop.ghci:myDrop10" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t (1 - 1) &lt;= 0</code></strong><br>(1 - 1) &lt;= 0 :: Bool<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>1 - 1</code></strong><br>0<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>0 &lt;= 0</code></strong><br>True<br></pre>
+<p id="x_Se"><a name="x_Se"></a> Finalmente, esta expressão foi
+avaliada como <code class="literal">True</code>! </p>
+<a name="myDrop.ghci:myDrop11"></a>
+<pre id="myDrop.ghci:myDrop11" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>True || null (tail "bcd")</code></strong><br>True<br></pre>
+<p id="x_Te"><a name="x_Te"></a> Porque o operando direito não pode
+afetar o resultado de <code class="function">(||)</code>, não é
+avaliado, eo resultado do predicado é <code class="literal">True</code>.
+Isso nos leva a avaliar a clausula <code class="code">then</code>. </p>
+<a name="myDrop.ghci:myDrop12"></a>
+<pre id="myDrop.ghci:myDrop12" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t tail "bcd"</code></strong><br>tail "bcd" :: [Char]<br></pre>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id581267">Retornando a recursão</h3>
+</div>
+</div>
+</div>
+<p id="x_Ue"><a name="x_Ue"></a> Lembre-se, agora estamos dentro da
+nossa segunda aplicação recursiva do <code class="function">meuDrop</code>.
+Esta aplicação é avaliada como <code class="code">tail "bcd"</code>.
+Voltamos a partir da aplicação da função, substituindo esta expressão
+para <code class="code">meuDrop (1 - 1) (tail "bcd")</code>, retornando o resultado dessa aplicação. </p>
+<a name="myDrop.ghci:myDrop13"></a>
+<pre id="myDrop.ghci:myDrop13" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>meuDrop (1 - 1) (tail "bcd") == tail "bcd"</code></strong><br>True<br></pre>
+<p id="x_Ve"><a name="x_Ve"></a> Nós então retornamos a partir da primeira aplicação recursiva, substituindo o resultado da segunda aplicação
+recursiva para <code class="code">meuDrop (2 - 1) (tail "abcd")</code>, retornando o resultado dessa aplicação. </p>
+<a name="myDrop.ghci:myDrop14"></a>
+<pre id="myDrop.ghci:myDrop14" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>meuDrop (2 - 1) (tail "abcd") == tail "bcd"</code></strong><br>True<br></pre>
+<p id="x_We"><a name="x_We"></a> Finalmente, o nosso retorno de
+aplicação original, substituindo o resultado da primeira aplicação
+recursiva. </p>
+<a name="myDrop.ghci:myDrop15"></a>
+<pre id="myDrop.ghci:myDrop15" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>meuDrop 2 "abcd" == tail "bcd"</code></strong><br>True<br></pre>
+<p id="x_Xe"><a name="x_Xe"></a> Observe que como nós retornamos a partir de
+cada aplicação recursiva sucessiva, nenhum deles necessitou avaliar a
+expressão <code class="code">tail "bcd"</code>: o resultado final da
+avaliação da expressão original é um <span class="emphasis"><em>thunk</em></span>.
+O thunk só é avaliado quando finalmente <span class="command"><strong>ghci</strong></span> precisar imprimi-lo. </p>
+<a name="myDrop.ghci:myDrop16"></a>
+<pre id="myDrop.ghci:myDrop16" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>meuDrop 2 "abcd"</code></strong><br>"cd"<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>tail "bcd"</code></strong><br>"cd"<br></pre>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id581397">O que aprendemos?</h3>
+</div>
+</div>
+</div>
+<p id="x_Ye"><a name="x_Ye"></a> Nós estabelecemos vários pontos importantes
+aqui. </p>
+<div class="itemizedlist">
+<ul type="disc">
+  <li>
+    <p id="x_Ze"><a name="x_Ze"></a> Faz sentido usar substituição e reescrita para entender a avaliação de uma expressão em Haskell. </p>
+  </li>
+  <li>
+    <p id="x_ae"><a name="x_ae"></a>A avaliação preguiçosa leva-nos a adiar a
+avaliação até termos um valor, e avaliamos apenas o
+suficiente de uma expressão para determinar o seu valor. </p>
+  </li>
+  <li>
+    <p id="x_be"><a name="x_be"></a> O resultado da aplicação de uma
+função pode ser um thunk (uma expressão em diferido). </p>
+  </li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="funcstypes.polymorphism">Polimorfismo
+em Haskell</h2>
+</div>
+</div>
+</div>
+<p id="x_he"><a name="x_he"></a>Quando introduzimoas as listas, mencionamos
+que o tipo de lista é
+polimórfico. Vamos falar sobre o polimorfismo Haskell em mais detalhes
+aqui. </p>
+<p id="x_ie"><a name="x_ie"></a> Se quisermos buscar o último elemento
+de uma lista, usamos a função <code class="function">last</code>. O
+valor que ele retorna deve ter o mesmo tipo que os elementos da lista,
+mas <code class="function">last</code> opera da mesma maneira, não
+importa qual o tipo desses elementos realmente são. </p>
+<a name="func.ghci:last"></a>
+<pre id="func.ghci:last" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>last [1,2,3,4,5]</code></strong><br>5<br><code class="prompt">ghci&gt; </code><strong class="userinput"><code>last "baz"</code></strong><br>'z'<br></pre>
+<p id="x_je"><a name="x_je"></a> Para captar esta idéia, a sua
+assinatura tipo contém uma "type variable".
+</p>
+<a name="func.ghci:last.type"></a>
+<pre id="func.ghci:last.type" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t last</code></strong><br>last :: [a] -&gt; a<br></pre>
+<p id="x_ke"><a name="x_ke"></a> Aqui, <code class="varname">a</code>
+é a "type variable". Podemos ler a assinatura como “<span class="quote">tem
+uma lista, da qual todos os elementos têm algum tipo <code class="varname">a</code>, e retorna um valor do mesmo tipo <code class="varname">a</code></span>”. </p>
+<div class="tip">
+<table summary="Tip: Identifying a type variable" border="0">
+  <tbody>
+    <tr>
+      <td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="support/figs/tip.png"></td>
+      <th align="left">Identificação de uma variável de tipo</th>
+    </tr>
+    <tr>
+      <td align="left" valign="top">
+      <p id="x_le"><a name="x_le"></a><span style="font-style: italic;">Type variables</span> sempre começam
+com uma letra minúscula. Você sempre
+pode dizer uma <span style="font-style: italic;">type variable</span>
+de uma variável normal pelo contexto,
+porque as linguagens de tipos e funções são separadas: variáveis tipo
+existem nas assinaturas, tipo e variáveis normais existem em expressões
+regulares. </p>
+      <p id="x_me"><a name="x_me"></a> É prática comum em Haskell manter
+os nomes de variáveis tipo muito curto. Uma carta é esmagadoramente
+comum; nomes já aparecem com pouca freqüência. Tipo de assinaturas são
+geralmente breves, ganhamos mais legibilidade, mantendo nomes curtos, tornando-descritivo. </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p id="x_c3"><a name="x_c3"></a>Quando uma função tem "type variable" na
+sua assinatura, o que indica
+que alguns dos seus argumentos podem ser de qualquer tipo, chamamos a
+função polimórfica. </p>
+<p id="x_ne"><a name="x_ne"></a> Quando queremos aplicar <code class="function">last</code> digamos, uma lista de <span class="type">Char</span>,
+o compilador substituto <span class="type">Char</span> para cada <code class="varname">a</code> em todo o tipo de assinatura, o que nos dá o
+tipo de <code class="function">last</code> com uma entrada de <span class="type">[Char]</span> como <span class="type">[Char] -&gt; Char</span>.
+</p>
+<p id="x_oe"><a name="x_oe"></a> Este tipo de polimorfismo é chamado
+polimorfismo <span class="emphasis"><em>paramétrico</em></span>
+. A escolha do nome é fácil de entender, por analogia: assim como uma
+função pode ter parâmetros que podemos ligar mais tarde a valores
+reais, um tipo Haskell podem ter parâmetros que podemos ligar mais
+tarde para outros tipos. </p>
+<div class="tip">
+<table summary="Tip: A little nomenclature" border="0">
+  <tbody>
+    <tr>
+      <td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="support/figs/tip.png"></td>
+      <th align="left">Um pouco nomenclatura</th>
+    </tr>
+    <tr>
+      <td align="left" valign="top">
+      <p id="x_pe"><a name="x_pe"></a>Se
+um tipo contém parametros para tipos, nós dizemos que é um tipo
+parametrizado, ou um tipo polimórfico. Se uma função ou do tipo de
+valor contém parâmetros de tipo, nós chamamos de polimorfismo. </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p id="x_qe"><a name="x_qe"></a>Quando vemos um tipo parametrizado,
+nós já observamos que o código
+não importa qual é o tipo realmente. Contudo, podemos fazer uma declaração
+mais forte: <span class="emphasis"><em>não tem jeito de descobrir qual
+é o tipo real,</em></span>
+ou para manipular um valor desse tipo. Não se pode criar um valor, nem
+pode inspeccionar um. Tudo o que podemos fazer é tratá-lo como uma “<span class="quote">caixa preta</span>” totalmente abstrata. Nós vamos tratar a razão por que isso é importante em breve. </p>
+<p id="x_re"><a name="x_re"></a>Polimorfismo paramétrico é o tipo mais
+visível de polimorfismo que o suporta Haskell. Polimorfismo paramétrico no Haskell diretamente
+influencia o projeto de recursos genéricos do Java e C#. Um tipo parametrizado em Haskell é semelhante a uma variável do
+tipo Generics Java. C++ templates também têm uma semelhança com o
+polimorfismo paramétrico. </p>
+<p id="x_rm"><a name="x_rm"></a> Para tornar mais claro
+como o polimorfismo em Haskell difere de outras linguagens, aqui estão
+algumas formas de polimorfismo que são comuns em outros linguagens, mas
+não estão presentes em Haskell. </p>
+<p id="x_se"><a name="x_se"></a> Normalmente em linguagens orientadas a
+objeto, o polimorfismo de <span class="emphasis"><em>subtipo</em></span>
+é mais amplo do que o polimorfismo paramétrico. Os mecanismos de
+subclasse de C++ e Java dá-le o polimorfismo subtipo. A classe base
+define um conjunto de comportamentos que suas subclasses pode modificar
+e estender. Desde que Haskell não é uma linguagem orientada a objetos, ele não
+fornecem polimorfismo de subtipo. </p>
+<p id="x_te"><a name="x_te"></a> Também é comum o polimorfismo <span class="emphasis"><em>coerção</em></span>
+o que permite um valor de um tipo a ser convertido implicitamente em um
+valor de outro tipo. Muitas linguagens fornecem alguma forma de coerção
+polimorfismo: um exemplo é a conversão automática entre números
+inteiros e de ponto flutuante. Haskell deliberadamente evita mesmo tipo de coerção automática simples. </p>
+<p id="x_ue"><a name="x_ue"></a> Isso não é toda a história do
+polimorfismo em Haskell: vamos voltar ao assunto no <a class="xref" href="using-typeclasses.html" title="Chapter&nbsp;6.&nbsp;Using Typeclasses">Capítulo&nbsp;6,
+<i>Usando Typeclasses</i></a>. </p>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id581696">Raciocínio sobre funções polimórficas</h3>
+</div>
+</div>
+</div>
+<p id="x_ve"><a name="x_ve"></a> Na <a class="xref" href="types-and-functions.html#funcstypes.sigs" title="Function types and purity">seção denominada “Tipos de função e
+pureza”</a>,
+falamos sobre como descobrir o comportamento de uma função com base na
+sua assinatura. Podemos aplicar o mesmo tipo de raciocínio para
+funções polimórficas. Vamos dar uma olhada novamente na <code class="function">fst</code>. </p>
+<a name="func.ghci:fst.type"></a>
+<pre id="func.ghci:fst.type" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t fst</code></strong><br>fst :: (a, b) -&gt; a<br></pre>
+<p id="x_we"><a name="x_we"></a> Em primeiro lugar, observe que o seu
+argumento contém duas variáveis do tipo, <code class="varname">a</code>
+e <code class="varname">b</code>, o que significa que os elementos da
+tupla pode ser de diferentes tipos. </p>
+<p id="x_xe"><a name="x_xe"></a> O tipo do resultado de <code class="function">fst</code> é <code class="varname">a</code>. Já
+mencionamos que o polimorfismo paramétrico faz o tipo real inacessível:
+<code class="function">fst</code> não tem informações suficientes para
+a construção de um valor do tipo <code class="varname">a</code>, nem
+pode transformar um <code class="varname">a</code> em um <code class="varname">b</code>. Assim, <span class="emphasis"><em>único</em></span>
+comportamento válido possível (omitindo loops infinitos ou falha) que
+pode ter é retornar o primeiro elemento do par. </p>
+<div class="sect3" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h4 class="title" id="id581793">Outras leituras</h4>
+</div>
+</div>
+</div>
+<p id="x_ye"><a name="x_ye"></a> Há um profundo sentido matemático em
+que qualquer função não-patológicos do tipo <span class="type">(a,b)
+-&gt; a</span> deve fazer exatamente o que <code class="function">fst</code>
+faz. Além disso, essa linha de raciocínio se estende a mais complicada
+de funções polimórficas. O documento [<span class="citation"><a href="bibliography.html#bib.wadler89" class="biblioref" title="[Wadler89]"><abbr class="abbrev">Wadler89</abbr></a></span>]
+abrange este procedimento em profundidade. </p>
+<p class="remark"><i><span class="remark"> Tem sido sugerido que nós
+devemos criar “<span class="quote">uma caixa de teoria</span>” para as
+discussões das coisas profundas, e referências a trabalhos acadêmicos. </span></i></p>
+</div>
+</div>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="id581829">O tipo de uma
+função de mais de um argumento</h2>
+</div>
+</div>
+</div>
+<p id="x_d3"><a name="x_d3"></a>Até agora, nós não vimos muitas assinaturas de funções
+que têm mais de um argumento. Já tinhamos usados algumas dessas funções, vamos
+olhar para a assinatura de uma, <code class="function">take</code>.
+</p>
+<a name="func.ghci:take.type"></a>
+<pre id="func.ghci:take.type" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t take</code></strong><br>take :: Int -&gt; [a] -&gt; [a]<br></pre>
+<p id="x_e3"><a name="x_e3"></a> É muito claro que existe alguma coisa acontecendo
+com um <span class="type">Int</span> e algumas listas, mas porque há
+dois símbolos <code class="literal">-&gt;</code> na assinatura? Grupos
+Haskell, essa cadeia de setas da direita para a esquerda, isto é, <code class="literal">-&gt;</code> é associativo à direita. Se introduzirmos
+parênteses, podemos definir como a assinatura deste tipo será
+interpretada. </p>
+<a name="Take.hs:type"></a>
+<pre id="Take.hs:type" class="programlisting">-- arquivo: ca02/Take.hs<br>take :: Int -&gt; ([a] -&gt; [a])</pre>
+<p id="x_f3"><a name="x_f3"></a> A partir disso, parece que devemos ler
+a assinatura de tipo como uma função que recebe um argumento, um <span class="type">Int</span>,
+e retorna outra função. Essa outra função também tem um argumento, uma
+lista, e retorna uma lista do mesmo tipo, como seu resultado. </p>
+<p id="x_g3"><a name="x_g3"></a> Isso é correto, mas não é fácil de ver
+quais seriam as suas consequências. Voltaremos a este tema na <a class="xref" href="functional-programming.html#fp.partialapp" title="Partial function application and currying">seção chamada
+“Aplicação de função parcial e currying”</a>, uma vez que passamos um
+pouco de tempo escrevendo funções. Por agora, podemos tratar do tipo
+após a última <code class="code">-&gt;</code> como sendo função do
+tipo de retorno, e os tipos anteriores como os próprios argumentos
+da função. </p>
+<p id="x_ze"><a name="x_ze"></a> Podemos agora escrever uma assinatura
+tipo da função <code class="function">meuDrop</code> que definimos
+anteriormente. </p>
+<a name="myDrop.hs:myDrop.type"></a>
+<pre id="myDrop.hs:myDrop.type" class="programlisting">-- arquivo: ca02/meuDrop.hs<br>meuDrop :: Int -&gt; [a] -&gt; [a]</pre>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="funcstypes.sigs.exercises">Exercícios</h2>
+</div>
+</div>
+</div>
+<div class="qandaset">
+<table summary="Q and A Set" border="0">
+  <col align="left" width="1%"><tbody>
+    <tr class="question">
+      <td align="left" valign="top"><a name="id581959"></a><a name="id581962"></a>
+      <p><b>1.</b></p>
+      </td>
+      <td align="left" valign="top">
+      <p id="x_A4"><a name="x_A4"></a> Haskell oferece uma função padrão, <code class="code">last :: [a] -&gt; a</code>,
+que retorna o último elemento de uma lista. Da leitura do tipo sozinho,
+quais são os possíveis comportamentos válidos (omitindo falhas e loops
+infinitos) que esta função poderia ter? Que coisas que
+esta função claramente não pode fazer? </p>
+      </td>
+    </tr>
+    <tr class="question">
+      <td align="left" valign="top"><a name="id581979"></a><a name="id581981"></a>
+      <p><b>2.</b></p>
+      </td>
+      <td align="left" valign="top">
+      <p id="x_sm"><a name="x_sm"></a> Escreva uma função <code class="function">lastButOne,</code> que retorna o elemento <span class="emphasis"><em>antes</em></span> do último. </p>
+      </td>
+    </tr>
+    <tr class="question">
+      <td align="left" valign="top"><a name="id582002"></a><a name="id582005"></a>
+      <p><b>3.</b></p>
+      </td>
+      <td align="left" valign="top">
+      <p id="x_B4"><a name="x_B4"></a> Carregue seu função <code class="function">lastButOne</code> no <span class="command"><strong>ghci</strong></span>,
+e teste-o em listas de diferentes comprimentos. O que acontece quando
+você passar uma lista que é muito curta? </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="id582031">Por que a confusão
+sobre a pureza?</h2>
+</div>
+</div>
+</div>
+<p id="x_tm"><a name="x_tm"></a>Poucas linguagens de programação vai
+tão longe como Haskell, insistindo
+que a pureza deve ser o padrão. Esta escolha tem consequências
+profundas e valiosas. </p>
+<p id="x_um"><a name="x_um"></a> Como o resultado da
+aplicação de uma função pura só pode depender de seus argumentos,
+muitas vezes podemos obter um forte indício de que uma função pura faz
+simplesmente lendo o seu nome e compreensão da sua assinatura.
+Como exemplo, vamos olhar <code class="function">not</code>. </p>
+<a name="func.ghci:not.type"></a>
+<pre id="func.ghci:not.type" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t not</code></strong><br>not :: Bool -&gt; Bool<br></pre>
+<p id="x_de"><a name="x_de"></a> Mesmo que não saiba o nome desta
+função, a sua assinatura só limita a validade comportamentos possíveis
+que poderia ter. </p>
+<div class="itemizedlist">
+<ul type="disc">
+  <li>
+    <p id="x_ee"><a name="x_ee"></a> Ignore o seu argumento, e sempre
+quer retornar <code class="code">True</code> ou <code class="code">False</code>.
+    </p>
+  </li>
+  <li>
+    <p id="x_fe"><a name="x_fe"></a> Returna seu argumento não
+modificado. </p>
+  </li>
+  <li>
+    <p id="x_ge"><a name="x_ge"></a> Negue seu argumento. </p>
+  </li>
+</ul>
+</div>
+<p id="x_vm"><a name="x_vm"></a> Sabemos também que esta função <span class="emphasis"><em>não</em></span> pode fazer algumas coisas: não
+pode acessar os arquivos, não pode falar com a rede e não posso
+dizer qual é a hora. </p>
+<p id="x_wm"><a name="x_wm"></a>Pureza faz o trabalho de compreensão de
+código mais fácil. O
+comportamento de uma função pura não depende do valor de uma variável
+global, ou o conteúdo de um banco de dados, ou o estado de uma conexão
+de rede. Código puros são inerentemente modular: cada função é
+independente, e tem uma interface bem definida. </p>
+<p id="x_xm"><a name="x_xm"></a> A consequência óbvia de pureza não ser
+o padrão é que trabalhar com o código <span class="emphasis"><em>impuro</em></span>
+se torna mais fácil. Haskell incentiva um estilo de programação onde nós separamos o código que <span class="emphasis"><em>deverá</em></span>
+ter efeitos colaterais do código que não precisa deles. Nesse
+estilo, o código impuro tende a ser simples, com a “<span class="quote"></span><span class="quote"></span><span class="quote">heavy lifting</span>” realizada em código puro. </p>
+<p id="x_ym"><a name="x_ym"></a>Grande parte do risco em software
+encontra-se em falar com o mundo
+exterior, seja lidando com dados incorretos ou faltantes, ou manipulação
+de ataques maliciosos. Por causa do sistema de tipos do haskell nos dizemos
+exatamente quais as partes do nosso código tem efeitos colaterais, que
+podem estar adequadamente sobre a guarda. Porque o nosso estilo de
+codificação mantém isolado impuro e simples, a nossa “<span class="quote">superfície de ataque</span>” é pequena. </p>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="funcstypes.end">Conclusão</h2>
+</div>
+</div>
+</div>
+<p id="x_T6"><a name="x_T6"></a>Neste capítulo, nós tivemos uma visão
+geral do turbilhão do sistema de
+tipos do Haskell e grande parte da sua sintaxe. Nós lemos sobre os
+tipos mais comuns, e descobrimos como escrever funções simples. Nós
+introduzimos polimorfismo, expressões condicionais, pureza e sobre
+avaliação preguiçosa. </p>
+<p id="x_U6"><a name="x_U6"></a> Isso tudo equivale a uma grande
+quantidade de informação para absorver. No <a class="xref" href="defining-types-streamlining-functions.html" title="Chapter&nbsp;3.&nbsp;Defining Types, Streamlining Functions">Capítulo&nbsp;3,
+<i>Definir os tipos, racionalizando as funções</i></a>, vamos construir
+esse conhecimento básico para melhorar ainda mais a nossa compreensão
+do Haskell. </p>
+</div>
+<div class="footnotes"><br>
+<hr align="left" width="100">
+<div class="footnote">
+<p><sup>[<a name="ftn.id578004" href="#id578004" class="para">2</a>] </sup>“<span class="quote"> If it walks like a duck, and quacks like a duck, then
+let's call it a duck. </span>” (Se anda como um pato e grasna como um
+pato, então vamos chamá-lo de um pato.)</p>
+</div>
+<div class="footnote">
+<p><sup>[<a name="ftn.id578076" href="#id578076" class="para">3</a>] </sup>
+Às vezes, precisamos dar ao compilador um pouco de informação para
+ajudá-lo a fazer uma escolha para a compreensão do nosso código. </p>
+</div>
+<div class="footnote">
+<p><sup>[<a name="ftn.id578737" href="#id578737" class="para">4</a>] </sup>
+Vamos falar mais sobre o polimorfismo na <a class="xref" href="types-and-functions.html#funcstypes.polymorphism" title="Polymorphism in Haskell">seção intitulada “Polimorfismo em
+Haskell”</a>. </p>
+</div>
+<div class="footnote">
+<p><sup>[<a name="ftn.id579534" href="#id579534" class="para">5</a>] </sup>
+O ambiente em que opera <span class="command"><strong>ghci</strong></span>
+é chamado de mónade <span class="type">IO</span>. No <a class="xref" href="io.html" title="Chapter&nbsp;7.&nbsp;I/O">Capítulo&nbsp;7, <i>I/O</i></a>,
+vamos cobrir o mónade <span class="type">IO</span> em profundidade, e
+aparentemente arbitrárias restrições que <span class="command"><strong>ghci</strong></span> coloca a nós fará mais sentido. </p>
+</div>
+<div class="footnote">
+<p><sup>[<a name="ftn.id580576" href="#id580576" class="para">6</a>] </sup>
+A expressão “<span class="quote">não-estrita</span>” e “<span class="quote">preguiçosa</span>” têm significados técnicas ligeiramente
+diferentes , mas não vamos entrar em detalhes da distinção
+aqui. </p>
+</div>
+</div>
+</div>
+
+<div class="rwhfooter">
+<p><img src="support/figs/rss.png"> Quer ficar atualizado? Assine o
+feed comentário para <a id="chapterfeed" class="feed" href="/feeds/comments/">este capítulo</a>, ou o <a class="feed" href="/feeds/comments/">livro inteiro</a>.</p>
+<p>Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart e John Goerzen.
+Esta obra está licenciada sob uma <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">Creative Commons
+Attribution-Noncommercial 3.0 License</a>. Ícones por <a href="mailto:mattahan@gmail.com">Paul Davey</a> aka <a href="http://mattahan.deviantart.com/">Mattahan</a>.</p>
+</div>
+
+<div class="navfooter">
+<table summary="Navigation footer" width="100%">
+  <tbody>
+    <tr>
+      <td align="left" width="40%"><a accesskey="p" href="getting-started.html">Anterior</a>&nbsp;</td>
+      <td align="center" width="20%">&nbsp;</td>
+      <td align="right" width="40%">&nbsp;<a accesskey="n" href="defining-types-streamlining-functions.html">Next</a></td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" width="40%">Capítulo
+1.&nbsp;Introdução</td>
+      <td align="center" width="20%"><a accesskey="h" href="index.html">Casa</a></td>
+      <td align="right" valign="top" width="40%">&nbsp;Capítulo&nbsp;3.&nbsp;Definir
+os tipos, racionalizando as funções</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+<script type="text/javascript">_uacct = "UA-1805907-3"; urchinTracker();</script>
+</body></html>

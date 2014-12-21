@@ -1,0 +1,703 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><!-- saved from url=(0058)http://book.realworldhaskell.org/read/getting-started.html -->
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Capítulo&nbsp;1.&nbsp;Começando</title><link rel="stylesheet" href="support/styles.css" type="text/css"><meta name="generator" content="Bluefish 1.0.7"><link rel="start" href="index.html" title="Real World Haskell"><link rel="up" href="index.html" title="Real World Haskell"><link rel="prev" href="why-functional-programming-why-haskell.html" title="Why functional programming? Why Haskell?"><link rel="next" href="types-and-functions.html" title="Chapter&nbsp;2.&nbsp;Types and Functions"><link rel="alternate" type="application/atom+xml" title="Comments" href="http://book.realworldhaskell.org/feeds/comments/"><link rel="shortcut icon" type="image/png" href="http://book.realworldhaskell.org/support/figs/favicon.png"><script type="text/javascript" src="support/jquery-min.js"></script><script type="text/javascript" src="support/form.js"></script><script type="text/javascript" src="support/hsbook.js"></script></head><body alink="#0000ff" bgcolor="white" link="#0000ff" text="black" vlink="#840084"><div class="navheader"><h2 class="booktitle"><a href="http://book.realworldhaskell.org/">Real World Haskell</a><span class="authors">por Bryan O'Sullivan, Don Stewart e John Goerzen</span></h2></div><div class="navheader"><table summary="Navigation header" width="100%"><tbody><tr><th colspan="3" align="center">Capítulo&nbsp;1.&nbsp;Começando<br>
+</th></tr><tr><td align="left" width="20%"><a accesskey="p" href="why-functional-programming-why-haskell.html">Anterior</a>&nbsp;</td><th align="center" width="60%">&nbsp;<br>
+</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="types-and-functions.html">Próximo</a></td></tr></tbody></table></div><div class="chapter" id="starting" lang="en"><div class="titlepage"><div><div><h2 class="title">Capítulo&nbsp;1.&nbsp;Começando</h2></div></div></div><div class="toc"><p style="opacity: 0.35;"><b>Índice analítico</b></p><p style="display: none;"><a onclick="return loadAllComments()">Load all comments (<b>slow</b>)</a></p>
+<dl><dt><span class="sect1"><a href="getting-started.html#starting.ghc">Seu ambiente Haskell</a></span><br>
+</dt>
+<dt><span class="sect1"><a href="getting-started.html#starting.ghci">Começando com ghci, o intérpretador</a></span><br>
+</dt><dt><span class="sect1"><a href="getting-started.html#starting.calc">Interação básica: usando ghci como uma calculadora</a></span><br>
+</dt><dd>
+<dl><dt><span class="sect2"><a href="getting-started.html#starting.calc.arithmetic">Aritmética simples</a></span><br>
+</dt>
+<dt><span class="sect2"><a href="getting-started.html#starting.calc.neg">Um equívoco aritmético: escrever números negativos</a></span><br>
+</dt>
+<dt><span class="sect2"><a href="getting-started.html#starting.calc.comparison">Lógica Booleana, operadores e comparações de valores</a></span><br>
+</dt>
+<dt><span class="sect2"><a href="getting-started.html#starting.calc.precedence">Precedência de operadores e associatividade</a></span><br>
+</dt>
+<dt><span class="sect2"><a href="getting-started.html#starting.calc.undef">Valores indefinidos, e introduzindo variáveis</a></span><br>
+</dt><dt><span class="sect2"><a href="getting-started.html#id575887">Lidar com as regras de precedência e associatividade</a></span><br>
+</dt></dl><br>
+</dd><dt><span class="sect1"><a href="getting-started.html#starting.ghci.edit">Edição de linha de comando em ghci</a></span><br>
+</dt><dt><span class="sect1"><a href="getting-started.html#starting.list">Listas</a></span><br>
+</dt><dd><dl><dt><span class="sect2"><a href="getting-started.html#starting.list.op">Operadores em listas</a></span><br>
+</dt></dl><br>
+</dd><dt><span class="sect1"><a href="getting-started.html#starting.string">Strings e caracteres</a></span><br>
+</dt><dt><span class="sect1"><a href="getting-started.html#starting.types">Primeiros passos com os tipos</a></span><br>
+</dt><dt><span class="sect1"><a href="getting-started.html#id577314">Um programa simples</a></span><br>
+</dt><dt><span class="sect1"><a href="getting-started.html#starting.types.exercises">Exercícios</a></span><br>
+</dt></dl></div><p id="x_TM"><a name="x_TM"></a>Enquanto lê os
+primeiros capítulos deste livro, tenha em mente que iremos as vezes
+apresentar alguns conceitos de modo restrito e simplificado. Haskell é
+uma linguagem ampla, e apresentar todos os aspectos de um determinado
+assunto de uma vez só pode atrapalhar o seu aprendizado. Como queremos
+construir uma base sólida em Haskell, iremos expandir estas explicações
+iniciais mais a frente. <span id="comments_x_TM" class="comment"><a class="commenttoggle" id="toggle_x_TM" pid="x_TM" onclick='return loadComments("x_TM")' href="comments:%20show%20/%20hide">11 comments</a></span></p><div class="sect1" lang="en"><div class="titlepage"><div>
+    
+    
+    <div><h2 class="title" style="clear: both;" id="starting.ghc">Seu ambiente Haskell</h2></div></div></div><p id="x_g"><a name="x_g"></a>
+Haskell é uma linguagem com muitas implementações, dos quais dois estão
+em ampla utilização. Hugs é um intérpretador que é usado principalmente
+para o ensino. Para aplicações reais, o Glasgow Haskell Compiler (<span class="application">GHC</span>) é muito mais popular. Comparado com <span class="application">Hugs</span>, <span class="application">GHC</span> é mais adequado para o “<span class="quote">trabalho real</span>”:
+ele compila para código nativo, suporta a execução paralela e fornece
+ferramentas de análise de desempenho e de depuração. Por estas razões, <span class="application">GHC</span> é a implementação Haskell que iremos utilizar ao longo deste livro.
+      <span id="comments_x_g" class="comment"><a class="commenttoggle" id="toggle_x_g" pid="x_g" onclick='return loadComments("x_g")' href="comments:%20show%20/%20hide">6 comments</a></span></p><p id="x_h"><a name="x_h"></a><span class="application">GHC</span> tem três componentes principais. <span id="comments_x_h" class="comment"><a class="commenttoggle" id="toggle_x_h" pid="x_h" onclick='return loadComments("x_h")' href="comments:%20show%20/%20hide">7 comments</a></span></p><div class="itemizedlist"><ul type="disc">
+      <li><p id="x_jl"><a name="x_jl"></a><span class="command"><strong>ghc</strong></span> é um compilador otimizado que gera código nativo rápido. <span id="comments_x_jl" class="comment"><a class="commenttoggle" id="toggle_x_jl" onclick='return loadComments("x_jl")' href="comment:%20add">No comments</a></span></p></li>
+      <li><p id="x_kl"><a name="x_kl"></a><span class="command"><strong>ghci</strong></span> é um intérpretador interativo e depurador. <span id="comments_x_kl" class="comment"><a class="commenttoggle" id="toggle_x_kl" onclick='return loadComments("x_kl")' href="comment:%20add">No comments</a></span></p></li>
+      <li><p id="x_ll"><a name="x_ll"></a><span class="command"><strong>runghc</strong></span> é um programa para a execução de programas Haskell como scripts, sem a necessidade de compilá-los em primeiro lugar. <span id="comments_x_ll" class="comment"><a class="commenttoggle" id="toggle_x_ll" pid="x_ll" onclick='return loadComments("x_ll")' href="comments:%20show%20/%20hide">3 comments</a></span></p></li></ul></div><div class="note">
+      <table summary="Note: How we refer to the components of GHC" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
+      <th align="left">Como nos referimos aos componentes do GHC</th></tr><tr><td align="left" valign="top"><p id="x_i"><a name="x_i"></a>
+      Quando discutimos o sistema <span class="application">GHC</span> como um todo, vamos nos referir a ele como <span class="application">GHC</span>. Quando precisarmos falar de um comando específico, vamos falar <span class="command"><strong>ghc</strong></span>, <span class="command"><strong>ghci</strong></span> ou <span class="command"><strong>runghc</strong></span> pelo nome. 
+      <span id="comments_x_i" class="comment"><a class="commenttoggle" id="toggle_x_i" pid="x_i" onclick='return loadComments("x_i")' href="comments:%20show%20/%20hide">3 comments</a></span></p></td></tr></tbody></table></div><p id="x_j"><a name="x_j"></a>
+      Neste livro, vamos supor que você está usando pelo menos a versão 6.12.2 do <span class="application">GHC</span>, que foi lançado em 2010. Muitos dos nossos exemplos irá funcionar sem modificações em versões mais antigas. No entanto,
+      <span class="emphasis"><em>recomendamos</em></span>
+usar a versão mais recente disponível para sua plataforma. Se você
+estiver usando Windows ou Mac OS X, você pode começar rápidamente e
+facilmente usando um instalador pré-construído. Para obter uma cópia do
+<span class="application">GHC</span> para essas plataformas, visite
+      <a class="ulink" href="http://www.haskell.org/ghc/download.html" target="_top">a página de download do <span class="application">GHC</span></a>, e olhe na lista de pacotes binários e instaladores.
+      <span id="comments_x_j" class="comment"><a class="commenttoggle" id="toggle_x_j" pid="x_j" onclick='return loadComments("x_j")' href="comments:%20show%20/%20hide">13 comments</a></span></p><p id="x_k"><a name="x_k"></a>
+      Muitas distribuições Linux, BSD Unix e outras variantes, tem disponível pacotes binários personalizado do <span class="application">GHC</span>.
+Como estes pacotes são construídos especificamente para cada ambiente,
+eles são muito mais fáceis de instalar e de usar do que os pacotes
+binários genéricos que estão disponíveis na página de download do <span class="application">GHC</span>. Você pode encontrar uma lista de distribuições de custom-build <span class="application">GHC</span> na página <span class="application">GHC</span> <a class="ulink" href="http://www.haskell.org/ghc/distribution_packages.html" target="_top">pacotes de distribuição</a>. 
+	<span id="comments_x_k" class="comment"><a class="commenttoggle" id="toggle_x_k" pid="x_k" onclick='return loadComments("x_k")' href="comments:%20show%20/%20hide">2 comments</a></span></p><p id="x_nL"><a name="x_nL"></a>
+	Para obter informações mais detalhadas sobre como instalar o <span class="application">GHC</span> em uma variedade de plataformas populares, nós fornecemos algumas instruções no <a class="xref" href="installing-ghc-and-haskell-libraries.html" title="Apêndice&nbsp;A.&nbsp;Instalação de GHC e bibliotecas Haskell">Apêndice&nbsp;A, <i> Instalação de GHC e bibliotecas Haskell</i></a>. 
+      <span id="comments_x_nL" class="comment"><a class="commenttoggle" id="toggle_x_nL" pid="x_nL" onclick='return loadComments("x_nL")' href="comments:%20show%20/%20hide">1 comment</a></span></p></div><div class="sect1" lang="en"><div class="titlepage"><div>
+      
+      
+      <div><h2 class="title" style="clear: both;" id="starting.ghci">Começando com ghci, o intérpretador</h2></div></div></div><p id="x_L1"><a name="x_L1"></a>
+      O interpretador interativo para <span class="application">GHC</span> é um programa chamado <span class="command"><strong>ghci</strong></span>.
+Nele nós podemos entrar e avaliar expressões Haskell, explorara os
+módulos, e depurar o nosso código. Se você estiver familiarizado com o
+Python e Ruby, <span class="command"><strong>ghci</strong></span> é algo semelhante ao
+      <code class="filename">python</code> e <code class="filename">irb</code>, os intérpretadores interativos do Python e Ruby. <span id="comments_x_L1" class="comment"><a class="commenttoggle" id="toggle_x_L1" pid="x_L1" onclick='return loadComments("x_L1")' href="comments:%20show%20/%20hide">8 comments</a></span></p><div class="note">      
+      <table summary="Note: The ghci command has a narrow focus" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
+      <th align="left">O comando ghci tem um foco estreito</th></tr><tr><td align="left" valign="top"><p id="x_UM"><a name="x_UM"></a>Nós normalmente não podemos copiar algum arquivo código de fonte Haskell e colá-lo em <span class="command"><strong>ghci</strong></span>.
+Isto não tem um efeito significativo na depuração pedaços de código,
+mas pode inicialmente ser surpreendente se você está acostumado, por
+exemplo, o interpretador Python interativo. <span id="comments_x_UM" class="comment"><a class="commenttoggle" id="toggle_x_UM" pid="x_UM" onclick='return loadComments("x_UM")' href="comments:%20show%20/%20hide">8 comments</a></span></p></td></tr></tbody></table></div><p id="x_VM"><a name="x_VM"></a>
+      Em sistemas Unix-like, rodamos <span class="command"><strong>ghci</strong></span>
+como um comando em uma janela shell. No Windows, está disponível
+através do Menu Iniciar. Por exemplo, se você instalou usando o
+instalador do <span class="application">GHC</span> no Windows XP, você deve ir para “<span class="quote">Todos programas</span>”,
+      depois “<span class="quote">GHC</span>”; então você vai ver <span class="command"><strong>ghci</strong></span> na lista. (Veja <a class="xref" href="installing-ghc-and-haskell-libraries.html#install.win" title="Windows">a seção chamada "Windows"</a>.) 
+      <span id="comments_x_VM" class="comment"><a class="commenttoggle" id="toggle_x_VM" pid="x_VM" onclick='return loadComments("x_VM")' href="comments:%20show%20/%20hide">2 comments</a></span></p><p id="x_M1"><a name="x_M1"></a>
+      Quando rodamos <span class="command"><strong>ghci</strong></span>, ele exibe um banner de inicialização, seguido de um prompt <code class="prompt">Prelude&gt;</code>. Aqui, estamos mostrando a versão 6.12.2 em uma máquina Linux. <span id="comments_x_M1" class="comment"><a class="commenttoggle" id="toggle_x_M1" pid="x_M1" onclick='return loadComments("x_M1")' href="comments:%20show%20/%20hide">4 comments</a></span></p><pre id="id574609" class="screen"><code class="prompt">$</code> <strong class="userinput"><code>ghci</code></strong>
+GHCi, version 6.12.2: http://www.haskell.org/ghc/  :? for help
+Loading package ghc-prim ... linking ... done.
+Loading package integer-gmp ... linking ... done.
+Loading package base ... linking ... done.
+Loading package ffi-1.0 ... linking ... done.
+<code class="prompt">Prelude&gt;</code>
+</pre> <span id="comments_id574609" class="comment"><a class="commenttoggle" id="toggle_id574609" onclick='return loadComments("id574609")' href="comment:%20add">No comments</a></span><p id="x_uK"><a name="x_uK"></a>
+A palavra <code class="code">Prelude</code> no prompt indica que <code class="classname">Prelude</code>,
+uma biblioteca padrão de funções úteis, está carregada e pronto para
+uso. Quando carregar outros módulos ou arquivos de origem, eles vão
+aparecer no prompt, também. <span id="comments_x_uK" class="comment"><a class="commenttoggle" id="toggle_x_uK" pid="x_uK" onclick='return loadComments("x_uK")' href="comments:%20show%20/%20hide">4 comments</a></span></p><div class="tip">
+
+<table summary="Tip: Getting help" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="support/figs/tip.png"></td><th align="left">Obtendo ajuda</th></tr><tr><td align="left" valign="top"><p id="x_ml"><a name="x_ml"></a>Se você digitar <code class="code">:?</code> no prompt <span class="command"><strong>ghci</strong></span>
+	ele irá imprimir uma mensagem de ajuda muito. 
+	<span id="comments_x_ml" class="comment"><a class="commenttoggle" id="toggle_x_ml" onclick='return loadComments("x_ml")' href="comment:%20add">No comments</a></span></p></td></tr></tbody></table></div><p id="x_o1"><a name="x_o1"></a>
+	O módulo <code class="classname">Prelude</code> é muitas vezes referida como “<span class="quote">the standard prelude</span>”, porque seu conteúdo é definido pelo padrão Haskell 98. Normalmente, ele é simplesmente reduzido à
+      “<span class="quote">o prelude</span>”. 
+      <span id="comments_x_o1" class="comment"><a class="commenttoggle" id="toggle_x_o1" pid="x_o1" onclick='return loadComments("x_o1")' href="comments:%20show%20/%20hide">3 comments</a></span></p><div class="note">
+      
+      <table summary="Note: About the ghci prompt" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
+      <th align="left">Sobre o prompt ghci</th></tr><tr><td align="left" valign="top"><p id="x_N1"><a name="x_N1"></a>
+      O prompt exibido pelo <span class="command"><strong>ghci</strong></span>
+muda freqüentemente, dependendo de quais módulos temos carregados. Que
+muitas vezes pode crescer o suficiente para deixar poco espaço visual e
+uma única linha para a nossa entrada. <span id="comments_x_N1" class="comment"><a class="commenttoggle" id="toggle_x_N1" pid="x_N1" onclick='return loadComments("x_N1")' href="comments:%20show%20/%20hide">2 comments</a></span></p><p id="x_WM"><a name="x_WM"></a>
+      Por questões de brevidade e coerência, ao longo deste livro, temos substituído o prompt padrão <span class="command"><strong>ghci</strong></span> pelo seguinte prompt <code class="prompt">ghci&gt;</code>. <span id="comments_x_WM" class="comment"><a class="commenttoggle" id="toggle_x_WM" pid="x_WM" onclick='return loadComments("x_WM")' href="comments:%20show%20/%20hide">3 comments</a></span></p><p id="x_nl"><a name="x_nl"></a>
+	Se você quiser fazer isso, use a directiva <code class="code">:set prompt</code> de <span class="command"><strong>ghci</strong></span>, como se segue. <span id="comments_x_nl" class="comment"><a class="commenttoggle" id="toggle_x_nl" pid="x_nl" onclick='return loadComments("x_nl")' href="comments:%20show%20/%20hide">7 comments</a></span></p><pre id="id574731" class="screen"><code class="prompt">Prelude&gt;</code> <strong class="userinput"><code>:set prompt "ghci&gt; "</code></strong>
+<code class="prompt">ghci&gt;</code></pre> <span id="comments_id574731" class="comment"><a class="commenttoggle" id="toggle_id574731" onclick='return loadComments("id574731")' href="comment:%20add">No comments</a></span></td></tr></tbody></table></div><p id="x_p1"><a name="x_p1"></a>
+O prelude está sempre implicitamente disponível, nós não precisamos de
+tomar quaisquer medidas para utilizar os tipos, valores ou funções que
+ele define. Para utilizar as definições de outros módulos, devemos
+carregá-los em <span class="command"><strong>ghci</strong></span>, utilizando o <span class="command"><strong>:module</strong></span> ou  <span class="command"><strong>:m</strong></span>. 
+	<span id="comments_x_p1" class="comment"><a class="commenttoggle" id="toggle_x_p1" pid="x_p1" onclick='return loadComments("x_p1")' href="comments:%20show%20/%20hide">4 comments</a></span></p>
+	<a name="basics.ghci:module"></a><pre id="basics.ghci:module" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:m +Data.Ratio</code></strong>
+</pre> <span id="comments_basics.ghci:module" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:module" pid="basics.ghci:module" onclick='return loadComments("basics.ghci:module")' href="comments:%20show%20/%20hide">8 comments</a></span><p id="x_tA1"><a name="x_tA1"></a>
+	Agora podemos usar as funcionalidades do módulo
+      <code class="code">Data.Ratio</code>, que nos permite trabalhar com números racionais (frações). <span id="comments_x_tA1" class="comment"><a class="commenttoggle" id="toggle_x_tA1" pid="x_tA1" onclick='return loadComments("x_tA1")' href="comments:%20show%20/%20hide">4 comments</a></span></p></div>
+      
+      <div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both;" id="starting.calc">Interação básica: usando ghci como uma calculadora</h2></div></div></div><p id="x_R1"><a name="x_R1"></a>
+      Além de fornecer uma interface conveniente para testar fragmentos de código, <span class="command"><strong>ghci</strong></span>
+pode funcionar como uma calculadora de desktop facilmente acessível.
+Podemos facilmente exprimir qualquer operação na calculadora <span class="command"><strong>ghci</strong></span>
+e, como bônus, podemos acrescentar operações mais complexas quando nós
+nos tornamos mais familiarizado com Haskell. Mesmo utilizando o
+intérprete desta forma simples, ele pode ajudar-nos a tornar-se mais
+confortáveis com o modo que o Haskell funciona.
+<span id="comments_x_R1" class="comment"><a class="commenttoggle" id="toggle_x_R1" onclick='return loadComments("x_R1")' href="comment:%20add">No comments</a></span></p><div class="sect2" lang="en"><div class="titlepage"><div>
+
+<div><h3 class="title" id="starting.calc.arithmetic">Aritméticas simples</h3></div></div></div><p id="x_S1"><a name="x_S1"></a>
+	Podemos começar imediatamente a entrar expressões, para ver o que <span class="command"><strong>ghci</strong></span>
+vai fazer com eles. Aritmética simples funciona de forma semelhante a
+linguagens como C e Python: nós escrevemos expressões na forma <span class="emphasis"><em>infixa</em></span> onde o operador aparece entre os seus operandos. 
+	<span id="comments_x_S1" class="comment"><a class="commenttoggle" id="toggle_x_S1" pid="x_S1" onclick='return loadComments("x_S1")' href="comments:%20show%20/%20hide">6 comments</a></span></p><a name="basics.ghci:arithmetic"></a><pre id="basics.ghci:arithmetic" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 + 2</code></strong>
+4
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>31337 * 101</code></strong>
+3165037
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>7.0 / 2.0</code></strong>
+3.5
+</pre> <span id="comments_basics.ghci:arithmetic" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:arithmetic" pid="basics.ghci:arithmetic" onclick='return loadComments("basics.ghci:arithmetic")' href="comments:%20show%20/%20hide">12 comments</a></span><p id="x_ZM"><a name="x_ZM"></a>
+	O estilo de escrever um infixo expressão é apenas uma conveniência: também podemos escrever uma expressão em forma de <span class="emphasis"><em>prefixo</em></span>, onde o operador precede os seus argumentos. Para fazer isso, devemos colocar o operador em parênteses. 
+	<span id="comments_x_ZM" class="comment"><a class="commenttoggle" id="toggle_x_ZM" pid="x_ZM" onclick='return loadComments("x_ZM")' href="comments:%20show%20/%20hide">7 comments</a></span></p><a name="basics.ghci:prefix"></a><pre id="basics.ghci:prefix" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 + 2</code></strong>
+4
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>(+) 2 2</code></strong>
+4
+</pre> <span id="comments_basics.ghci:prefix" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:prefix" onclick='return loadComments("basics.ghci:prefix")' href="comment:%20add">No comments</a></span><p id="x_T1"><a name="x_T1"></a>
+Como as expressões acima implicam, ao Haskell ter uma noção de números
+inteiros e de ponto flutuante. Inteiros podem ser arbitrariamente
+grande. Aqui, <code class="function">(^)</code> fornece exponenciação inteiro. <span id="comments_x_T1" class="comment"><a class="commenttoggle" id="toggle_x_T1" pid="x_T1" onclick='return loadComments("x_T1")' href="comments:%20show%20/%20hide">4 comments</a></span></p><a name="basics.ghci:bignum"></a><pre id="basics.ghci:bignum" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>313 ^ 15</code></strong>
+27112218957718876716220410905036741257
+</pre> <span id="comments_basics.ghci:bignum" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:bignum" onclick='return loadComments("basics.ghci:bignum")' href="comment:%20add">No comments</a></span></div><div class="sect2" lang="en"><div class="titlepage"><div>
+
+<div><h3 class="title" id="starting.calc.neg">Um equívoco aritmético: escrever números negativos</h3></div></div></div><p id="x_X1"><a name="x_X1"></a>
+Haskell nos apresenta uma peculiaridade no modo como devemos escrever
+números: é muitas vezes necessário colocar um número negativo entre
+parênteses. Isto afeta-nos logo que ir além da simples expressões. <span id="comments_x_X1" class="comment"><a class="commenttoggle" id="toggle_x_X1" onclick='return loadComments("x_X1")' href="comment:%20add">No comments</a></span></p><p id="x_bM"><a name="x_bM"></a>
+	Vamos começar por escrever um número negativo.
+	<span id="comments_x_bM" class="comment"><a class="commenttoggle" id="toggle_x_bM" onclick='return loadComments("x_bM")' href="comment:%20add">No comments</a></span></p><a name="basics.ghci:neg.simple"></a><pre id="basics.ghci:neg.simple" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>-3</code></strong>
+-3
+</pre> <span id="comments_basics.ghci:neg.simple" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:neg.simple" onclick='return loadComments("basics.ghci:neg.simple")' href="comment:%20add">No comments</a></span><p id="x_cM"><a name="x_cM"></a>
+	O <code class="code">-</code> acima, é um operador unário. Em outras palavras, não escrevemos o número único “<span class="quote">-3</span>”; nós escrevemos o número “<span class="quote">3</span>”, e aplicado o operador
+	<code class="code">-</code> para ele. O operador <code class="code">-</code> é apenas um operador unário do Haskell, e não podemos misturá-la com os operadores infixo.
+	<span id="comments_x_cM" class="comment"><a class="commenttoggle" id="toggle_x_cM" pid="x_cM" onclick='return loadComments("x_cM")' href="comments:%20show%20/%20hide">6 comments</a></span></p><a name="basics.ghci:neg.error"></a><pre id="basics.ghci:neg.error" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 + -3</code></strong>
+
+&lt;interactive&gt;:1:0:
+    precedence parsing error
+        cannot mix `(+)' [infixl 6] and prefix `-' [infixl 6] in the same infix expression
+</pre> <span id="comments_basics.ghci:neg.error" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:neg.error" pid="basics.ghci:neg.error" onclick='return loadComments("basics.ghci:neg.error")' href="comments:%20show%20/%20hide">6 comments</a></span><p id="x_dM"><a name="x_dM"></a>
+	Se quisermos usar o menos unário perto de um operador infixo, devemos envolver a expressão que se aplica a entre parênteses.
+	<span id="comments_x_dM" class="comment"><a class="commenttoggle" id="toggle_x_dM" onclick='return loadComments("x_dM")' href="comment:%20add">No comments</a></span></p><a name="basics.ghci:neg.better"></a><pre id="basics.ghci:neg.better" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 + (-3)</code></strong>
+-1
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>3 + (-(13 * 37))</code></strong>
+-478
+</pre> <span id="comments_basics.ghci:neg.better" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:neg.better" pid="basics.ghci:neg.better" onclick='return loadComments("basics.ghci:neg.better")' href="comments:%20show%20/%20hide">4 comments</a></span><p id="x_uA1"><a name="x_uA1"></a>
+Isso evita uma ambigüidade análise. Quando se aplica uma função em
+Haskell, nós escrevemos o nome da função, seguido do argumento, por
+exemplo, <code class="code">f 3</code>.
+Se não tivéssemos necessidade de envolver um número negativo entre
+parênteses, teríamos duas diferentes maneiras de ler profundamente <code class="code">f-3</code>: poderia ser “<span class="quote">aplicada a função <code class="function">f</code> para o número <code class="code">-3</code></span>”, ou “<span class="quote">subtrair o número <code class="code">3</code> de <code class="varname">f</code></span>”. 
+	<span id="comments_x_uA1" class="comment"><a class="commenttoggle" id="toggle_x_uA1" pid="x_uA1" onclick='return loadComments("x_uA1")' href="comments:%20show%20/%20hide">4 comments</a></span></p><p id="x_Z1"><a name="x_Z1"></a><span class="emphasis">
+	<em>Na maioria</em></span> das vezes, podemos omitir o espaço em branco (“<span class="quote">blank</span>”
+caracteres, como espaço e guia) de expressões e Haskell irá analisá-los
+à medida que se destina. Mas nem sempre. Aqui está uma expressão que
+funciona: <span id="comments_x_Z1" class="comment"><a class="commenttoggle" id="toggle_x_Z1" pid="x_Z1" onclick='return loadComments("x_Z1")' href="comments:%20show%20/%20hide">3 comments</a></span></p><a name="basics.ghci:whitespace.ok"></a><pre id="basics.ghci:whitespace.ok" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2*3</code></strong>
+6
+</pre> <span id="comments_basics.ghci:whitespace.ok" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:whitespace.ok" onclick='return loadComments("basics.ghci:whitespace.ok")' href="comment:%20add">No comments</a></span><p id="x_a1"><a name="x_a1"></a>
+E aqui está um casp que parece similar ao exemplo problemático de
+número negativo acima, mas a mensagem de erro resultante é diferente. <span id="comments_x_a1" class="comment"><a class="commenttoggle" id="toggle_x_a1" pid="x_a1" onclick='return loadComments("x_a1")' href="comments:%20show%20/%20hide">1 comment</a></span></p><a name="basics.ghci:whitespace.eek"></a><pre id="basics.ghci:whitespace.eek" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2*-3</code></strong>
+
+&lt;interactive&gt;:1:1: Not in scope: `*-'
+</pre> <span id="comments_basics.ghci:whitespace.eek" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:whitespace.eek" pid="basics.ghci:whitespace.eek" onclick='return loadComments("basics.ghci:whitespace.eek")' href="comments:%20show%20/%20hide">3 comments</a></span><p id="x_b1"><a name="x_b1"></a>
+	Aqui, a aplicação Haskell está lendo
+	<code class="literal">*-</code>
+como um único operador. Haskell nos permite definir novos operadores
+(um assunto que voltaremos mais tarde), mas não temos definido <code class="literal">*-</code>.  Mais uma vez, uns poucos parênteses nos permite resolver este problema. 
+	<span id="comments_x_b1" class="comment"><a class="commenttoggle" id="toggle_x_b1" pid="x_b1" onclick='return loadComments("x_b1")' href="comments:%20show%20/%20hide">3 comments</a></span></p><a name="basics.ghci:whitespace.whew"></a><pre id="basics.ghci:whitespace.whew" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2*(-3)</code></strong>
+-6
+</pre> <span id="comments_basics.ghci:whitespace.whew" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:whitespace.whew" pid="basics.ghci:whitespace.whew" onclick='return loadComments("basics.ghci:whitespace.whew")' href="comments:%20show%20/%20hide">1 comment</a></span><p id="x_c1"><a name="x_c1"></a>
+Em comparação com outras linguagens, este tratamento incomum de números
+negativos pode parecer chato, mas representa um trade-off fundamentado.
+Haskell nos permite definir operadores novos a qualquer momento. O que
+não é um tipo de recurso de comun a linguagens, vamos ver bastante
+operadores definidos pelo usuário nos próximos capítulos. Os
+projetistas da linguagem decidiram aceitar uma sintaxe um pouco pesado
+para números negativos em troca deste poder expressivo. <span id="comments_x_c1" class="comment"><a class="commenttoggle" id="toggle_x_c1" pid="x_c1" onclick='return loadComments("x_c1")' href="comments:%20show%20/%20hide">5 comments</a></span></p></div><div class="sect2" lang="en"><div class="titlepage"><div>
+	
+	
+	<div><h3 class="title" id="starting.calc.comparison">Lógica Booleana, operadores e comparações de valores</h3></div></div></div><p id="x_j1"><a name="x_j1"></a>
+	Os valores da lógica booleana em Haskell são
+	<code class="literal">True</code> e <code class="literal">False</code>.
+A capitalização destes nomes é importante. A linguagem foi influenciada
+por C na definição dos operadores para valores booleanos: <code class="function">(&amp;&amp;)</code> é lógico “<span class="quote">e</span>”, e <code class="function">(||)</code>
+	é lógico “<span class="quote">ou</span>”. 
+	<span id="comments_x_j1" class="comment"><a class="commenttoggle" id="toggle_x_j1" pid="x_j1" onclick='return loadComments("x_j1")' href="comments:%20show%20/%20hide">7 comments</a></span></p><a name="basics.ghci:boolean"></a><pre id="basics.ghci:boolean" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>True &amp;&amp; False</code></strong>
+False
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>False || True</code></strong>
+True
+</pre> <span id="comments_basics.ghci:boolean" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:boolean" onclick='return loadComments("basics.ghci:boolean")' href="comment:%20add">No comments</a></span><p id="x_k1"><a name="x_k1"></a>
+	Embora algumas linguagens de programação trate o número zero como sinônimo de <code class="literal">False</code>,
+	Haskell não, nem considera que um valor diferente de zero deve ser <code class="literal">True</code>. 
+	<span id="comments_x_k1" class="comment"><a class="commenttoggle" id="toggle_x_k1" pid="x_k1" onclick='return loadComments("x_k1")' href="comments:%20show%20/%20hide">5 comments</a></span></p><a name="basics.ghci:boolean.bad"></a><pre id="basics.ghci:boolean.bad" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>True &amp;&amp; 1</code></strong>
+
+&lt;interactive&gt;:1:8:
+    No instance for (Num Bool)
+      arising from the literal `1' at &lt;interactive&gt;:1:8
+    Possible fix: add an instance declaration for (Num Bool)
+    In the second argument of `(&amp;&amp;)', namely `1'
+    In the expression: True &amp;&amp; 1
+    In the definition of `it': it = True &amp;&amp; 1
+</pre> <span id="comments_basics.ghci:boolean.bad" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:boolean.bad" pid="basics.ghci:boolean.bad" onclick='return loadComments("basics.ghci:boolean.bad")' href="comments:%20show%20/%20hide">5 comments</a></span><p id="x_fM"><a name="x_fM"></a>
+	Mais uma vez, somos confrontados com uma mensagem de erro substancial. Em resumo, diz-nos que o tipo Boolean, <span class="type">Bool</span>, não é um membro da família de tipos numéricos, <code class="code">Num</code>.  A mensagem de erro é bastante longa, pois <span class="command"><strong>ghci</strong></span>
+está a apontar a localização do problema, e sugerindo uma possível
+mudança que nós poderíamos fazer de modo que possa resolver o problema.
+<span id="comments_x_fM" class="comment"><a class="commenttoggle" id="toggle_x_fM" pid="x_fM" onclick='return loadComments("x_fM")' href="comments:%20show%20/%20hide">8 comments</a></span></p><p id="x_vA1"><a name="x_vA1"></a>
+	Aqui está uma divisão mais detalhada da mensagem de erro.
+	<span id="comments_x_vA1" class="comment"><a class="commenttoggle" id="toggle_x_vA1" onclick='return loadComments("x_vA1")' href="comment:%20add">No comments</a></span></p><div class="itemizedlist"><ul type="disc"><li><p id="x_wA1"><a name="x_wA1"></a>
+	“<span class="quote"><code class="code">No instance for (Num Bool)</code></span>”
+	    diz-nos que <span class="command"><strong>ghci</strong></span> está tentando tratar o valor numérico
+	    <span class="type">1</span> como tendo um tipo <span class="type">Bool</span>, mas não conseguiu.
+	    <span id="comments_x_wA1" class="comment"><a class="commenttoggle" id="toggle_x_wA1" onclick='return loadComments("x_wA1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_xA1"><a name="x_xA1"></a>
+	    “<span class="quote"><code class="code">arising from the literal
+		`1'</code></span>” indica que foi o nosso uso do número <code class="code">1</code> que causou o problema. 
+		<span id="comments_x_xA1" class="comment"><a class="commenttoggle" id="toggle_x_xA1" onclick='return loadComments("x_xA1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_yA1"><a name="x_yA1"></a>
+		“<span class="quote"><code class="code">In the definition of `it'</code></span>”
+	    se refere a uma abreviação <span class="command"><strong>ghci</strong></span> que iremos rever em algumas páginas a frente. 
+	    <span id="comments_x_yA1" class="comment"><a class="commenttoggle" id="toggle_x_yA1" pid="x_yA1" onclick='return loadComments("x_yA1")' href="comments:%20show%20/%20hide">1 comment</a></span></p></li></ul></div><div class="tip">
+	    <table summary="Tip: Remain fearless in the face of error messages" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="support/figs/tip.png"></td><th align="left">Permaneça sem medo diante das mensagens de erro</th></tr>
+	    <tr><td align="left" valign="top"><p id="x_G2"><a name="x_G2"></a>
+Temos uma importante consideração a fazer aqui, que vamos repetir em
+todo o trecho inicial do livro. Se você tiver problemas ou mensagens de
+erro que você ainda não entender, <span class="emphasis"><em>não se desespere</em></span>.
+No início, tudo que você precisa fazer é descobrir o suficiente para
+progredir em um problema. Como você adquirir experiência, será mais
+fácil de entender as partes das mensagens de erro que inicialmente
+parece obscuro
+---. <span id="comments_x_G2" class="comment"><a class="commenttoggle" id="toggle_x_G2" pid="x_G2" onclick='return loadComments("x_G2")' href="comments:%20show%20/%20hide">3 comments</a></span></p><p id="x_gM"><a name="x_gM"></a>
+As várias mensagens de erro têm uma finalidade: eles realmente nos
+ajudar a escrever o código correto, fazendo-nos executar uma certa
+quantidade de depuração “<span class="quote">a frente</span>”,
+antes que nós executarmos um programa. Se você estiver vindo de um
+background de trabalho com linguagens mais permissivas, essa forma de
+trabalho pode vir como uma espécie de choque. Bear conosco. <span id="comments_x_gM" class="comment"><a class="commenttoggle" id="toggle_x_gM" pid="x_gM" onclick='return loadComments("x_gM")' href="comments:%20show%20/%20hide">6 comments</a></span></p></td></tr></tbody></table></div><p id="x_l1"><a name="x_l1"></a>
+	  A maioria dos operadores de comparação Haskell são similares àqueles usados em C e muitas linguagens que foram influencidas.
+	<span id="comments_x_l1" class="comment"><a class="commenttoggle" id="toggle_x_l1" pid="x_l1" onclick='return loadComments("x_l1")' href="comments:%20show%20/%20hide">5 comments</a></span></p><a name="basics.ghci:comparison"></a><pre id="basics.ghci:comparison" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>1 == 1</code></strong>
+True
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 &lt; 3</code></strong>
+True
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>4 &gt;= 3.99</code></strong>
+True
+</pre> <span id="comments_basics.ghci:comparison" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:comparison" pid="basics.ghci:comparison" onclick='return loadComments("basics.ghci:comparison")' href="comments:%20show%20/%20hide">5 comments</a></span><p id="x_m1"><a name="x_m1"></a>
+	Um operador que difere de C é o “<span class="quote">não é igual</span>”. Em C, este é escrito como
+	<code class="code">!=</code>. Em Haskell, escrevemos
+	<code class="function">(/=)</code>,  que se assemelha a notação ≠ usada em matemática.
+	<span id="comments_x_m1" class="comment"><a class="commenttoggle" id="toggle_x_m1" pid="x_m1" onclick='return loadComments("x_m1")' href="comments:%20show%20/%20hide">7 comments</a></span></p><a name="basics.ghci:neq"></a><pre id="basics.ghci:neq" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 /= 3</code></strong>
+True
+</pre> <span id="comments_basics.ghci:neq" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:neq" pid="basics.ghci:neq" onclick='return loadComments("basics.ghci:neq")' href="comments:%20show%20/%20hide">3 comments</a></span><p id="x_hM"><a name="x_hM"></a>
+	Além disso, onde linguagens similares C costumam usar <code class="function">!</code> para a negação lógica, Haskell usa a função <code class="function">not</code>. 
+	<span id="comments_x_hM" class="comment"><a class="commenttoggle" id="toggle_x_hM" onclick='return loadComments("x_hM")' href="comment:%20add">No comments</a></span></p><a name="basics.ghci:not"></a><pre id="basics.ghci:not" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>not True</code></strong>
+False
+</pre> <span id="comments_basics.ghci:not" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:not" pid="basics.ghci:not" onclick='return loadComments("basics.ghci:not")' href="comments:%20show%20/%20hide">6 comments</a></span></div><div class="sect2" lang="en"><div class="titlepage"><div>
+
+
+<div><h3 class="title" id="starting.calc.precedence">Precedência de operadores e associatividade</h3></div></div></div><p id="x_U1"><a name="x_U1"></a>
+Como em álgebra e outras linguagens de programação que usa operadores
+infixo, Haskell tem uma noção de precedência de operadores. Podemos
+usar parênteses para explicitamente agrupar partes de uma expressão, e
+a precedência nos permite omitir alguns parênteses. Por exemplo, o
+operador de multiplicação tem precedência maior do que o operador de
+adição, de modo que Haskell trata as seguinte expressões como
+equivalentes. <span id="comments_x_U1" class="comment"><a class="commenttoggle" id="toggle_x_U1" pid="x_U1" onclick='return loadComments("x_U1")' href="comments:%20show%20/%20hide">6 comments</a></span></p><a name="basics.ghci:parens"></a><pre id="basics.ghci:parens" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>1 + (4 * 4)</code></strong>
+17
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>1 + 4 * 4</code></strong>
+17
+</pre> <span id="comments_basics.ghci:parens" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:parens" onclick='return loadComments("basics.ghci:parens")' href="comment:%20add">No comments</a></span><p id="x_iM"><a name="x_iM"></a>
+Haskell atribui valores numéricos a precedência dos operadores, sendo 1
+a menor precedência e 9 a maior. Um operador de prioridade maior é
+aplicada antes de um operador de prioridade inferior. Podemos usar <span class="command"><strong>ghci</strong></span> para inspecionar os níveis de precedência de operadores individuais, utilizando o seu comando <span class="command"><strong>:info</strong></span> ou <span class="command"><strong>:i</strong></span>. 
+	<span id="comments_x_iM" class="comment"><a class="commenttoggle" id="toggle_x_iM" pid="x_iM" onclick='return loadComments("x_iM")' href="comments:%20show%20/%20hide">8 comments</a></span></p><a name="basics.ghci:precedence"></a><pre id="basics.ghci:precedence" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:i (+)</code></strong>
+class (Eq a, Show a) =&gt; Num a where
+  (+) :: a -&gt; a -&gt; a
+  ...
+  	-- Defined in GHC.Num
+infixl 6 +
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>:i (*)</code></strong>
+class (Eq a, Show a) =&gt; Num a where
+  ...
+  (*) :: a -&gt; a -&gt; a
+  ...
+  	-- Defined in GHC.Num
+infixl 7 *
+</pre> <span id="comments_basics.ghci:precedence" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:precedence" pid="basics.ghci:precedence" onclick='return loadComments("basics.ghci:precedence")' href="comments:%20show%20/%20hide">14 comments</a></span><p id="x_jM"><a name="x_jM"></a>
+	A informação que nós buscamos é na linha
+	“<span class="quote"><code class="code">infixl 6 +</code></span>”, que indica que o <code class="function">(+)</code> operador tem uma precedência de 6. (Nós vamos explicar a saída de outros em um capítulo posterior.) O “<span class="quote"><code class="code">infixl 7 *</code></span>” diz-nos que o <code class="function">(*)</code> operador tem uma precedência de 7. Desde <code class="function">(*)</code> tem uma precedência maior do que
+	<code class="function">(+)</code>, podemos ver agora porque <code class="code">1 + 4 *
+	  4</code> é avaliado como <code class="code">1 + (4 * 4)</code>, e não
+	<code class="code">(1 + 4) * 4</code>. 
+	<span id="comments_x_jM" class="comment"><a class="commenttoggle" id="toggle_x_jM" pid="x_jM" onclick='return loadComments("x_jM")' href="comments:%20show%20/%20hide">13 comments</a></span></p><p id="x_kM"><a name="x_kM"></a>
+	Haskell também define <span class="emphasis"><em>associatividade</em></span>
+dos operadores. Isso determina se uma expressão contendo múltiplos usos
+de um operador é avaliada da esquerda para a direita ou para a direita
+para a esquerda. Os operadores <code class="function">(+)</code> e <code class="function">(*)</code> ficam associativos esquerdos, que é representado como <code class="code">infixl</code> infixl na saída <span class="command"><strong>ghci</strong></span> acima. Um operador de direito associativo é exibida com
+	<code class="code">infixr</code>. 
+	<span id="comments_x_kM" class="comment"><a class="commenttoggle" id="toggle_x_kM" pid="x_kM" onclick='return loadComments("x_kM")' href="comments:%20show%20/%20hide">15 comments</a></span></p><a name="basics.ghci:caret"></a><pre id="basics.ghci:caret" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:i (^)</code></strong>
+(^) :: (Num a, Integral b) =&gt; a -&gt; b -&gt; a 	-- Defined in GHC.Real
+infixr 8 ^
+</pre> <span id="comments_basics.ghci:caret" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:caret" pid="basics.ghci:caret" onclick='return loadComments("basics.ghci:caret")' href="comments:%20show%20/%20hide">3 comments</a></span><p id="x_lM"><a name="x_lM"></a>
+	A combinação de regras de precedência e associatividade são geralmente referidos como as <span class="emphasis"><em>fixity rules</em></span>. 
+	<span id="comments_x_lM" class="comment"><a class="commenttoggle" id="toggle_x_lM" onclick='return loadComments("x_lM")' href="comment:%20add">No comments</a></span></p></div><div class="sect2" lang="en"><div class="titlepage"><div>
+	
+	
+	<div><h3 class="title" id="starting.calc.undef">Valores indefinidos, e introduzindo variáveis</h3></div></div></div><p id="x_d1"><a name="x_d1"></a>
+O prelude de Haskell, a biblioteca padrão mencionado anteriormente,
+define pelo menos um conhecido constante matemática para nós. <span id="comments_x_d1" class="comment"><a class="commenttoggle" id="toggle_x_d1" pid="x_d1" onclick='return loadComments("x_d1")' href="comments:%20show%20/%20hide">1 comment</a></span></p><a name="basics.ghci:pi"></a><pre id="basics.ghci:pi" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>pi</code></strong>
+3.141592653589793
+</pre> <span id="comments_basics.ghci:pi" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:pi" onclick='return loadComments("basics.ghci:pi")' href="comment:%20add">No comments</a></span><p id="x_e1"><a name="x_e1"></a>
+Mas a sua abrangência de constantes matemáticas não é abrangente, como
+podemos ver rapidamente. Olhemos para o número de Euler, <code class="varname">e</code>. 
+	<span id="comments_x_e1" class="comment"><a class="commenttoggle" id="toggle_x_e1" pid="x_e1" onclick='return loadComments("x_e1")' href="comments:%20show%20/%20hide">5 comments</a></span></p><a name="basics.ghci:e"></a><pre id="basics.ghci:e" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>e</code></strong>
+
+&lt;interactive&gt;:1:0: Not in scope: `e'
+</pre> <span id="comments_basics.ghci:e" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:e" onclick='return loadComments("basics.ghci:e")' href="comment:%20add">No comments</a></span><p id="x_f1"><a name="x_f1"></a>
+	Tudo bem. Nós temos que defini-lo nós mesmos.
+	<span id="comments_x_f1" class="comment"><a class="commenttoggle" id="toggle_x_f1" pid="x_f1" onclick='return loadComments("x_f1")' href="comments:%20show%20/%20hide">5 comments</a></span></p><div class="note">
+	<table summary="Note: Don't worry about the error message" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
+	<th align="left">Não se preocupe com a mensagem de erro</th></tr><tr><td align="left" valign="top"><p id="x_g1"><a name="x_g1"></a>
+	Se a mensagem de erro “<span class="quote">not in scope</span>” acima parece um pouco assustador, não se preocupe. Tudo isto significa é que não há nenhuma variável definida com o nome
+	  <code class="varname">e</code>. 
+	  <span id="comments_x_g1" class="comment"><a class="commenttoggle" id="toggle_x_g1" pid="x_g1" onclick='return loadComments("x_g1")' href="comments:%20show%20/%20hide">12 comments</a></span></p></td></tr></tbody></table></div><p id="x_h1"><a name="x_h1"></a>
+	  Usando a construção <code class="literal">let</code> de <span class="command"><strong>ghci</strong></span>, nós podemos fazer uma definição temporária <code class="varname">e</code> de nós mesmos.
+	<span id="comments_x_h1" class="comment"><a class="commenttoggle" id="toggle_x_h1" pid="x_h1" onclick='return loadComments("x_h1")' href="comments:%20show%20/%20hide">4 comments</a></span></p><a name="basics.ghci:let"></a><pre id="basics.ghci:let" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>let e = exp 1</code></strong>
+</pre> <span id="comments_basics.ghci:let" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:let" pid="basics.ghci:let" onclick='return loadComments("basics.ghci:let")' href="comments:%20show%20/%20hide">6 comments</a></span><p id="x_mM"><a name="x_mM"></a>
+	Esta é uma aplicação da função exponencial, <code class="function">exp</code>,
+e nosso primeiro exemplo de aplicação de uma função em Haskell.
+Enquanto linguagens como Python exigem parênteses os argumentos para
+uma função, Haskell não. <span id="comments_x_mM" class="comment"><a class="commenttoggle" id="toggle_x_mM" pid="x_mM" onclick='return loadComments("x_mM")' href="comments:%20show%20/%20hide">8 comments</a></span></p><p id="x_i1"><a name="x_i1"></a>
+	Com <code class="varname">e</code> definido, agora podemos usá-lo em expressões aritméticas. O operador
+	<code class="function">(^)</code>
+de exponenciação que introduzimos anteriormente só pode elevar um
+número a uma potência inteira. Para usar um número de ponto flutuante
+como o expoente, usamos o operador de exponenciação <code class="function">(**)</code>.
+	<span id="comments_x_i1" class="comment"><a class="commenttoggle" id="toggle_x_i1" pid="x_i1" onclick='return loadComments("x_i1")' href="comments:%20show%20/%20hide">5 comments</a></span></p><a name="basics.ghci:epipi"></a><pre id="basics.ghci:epipi" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>(e ** pi) - pi</code></strong>
+19.99909997918947
+</pre> <span id="comments_basics.ghci:epipi" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:epipi" pid="basics.ghci:epipi" onclick='return loadComments("basics.ghci:epipi")' href="comments:%20show%20/%20hide">11 comments</a></span>
+<div class="warning">
+<table summary="Warning: This syntax is ghci-specific" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="support/figs/warning.png"></td>
+<th align="left">Essa sintaxe é específica do ghci</th></tr><tr><td align="left" valign="top"><p id="x_nM"><a name="x_nM"></a>A sintaxe para <code class="literal">let</code> que o <span class="command"><strong>ghci</strong></span> aceita não é o mesmo que iremos usar no alto nível "de um programa Haskell normal. Vamos ver a sintaxe normal na <a class="xref" href="defining-types-streamlining-functions.html#deftypes.locals" title="Introducing local variables"> seção chamada “Introduzir variáveis locais”</a>. 
+<span id="comments_x_nM" class="comment"><a class="commenttoggle" id="toggle_x_nM" pid="x_nM" onclick='return loadComments("x_nM")' href="comments:%20show%20/%20hide">5 comments</a></span></p></td></tr></tbody></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div>
+
+
+<div><h3 class="title" id="id575887">Lidar com as regras de precedência e associatividade</h3></div></div></div><p id="x_V1"><a name="x_V1"></a>
+Às vezes é melhor deixar pelo menos alguns parênteses no lugar, mesmo
+quando Haskell permite omitir-los. Sua presença pode ajudar os futuros
+leitores (incluindo nós mesmos) para entender o que se destina. <span id="comments_x_V1" class="comment"><a class="commenttoggle" id="toggle_x_V1" pid="x_V1" onclick='return loadComments("x_V1")' href="comments:%20show%20/%20hide">4 comments</a></span></p><p id="x_W1"><a name="x_W1"></a>
+Ainda mais importante, expressões complexas que confiam totalmente na
+precedência do operador são fontes notórias de bugs. Um compilador e um
+ser humano pode facilmente acabar com noções diferentes do que até
+mesmo um parêntese, livre expressão curta é suposto fazer. <span id="comments_x_W1" class="comment"><a class="commenttoggle" id="toggle_x_W1" pid="x_W1" onclick='return loadComments("x_W1")' href="comments:%20show%20/%20hide">2 comments</a></span></p><p id="x_pM"><a name="x_pM"></a>
+Não há necessidade de lembrar todas as regras de precedência e
+associatividade números: é mais simples de adicionar parênteses se
+tiver dúvidas. <span id="comments_x_pM" class="comment"><a class="commenttoggle" id="toggle_x_pM" pid="x_pM" onclick='return loadComments("x_pM")' href="comments:%20show%20/%20hide">12 comments</a></span></p></div></div><div class="sect1" lang="en"><div class="titlepage"><div>
+	
+	<div><h2 class="title" style="clear: both;" id="starting.ghci.edit">Edição de linha de comando em ghci</h2></div></div></div><p id="x_O1"><a name="x_O1"></a>
+	Na maioria dos sistemas, <span class="command"><strong>ghci</strong></span>
+tem uma certa quantidade capacidade de edição de linha de comando. Caso
+você não esteja familiarizado com edição de linha de comando, é uma
+enorme economia de tempo. Os princípios básicos são comuns a ambos
+Unix-like e Windows. Pressionando a tecla de seta para <span class="keycap"><strong>cima</strong></span> no seu teclado recorda a última linha de entrada que você entrou; pressionando <span class="keycap"><strong>cima</strong></span> repetidamente ciclos através de linhas antes da entrada. Você pode usar as teclas <span class="keycap"><strong>esquerda</strong></span> e <span class="keycap"><strong>direita</strong></span> seta para se movimentar dentro de uma linha de entrada. Em Unix (mas não no Windows, infelizmente), a tecla de <span class="keycap"><strong>tabulação</strong></span> completa os identificadores parcialmente inseridos. 
+	<span id="comments_x_O1" class="comment"><a class="commenttoggle" id="toggle_x_O1" pid="x_O1" onclick='return loadComments("x_O1")' href="comments:%20show%20/%20hide">11 comments</a></span></p><div class="tip">
+	<table summary="Tip: Where to look for more information" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="support/figs/tip.png"></td>
+	<th align="left">Onde procurar mais informações</th></tr><tr><td align="left" valign="top"><p id="x_XM"><a name="x_XM"></a>
+Nós mal arranhamos a superfície de edição de linha de comando aqui.
+Desde que você pode trabalhar com mais eficiência se você estiver mais
+familiarizado com as capacidades do seu sistema de edição de linha de
+comando, você pode achar útil fazer algumas leituras complementares. <span id="comments_x_XM" class="comment"><a class="commenttoggle" id="toggle_x_XM" pid="x_XM" onclick='return loadComments("x_XM")' href="comments:%20show%20/%20hide">2 comments</a></span></p><p id="x_YM"><a name="x_YM"></a>
+	Em sistemas Unix-like, <span class="command"><strong>ghci</strong></span> usa a <a class="ulink" href="http://tiswww.case.edu/php/chet/readline/rltop.html#Documentation" target="_top">biblioteca readline GNU</a>, que é poderoso e personalizável. No Windows, a capacidade do <span class="command"><strong>ghci</strong></span> de edição de linha de comando são fornecidas pelo <a class="ulink" href="http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/doskey.mspx" target="_top">comando <span class="command"><strong>doskey</strong></span></a>. <span id="comments_x_YM" class="comment"><a class="commenttoggle" id="toggle_x_YM" pid="x_YM" onclick='return loadComments("x_YM")' href="comments:%20show%20/%20hide">2 comments</a></span></p></td></tr></tbody></table></div></div><div class="sect1" lang="en"><div class="titlepage"><div>
+	
+	
+	<div><h2 class="title" style="clear: both;" id="starting.list">Listas</h2></div></div></div><p id="x_K2"><a name="x_K2"></a>
+	A lista está entre colchetes, os elementos são separados por vírgulas. 
+	<span id="comments_x_K2" class="comment"><a class="commenttoggle" id="toggle_x_K2" pid="x_K2" onclick='return loadComments("x_K2")' href="comments:%20show%20/%20hide">6 comments</a></span></p><a name="basics.ghci:list"></a><pre id="basics.ghci:list" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>[1, 2, 3]</code></strong>
+[1,2,3]
+</pre> <span id="comments_basics.ghci:list" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:list" onclick='return loadComments("basics.ghci:list")' href="comment:%20add">No comments</a></span>
+<div class="warning">
+<table summary="Note: Commas are separators, not terminators" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="support/figs/warning.png"></td>
+<th align="left">Vírgulas são separadores, não terminadores</th></tr><tr><td align="left" valign="top"><p id="x_qM"><a name="x_qM"></a>
+Algumas linguagens permitem o último elemento de uma lista seja seguido
+por uma vírgula à direita opcional antes de um parêntese de fecho, mas
+Haskell não permite isso. Se você deixar uma vírgula no final (por
+exemplo, <code class="code">[1,2,]</code>), ), você receberá um erro de análise. 
+	<span id="comments_x_qM" class="comment"><a class="commenttoggle" id="toggle_x_qM" pid="x_qM" onclick='return loadComments("x_qM")' href="comments:%20show%20/%20hide">3 comments</a></span></p></td></tr></tbody></table></div><p id="x_L2"><a name="x_L2"></a>
+	A lista pode ser de qualquer tamanho. A lista vazia é escrita <code class="literal">[]</code>. 
+	<span id="comments_x_L2" class="comment"><a class="commenttoggle" id="toggle_x_L2" onclick='return loadComments("x_L2")' href="comment:%20add">No comments</a></span></p><a name="basics.ghci:list.shortlong"></a><pre id="basics.ghci:list.shortlong" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>[]</code></strong>
+[]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>["foo", "bar", "baz", "quux", "fnord", "xyzzy"]</code></strong>
+["foo","bar","baz","quux","fnord","xyzzy"]
+</pre> <span id="comments_basics.ghci:list.shortlong" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:list.shortlong" pid="basics.ghci:list.shortlong" onclick='return loadComments("basics.ghci:list.shortlong")' href="comments:%20show%20/%20hide">5 comments</a></span><p id="x_M2"><a name="x_M2"></a>
+	Todos os elementos de uma lista devem ser do mesmo tipo. Aqui, violamos esta regra: a nossa lista começa com dois valores
+      <span class="type">Bool</span> mas termina com um string.
+      <span id="comments_x_M2" class="comment"><a class="commenttoggle" id="toggle_x_M2" pid="x_M2" onclick='return loadComments("x_M2")' href="comments:%20show%20/%20hide">4 comments</a></span></p><a name="basics.ghci:list.bad"></a><pre id="basics.ghci:list.bad" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>[True, False, "teste"]</code></strong>
+
+&lt;interactive&gt;:1:14:
+    Couldn't match expected type `Bool' against inferred type `[Char]'
+      Expected type: Bool
+      Inferred type: [Char]
+    In the expression: "teste"
+    In the expression: [True, False, "teste"]
+</pre> <span id="comments_basics.ghci:list.bad" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:list.bad" pid="basics.ghci:list.bad" onclick='return loadComments("basics.ghci:list.bad")' href="comments:%20show%20/%20hide">1 comment</a></span><p id="x_N2"><a name="x_N2"></a>
+	Mais uma vez, é uma mensagem de erro <span class="command"><strong>ghci</strong></span>
+detalhada, mas ela simplesmente diz que não há maneira de transformar a
+string em um valor booleano, então a expressão lista não está
+corretamente digitado. <span id="comments_x_N2" class="comment"><a class="commenttoggle" id="toggle_x_N2" pid="x_N2" onclick='return loadComments("x_N2")' href="comments:%20show%20/%20hide">8 comments</a></span></p><p id="x_O2"><a name="x_O2"></a>
+      Se nós escrevemos uma série de elementos usando a <span class="emphasis"><em>notação de enumeração</em></span>, Haskell irá preencher o conteúdo da lista para nós. 
+      <span id="comments_x_O2" class="comment"><a class="commenttoggle" id="toggle_x_O2" pid="x_O2" onclick='return loadComments("x_O2")' href="comments:%20show%20/%20hide">2 comments</a></span></p><a name="basics.ghci:range"></a><pre id="basics.ghci:range" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>[1..10]</code></strong>
+[1,2,3,4,5,6,7,8,9,10]
+</pre> <span id="comments_basics.ghci:range" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:range" pid="basics.ghci:range" onclick='return loadComments("basics.ghci:range")' href="comments:%20show%20/%20hide">1 comment</a></span><p id="x_rM"><a name="x_rM"></a>
+	Aqui, os <code class="literal">..</code> caracteres denotam uma <span class="emphasis"><em>enumeração</em></span>.
+Só podemos usar esta notação para os tipos cujos elementos, podemos
+enumerar. Não faz sentido para cadeias de texto, por exemplo: não há
+qualquer sensível, forma geral, para enumerar <code class="code">["foo".."quux"]</code>. 
+      <span id="comments_x_rM" class="comment"><a class="commenttoggle" id="toggle_x_rM" pid="x_rM" onclick='return loadComments("x_rM")' href="comments:%20show%20/%20hide">15 comments</a></span></p><p id="x_vK"><a name="x_vK"></a>
+      De qualquer modo, observe que a utilização acima de notação intervalo nos dá um <span class="emphasis"><em>intervalo fechado</em></span>; a lista contém os dois pontos finais. 
+      <span id="comments_x_vK" class="comment"><a class="commenttoggle" id="toggle_x_vK" pid="x_vK" onclick='return loadComments("x_vK")' href="comments:%20show%20/%20hide">6 comments</a></span></p><p id="x_P2"><a name="x_P2"></a>
+Quando escrevemos uma enumeração, podemos, opcionalmente, especificar o
+tamanho do passo para utilização, fornecendo os primeiros dois
+elementos, seguido pelo valor em que parar de gerar a enumeração. <span id="comments_x_P2" class="comment"><a class="commenttoggle" id="toggle_x_P2" pid="x_P2" onclick='return loadComments("x_P2")' href="comments:%20show%20/%20hide">3 comments</a></span></p><a name="basics.ghci:range.step"></a><pre id="basics.ghci:range.step" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>[1.0,1.25..2.0]</code></strong>
+[1.0,1.25,1.5,1.75,2.0]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>[1,4..15]</code></strong>
+[1,4,7,10,13]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>[10,9..1]</code></strong>
+[10,9,8,7,6,5,4,3,2,1]
+</pre> <span id="comments_basics.ghci:range.step" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:range.step" pid="basics.ghci:range.step" onclick='return loadComments("basics.ghci:range.step")' href="comments:%20show%20/%20hide">7 comments</a></span><p id="x_wK"><a name="x_wK"></a>
+Neste último caso acima, a lista é quase sensata faltando o ponto final
+da contagem, porque não é um elemento da série que nós definimos. <span id="comments_x_wK" class="comment"><a class="commenttoggle" id="toggle_x_wK" pid="x_wK" onclick='return loadComments("x_wK")' href="comments:%20show%20/%20hide">7 comments</a></span></p><p id="x_sM"><a name="x_sM"></a>
+      Nós podemos omitir o ponto final de uma enumeração. Se um tipo não tem um natural “<span class="quote">limite superior</span>”, isso vai produzir valores indefinidamente. Por exemplo, se você digitar
+      <code class="literal">[1..]</code> no prompt <span class="command"><strong>ghci</strong></span> você terá que interromper ou matar <span class="command"><strong>ghci</strong></span> para parar de imprimir uma sucessão infinita de números cada vez maiores. Se você está tentado a fazer isso, tecle <span class="keycap"><strong>Ctrl-C</strong></span> para interromper a contagem. Nós vamos encontrar mais tarde que as listas infinitas são frequentemente útil no Haskell. <span id="comments_x_sM" class="comment"><a class="commenttoggle" id="toggle_x_sM" pid="x_sM" onclick='return loadComments("x_sM")' href="comments:%20show%20/%20hide">9 comments</a></span></p>
+      <div class="warning"><table summary="Warning: Beware enumerating floating point numbers" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="support/figs/warning.png"></td>
+      <th align="left">Cuidado ao enumerar números de ponto flutuante</th></tr><tr><td align="left" valign="top"><p id="x_tM"><a name="x_tM"></a>Aqui está um pouco não-intuitivo. <span id="comments_x_tM" class="comment"><a class="commenttoggle" id="toggle_x_tM" onclick='return loadComments("x_tM")' href="comment:%20add">No comments</a></span></p><a name="basics.ghci:range.double"></a><pre id="basics.ghci:range.double" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>[1.0..1.8]</code></strong>
+[1.0,2.0]
+</pre> <span id="comments_basics.ghci:range.double" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:range.double" onclick='return loadComments("basics.ghci:range.double")' href="comment:%20add">No comments</a></span><p id="x_uM"><a name="x_uM"></a>
+	Nos bastidores, para evitar problemas de arredondamento em ponto flutuante, o Haskell implementa a enumeração de
+	<code class="code">1.0</code> a <code class="code">1.8+0.5</code>. <span id="comments_x_uM" class="comment"><a class="commenttoggle" id="toggle_x_uM" pid="x_uM" onclick='return loadComments("x_uM")' href="comments:%20show%20/%20hide">12 comments</a></span></p><p id="x_wM"><a name="x_wM"></a>
+Usando a notação de enumeração sobre números de ponto flutuante pode
+pegar mais algumas surpresas, por isso, se você usá-lo, seja cuidadoso.
+Comportamento de ponto flutuante é peculiar em todas as linguagens de
+programação, não há nada exclusivo para Haskell aqui. <span id="comments_x_wM" class="comment"><a class="commenttoggle" id="toggle_x_wM" pid="x_wM" onclick='return loadComments("x_wM")' href="comments:%20show%20/%20hide">12 comments</a></span></p></td></tr></tbody></table></div><div class="sect2" lang="en"><div class="titlepage"><div>
+	
+	<div><h3 class="title" id="starting.list.op">Operadores em listas</h3></div></div></div><p id="x_xM"><a name="x_xM"></a>
+	Existem dois operadores onipresente para trabalhar com listas. Nós concatenamos duas listas com o  operador <code class="function">(++)</code>. 
+	<span id="comments_x_xM" class="comment"><a class="commenttoggle" id="toggle_x_xM" pid="x_xM" onclick='return loadComments("x_xM")' href="comments:%20show%20/%20hide">5 comments</a></span></p><a name="basics.ghci:concat"></a><pre id="basics.ghci:concat" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>[3,1,3] ++ [3,7]</code></strong>
+[3,1,3,3,7]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>[] ++ [False,True] ++ [True]</code></strong>
+[False,True,True]
+</pre> <span id="comments_basics.ghci:concat" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:concat" pid="basics.ghci:concat" onclick='return loadComments("basics.ghci:concat")' href="comments:%20show%20/%20hide">5 comments</a></span><p id="x_yM"><a name="x_yM"></a>
+	O mais básico operador é o <code class="function">(:)</code>, que acrescenta um elemento para a frente de uma lista. Esta é pronunciado como “<span class="quote">cons</span>” (abreviação de
+	“<span class="quote">construção</span>”). <span id="comments_x_yM" class="comment"><a class="commenttoggle" id="toggle_x_yM" pid="x_yM" onclick='return loadComments("x_yM")' href="comments:%20show%20/%20hide">4 comments</a></span></p><a name="basics.ghci:cons"></a><pre id="basics.ghci:cons" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>1 : [2,3]</code></strong>
+[1,2,3]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>1 : []</code></strong>
+[1]
+</pre> <span id="comments_basics.ghci:cons" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:cons" pid="basics.ghci:cons" onclick='return loadComments("basics.ghci:cons")' href="comments:%20show%20/%20hide">3 comments</a></span><p id="x_zA1"><a name="x_zA1"></a>
+	Você pode estar tentado a tentar escrever <code class="code">[1,2]:3</code>
+	para adicionar um elemento ao final de uma lista, mas o <span class="command"><strong>ghci</strong></span> irá rejeitar-lo com uma mensagem de erro, porque o primeiro argumento
+	<code class="function">(:)</code> deve ser um elemento, e o segundo deve ser uma lista.
+	<span id="comments_x_zA1" class="comment"><a class="commenttoggle" id="toggle_x_zA1" pid="x_zA1" onclick='return loadComments("x_zA1")' href="comments:%20show%20/%20hide">10 comments</a></span></p></div></div><div class="sect1" lang="en"><div class="titlepage"><div>
+	
+	
+	<div><h2 class="title" style="clear: both;" id="starting.string">Strings e caracteres</h2></div></div></div><p id="x_H2"><a name="x_H2"></a>
+	Se você conhece uma linguagem como Perl ou C, você vai achar as anotações Haskell para strings familiar. 
+      <span id="comments_x_H2" class="comment"><a class="commenttoggle" id="toggle_x_H2" pid="x_H2" onclick='return loadComments("x_H2")' href="comments:%20show%20/%20hide">4 comments</a></span></p><p id="x_I2"><a name="x_I2"></a>
+      Uma cadeia de caracteres é cercada por aspas duplas. 
+      <span id="comments_x_I2" class="comment"><a class="commenttoggle" id="toggle_x_I2" onclick='return loadComments("x_I2")' href="comment:%20add">No comments</a></span></p><a name="basics.ghci:string"></a><pre id="basics.ghci:string" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>"Esta é uma string."</code></strong>
+"Esta é uma string."
+</pre> <span id="comments_basics.ghci:string" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:string" onclick='return loadComments("basics.ghci:string")' href="comment:%20add">No comments</a></span><p id="x_J2"><a name="x_J2"></a>
+	Como em muitas linguagens, podemos representar caracteres hard-to-see através de “<span class="quote">escaping</span>”
+delas. Escapes in Haskell e as regras de escaping segue as convenções
+utilizadas e amplamente estabelecida pela linguagem C. Por exemplo, <code class="literal">'\n'</code> denota um caractere de nova linha, e <code class="literal">'\t'</code> é um caracter de tabulação. Para detalhes completos, consulte <a class="xref" href="characters-strings-and-escaping-rules.html" title="Apêndice&nbsp;B.&nbsp;Caracteres, strings, e regras escapando">Apêndice&nbsp;B, <i>Caracteres, strings, e regras escapando</i></a>. <span id="comments_x_J2" class="comment"><a class="commenttoggle" id="toggle_x_J2" pid="x_J2" onclick='return loadComments("x_J2")' href="comments:%20show%20/%20hide">4 comments</a></span></p><a name="basics.ghci:newline"></a><pre id="basics.ghci:newline" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>putStrLn "Aqui está uma nova linha --&gt;\n&lt;-- Viu?"</code></strong>
+Aqui está uma nova linha --&gt;
+&lt;-- Viu?
+</pre> <span id="comments_basics.ghci:newline" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:newline" pid="basics.ghci:newline" onclick='return loadComments("basics.ghci:newline")' href="comments:%20show%20/%20hide">6 comments</a></span><p id="x_AB1"><a name="x_AB1"></a>
+	O função <code class="function">putStrLn</code> imprime uma string. 
+      <span id="comments_x_AB1" class="comment"><a class="commenttoggle" id="toggle_x_AB1" pid="x_AB1" onclick='return loadComments("x_AB1")' href="comments:%20show%20/%20hide">2 comments</a></span></p><p id="x_Q2"><a name="x_Q2"></a>Haskell faz uma distinção entre um único caracter e cadeias de caracteres. Um único caractere é colocado entre aspas simples. <span id="comments_x_Q2" class="comment"><a class="commenttoggle" id="toggle_x_Q2" pid="x_Q2" onclick='return loadComments("x_Q2")' href="comments:%20show%20/%20hide">2 comments</a></span></p><a name="basics.ghci:char"></a><pre id="basics.ghci:char" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>'a'</code></strong>
+'a'
+</pre> <span id="comments_basics.ghci:char" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:char" onclick='return loadComments("basics.ghci:char")' href="comment:%20add">No comments</a></span><p id="x_R2"><a name="x_R2"></a>
+De fato, uma cadeia de texto é simplesmente uma lista de caracteres
+individuais. Aqui está uma maneira dolorosa para escrever uma string
+curta, que <span class="command"><strong>ghci</strong></span> devolve-nos de uma forma mais familiar. 
+	<span id="comments_x_R2" class="comment"><a class="commenttoggle" id="toggle_x_R2" pid="x_R2" onclick='return loadComments("x_R2")' href="comments:%20show%20/%20hide">1 comment</a></span></p><a name="basics.ghci:work"></a><pre id="basics.ghci:work" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>let a = ['m', 'u', 'i', 't', 'o', ' ', 't', 'r', 'a', 'b', 'a', 'l', 'h', 'o']</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>a</code></strong>
+"muito trabalho"
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>a == "muito trabalho"</code></strong>
+True
+</pre> <span id="comments_basics.ghci:work" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:work" pid="basics.ghci:work" onclick='return loadComments("basics.ghci:work")' href="comments:%20show%20/%20hide">6 comments</a></span><p id="x_BB1"><a name="x_BB1"></a>
+A cadeia vazia é escrito <code class="code">""</code>, e é um sinônimo para <code class="code">[]</code>. 
+<span id="comments_x_BB1" class="comment"><a class="commenttoggle" id="toggle_x_BB1" pid="x_BB1" onclick='return loadComments("x_BB1")' href="comments:%20show%20/%20hide">9 comments</a></span></p><a name="basics.ghci:emptystring"></a><pre id="basics.ghci:emptystring" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>"" == []</code></strong>
+True
+</pre> <span id="comments_basics.ghci:emptystring" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:emptystring" pid="basics.ghci:emptystring" onclick='return loadComments("basics.ghci:emptystring")' href="comments:%20show%20/%20hide">4 comments</a></span><p id="x_CB1"><a name="x_CB1"></a>
+Desde uma string é uma lista de caracteres, podemos utilizar os
+operadores de lista regulares para a construção de novas cadeias. <span id="comments_x_CB1" class="comment"><a class="commenttoggle" id="toggle_x_CB1" onclick='return loadComments("x_CB1")' href="comment:%20add">No comments</a></span></p><a name="basics.ghci:newstring"></a><pre id="basics.ghci:newstring" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>'a':"bc"</code></strong>
+"abc"
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>"foo" ++ "bar"</code></strong>
+"foobar"
+</pre> <span id="comments_basics.ghci:newstring" class="comment"><a class="commenttoggle" id="toggle_basics.ghci:newstring" pid="basics.ghci:newstring" onclick='return loadComments("basics.ghci:newstring")' href="comments:%20show%20/%20hide">6 comments</a></span></div><div class="sect1" lang="en"><div class="titlepage"><div>
+
+
+<div><h2 class="title" style="clear: both;" id="starting.types">Primeiros passos com os tipos</h2></div></div></div><p id="x_S2"><a name="x_S2"></a>
+	Enquanto nós ja falamos um pouco sobre os tipos, nossas interações com <span class="command"><strong>ghci</strong></span> têm sido até agora livre de pensamento do tipo. Nós não disse que tipos em <span class="command"><strong>ghci</strong></span> que nós vimos utilizando, e é na sua maioria, dispostos a aceitar a nossa entrada.
+      <span id="comments_x_S2" class="comment"><a class="commenttoggle" id="toggle_x_S2" pid="x_S2" onclick='return loadComments("x_S2")' href="comments:%20show%20/%20hide">2 comments</a></span></p><p id="x_zM"><a name="x_zM"></a>
+Haskell exige que nomes de tipo inicie com uma letra maiúscula e nomes
+de variáveis devem começar com uma letra minúscula. Tenha isso em mente
+sobre como você lê, que torna muito mais fácil seguir os nomes. <span id="comments_x_zM" class="comment"><a class="commenttoggle" id="toggle_x_zM" pid="x_zM" onclick='return loadComments("x_zM")' href="comments:%20show%20/%20hide">4 comments</a></span></p><p id="x_T2"><a name="x_T2"></a>
+      A primeira coisa que podemos fazer para começar a explorar o mundo de tipos é pedir ao <span class="command"><strong>ghci</strong></span> para nos dizer mais sobre o que ele é usandondo um comando <span class="command"><strong>ghci</strong></span>, <span class="command"><strong>:set</strong></span> ou <span class="command"><strong>:s</strong></span>,
+que nos permite alterar alguns dos seus comportamentos padrão. Podemos
+pedir que imprima mais informações sobre tipo, como a seguir. <span id="comments_x_T2" class="comment"><a class="commenttoggle" id="toggle_x_T2" pid="x_T2" onclick='return loadComments("x_T2")' href="comments:%20show%20/%20hide">3 comments</a></span></p><a name="types.ghci:set_t_on"></a><pre id="types.ghci:set_t_on" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:s +t</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>'c'</code></strong>
+'c'
+it :: Char
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>"foo"</code></strong>
+"foo"
+it :: [Char]
+</pre> <span id="comments_types.ghci:set_t_on" class="comment"><a class="commenttoggle" id="toggle_types.ghci:set_t_on" pid="types.ghci:set_t_on" onclick='return loadComments("types.ghci:set_t_on")' href="comments:%20show%20/%20hide">3 comments</a></span><p id="x_U2"><a name="x_U2"></a>
+	O que <code class="code">+t</code> faz é dizer <span class="command"><strong>ghci</strong></span> para imprimir o tipo de expressão após a expressão. O enigmático <code class="varname">it</code> na saída pode ser muito útil: ele é realmente o nome de uma variável especial, que armazena no <span class="command"><strong>ghci</strong></span> o resultado da última expressão avaliada. (Esta não é uma característica da linguagem Haskell, é específico para <span class="command"><strong>ghci</strong></span>.) Vamos quebrar o significado da última linha de saída <span class="command"><strong>ghci</strong></span>. 
+	<span id="comments_x_U2" class="comment"><a class="commenttoggle" id="toggle_x_U2" pid="x_U2" onclick='return loadComments("x_U2")' href="comments:%20show%20/%20hide">6 comments</a></span></p><div class="itemizedlist"><ul type="disc">
+      <li><p id="x_V2"><a name="x_V2"></a>
+      Ele está nos dizendo sobre a variável especial <code class="varname">it</code>. 
+	  <span id="comments_x_V2" class="comment"><a class="commenttoggle" id="toggle_x_V2" onclick='return loadComments("x_V2")' href="comment:%20add">No comments</a></span></p></li>
+	  <li><p id="x_W2"><a name="x_W2"></a>
+	  Podemos ler o texto da forma <code class="code">x :: y</code> no sentido de “<span class="quote">a expressão <code class="code">x</code> com o tipo <code class="code">y</code></span>”. 
+	  <span id="comments_x_W2" class="comment"><a class="commenttoggle" id="toggle_x_W2" pid="x_W2" onclick='return loadComments("x_W2")' href="comments:%20show%20/%20hide">2 comments</a></span></p></li>
+	    <li><p id="x_X2"><a name="x_X2"></a>
+	    Aqui, a expressão “<span class="quote">it</span>” tem o tipo <span class="type">[Char]</span>.  (O nome <span class="type">String</span> é frequentemente utilizado em vez de <span class="type">[Char]</span>. É simplesmente um sinônimo para <span class="type">[Char]</span>.) 
+	    <span id="comments_x_X2" class="comment"><a class="commenttoggle" id="toggle_x_X2" pid="x_X2" onclick='return loadComments("x_X2")' href="comments:%20show%20/%20hide">5 comments</a></span></p></li></ul></div>
+	    
+	    <div class="tip"><table summary="Tip: The joy of it" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="support/figs/tip.png"></td>
+	    <th align="left"><a name="starting.it"></a>O interessante do “<span class="quote">it</span>”</th></tr><tr><td align="left" valign="top"><p id="x_Y2"><a name="x_Y2"></a>
+	    Que <code class="varname">it</code> é uma variável <span class="command"><strong>ghci</strong></span> muito útil. Ele permite usar o resultado da expressão que acabamos de avaliar em uma nova expressão.
+	<span id="comments_x_Y2" class="comment"><a class="commenttoggle" id="toggle_x_Y2" pid="x_Y2" onclick='return loadComments("x_Y2")' href="comments:%20show%20/%20hide">3 comments</a></span></p><a name="types.ghci:it"></a><pre id="types.ghci:it" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>"foo"</code></strong>
+"foo"
+it :: [Char]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>it ++ "bar"</code></strong>
+"foobar"
+it :: [Char]
+</pre> <span id="comments_types.ghci:it" class="comment"><a class="commenttoggle" id="toggle_types.ghci:it" pid="types.ghci:it" onclick='return loadComments("types.ghci:it")' href="comments:%20show%20/%20hide">1 comment</a></span><p id="x_Z2"><a name="x_Z2"></a>
+	Ao avaliar uma expressão, <span class="command"><strong>ghci</strong></span> não irá alterar o valor de <code class="varname">it</code> se a avaliação falhar. Isso permite que você escreva expressões potencialmente seguras como algo de uma rede de segurança. 
+	<span id="comments_x_Z2" class="comment"><a class="commenttoggle" id="toggle_x_Z2" pid="x_Z2" onclick='return loadComments("x_Z2")' href="comments:%20show%20/%20hide">7 comments</a></span></p><a name="types.ghci:it.bad"></a><pre id="types.ghci:it.bad" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>it</code></strong>
+"foobar"
+it :: [Char]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>it ++ 3</code></strong>
+
+&lt;interactive&gt;:1:6:
+    No instance for (Num [Char])
+      arising from the literal `3' at &lt;interactive&gt;:1:6
+    Possible fix: add an instance declaration for (Num [Char])
+    In the second argument of `(++)', namely `3'
+    In the expression: it ++ 3
+    In the definition of `it': it = it ++ 3
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>it</code></strong>
+"foobar"
+it :: [Char]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>it ++ "baz"</code></strong>
+"foobarbaz"
+it :: [Char]
+</pre> <span id="comments_types.ghci:it.bad" class="comment"><a class="commenttoggle" id="toggle_types.ghci:it.bad" pid="types.ghci:it.bad" onclick='return loadComments("types.ghci:it.bad")' href="comments:%20show%20/%20hide">3 comments</a></span><p id="x_a2"><a name="x_a2"></a>
+	Quando acoplamos <code class="varname">it</code>
+liberalmente com o uso das teclas de setas para chamar e editar a
+última expressão que foi digitada, ganhamos uma boa maneira de
+experimentar de forma interativa: o custo dos erros é muito baixa.
+Aproveite a oportunidade para fazer mais barato, abundante erros quando
+você está explorando a língua! <span id="comments_x_a2" class="comment"><a class="commenttoggle" id="toggle_x_a2" pid="x_a2" onclick='return loadComments("x_a2")' href="comments:%20show%20/%20hide">8 comments</a></span></p></td></tr></tbody></table></div><p id="x_b2"><a name="x_b2"></a>
+	Aqui estão mais alguns nomes de Haskell para os tipos, de expressões do tipo já vimos.
+      <span id="comments_x_b2" class="comment"><a class="commenttoggle" id="toggle_x_b2" onclick='return loadComments("x_b2")' href="comment:%20add">No comments</a></span></p><a name="types.ghci:integer"></a><pre id="types.ghci:integer" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>7 ^ 80</code></strong>
+40536215597144386832065866109016673800875222251012083746192454448001
+it :: Integer
+</pre> <span id="comments_types.ghci:integer" class="comment"><a class="commenttoggle" id="toggle_types.ghci:integer" pid="types.ghci:integer" onclick='return loadComments("types.ghci:integer")' href="comments:%20show%20/%20hide">2 comments</a></span><p id="x_c2"><a name="x_c2"></a>
+	 O tipo inteiro Haskell é nomeado como <span class="type">Integer</span>. O tamanho de um valor <span class="type">Integer</span> é limitada apenas pelo sistema de memória a sua capacidade. 
+	 <span id="comments_x_c2" class="comment"><a class="commenttoggle" id="toggle_x_c2" pid="x_c2" onclick='return loadComments("x_c2")' href="comments:%20show%20/%20hide">9 comments</a></span></p><p id="x_e2"><a name="x_e2"></a>
+	 Números racionais não parecem com os números inteiros. Para construir um número racional, usamos o operador <code class="function">(%)</code>. O numerador é à esquerda, e o denominador do lado direito. 
+	 <span id="comments_x_e2" class="comment"><a class="commenttoggle" id="toggle_x_e2" pid="x_e2" onclick='return loadComments("x_e2")' href="comments:%20show%20/%20hide">6 comments</a></span></p><a name="types.ghci:ratio"></a><pre id="types.ghci:ratio" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:m +Data.Ratio</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>(1 % 2) + (1 % 4)</code></strong>
+3 % 4
+it :: Ratio Integer
+</pre> <span id="comments_types.ghci:ratio" class="comment"><a class="commenttoggle" id="toggle_types.ghci:ratio" pid="types.ghci:ratio" onclick='return loadComments("types.ghci:ratio")' href="comments:%20show%20/%20hide">9 comments</a></span><p id="x_DB1"><a name="x_DB1"></a>
+	Por conveniência, <span class="command"><strong>ghci</strong></span> nos permite abreviar muitos comandos, assim podemos escrever <span class="command"><strong>:m</strong></span> em vez de <span class="command"><strong>:module</strong></span> para carregar um módulo. 
+	<span id="comments_x_DB1" class="comment"><a class="commenttoggle" id="toggle_x_DB1" onclick='return loadComments("x_DB1")' href="comment:%20add">No comments</a></span></p><p id="x_f2"><a name="x_f2"></a>
+	Note <span class="emphasis"><em>duas</em></span> palavras sobre o lado direito da <code class="code">::</code> acima. Podemos ler isso como uma “<span class="quote"><span class="type">Ratio</span> de <span class="type">Integer</span></span>”.  Podemos supor que uma <span class="type">Ratio</span> deve ter valores do tipo
+      <span class="type">Integer</span> como o numerador e o denominador. Certo bastante, se tentarmos construir uma <span class="type">Ratio</span> onde o numerador e o denominador são de diferentes tipos, ou mesmo um tipo não-integral, o <span class="command"><strong>ghci</strong></span> irrá reclamar.
+      <span id="comments_x_f2" class="comment"><a class="commenttoggle" id="toggle_x_f2" pid="x_f2" onclick='return loadComments("x_f2")' href="comments:%20show%20/%20hide">3 comments</a></span></p><a name="types.ghci:ratio.bad"></a><pre id="types.ghci:ratio.bad" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>3.14 % 8</code></strong>
+
+&lt;interactive&gt;:1:0:
+    Ambiguous type variable `t' in the constraints:
+      `Integral t' arising from a use of `%' at &lt;interactive&gt;:1:0-7
+      `Fractional t'
+        arising from the literal `3.14' at &lt;interactive&gt;:1:0-3
+    Probable fix: add a type signature that fixes these type variable(s)
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>1.2 % 3.4</code></strong>
+
+&lt;interactive&gt;:1:0:
+    Ambiguous type variable `t' in the constraints:
+      `Integral t' arising from a use of `%' at &lt;interactive&gt;:1:0-8
+      `Fractional t'
+        arising from the literal `3.4' at &lt;interactive&gt;:1:6-8
+    Probable fix: add a type signature that fixes these type variable(s)
+</pre> <span id="comments_types.ghci:ratio.bad" class="comment"><a class="commenttoggle" id="toggle_types.ghci:ratio.bad" pid="types.ghci:ratio.bad" onclick='return loadComments("types.ghci:ratio.bad")' href="comments:%20show%20/%20hide">9 comments</a></span><p id="x_g2"><a name="x_g2"></a>
+	Embora inicialmente é útil ter <strong class="userinput"><code>:s +t</code></strong>
+dando-nos informações de tipo para cada expressão que entramos, este é
+um mecanismo que vai superar rapidamente. Depois de um tempo, nós,
+muitas vezes, saber que tipo esperamos ter uma expressão. Nós podemos
+desligar o tipo de informação extra, a qualquer momento, usando o
+comando <span class="command"><strong>:unset</strong></span>. 
+	<span id="comments_x_g2" class="comment"><a class="commenttoggle" id="toggle_x_g2" pid="x_g2" onclick='return loadComments("x_g2")' href="comments:%20show%20/%20hide">3 comments</a></span></p><a name="types.ghci:set_t_off"></a><pre id="types.ghci:set_t_off" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:unset +t</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>2</code></strong>
+2
+</pre> <span id="comments_types.ghci:set_t_off" class="comment"><a class="commenttoggle" id="toggle_types.ghci:set_t_off" pid="types.ghci:set_t_off" onclick='return loadComments("types.ghci:set_t_off")' href="comments:%20show%20/%20hide">2 comments</a></span><p id="x_h2"><a name="x_h2"></a>
+Mesmo com esta facilidade desligado, ainda podemos obter esse tipo de
+informação facilmente quando precisamos dele, usando um outro comando <span class="command"><strong>ghci</strong></span>. 
+	<span id="comments_x_h2" class="comment"><a class="commenttoggle" id="toggle_x_h2" onclick='return loadComments("x_h2")' href="comment:%20add">No comments</a></span></p><a name="types.ghci:type"></a><pre id="types.ghci:type" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t 'a'</code></strong>
+'a' :: Char
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>"foo"</code></strong>
+"foo"
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t it</code></strong>
+it :: [Char]
+</pre> <span id="comments_types.ghci:type" class="comment"><a class="commenttoggle" id="toggle_types.ghci:type" pid="types.ghci:type" onclick='return loadComments("types.ghci:type")' href="comments:%20show%20/%20hide">1 comment</a></span><p id="x_i2"><a name="x_i2"></a>
+	O comando <span class="command"><strong>:type</strong></span> ou <span class="command"><strong>:t</strong></span> irá imprimir informações de tipo para qualquer expressão que damos a ele (inclusive o <code class="varname">it</code>, como vimos acima). Ele não irá realmente avaliar a expressão, mas apenas verifica o seu tipo e imprime isso. 
+	<span id="comments_x_i2" class="comment"><a class="commenttoggle" id="toggle_x_i2" pid="x_i2" onclick='return loadComments("x_i2")' href="comments:%20show%20/%20hide">5 comments</a></span></p><p id="x_EB1"><a name="x_EB1"></a>
+	Porque os tipos relatados para estas duas expressões são diferentes?
+      <span id="comments_x_EB1" class="comment"><a class="commenttoggle" id="toggle_x_EB1" pid="x_EB1" onclick='return loadComments("x_EB1")' href="comments:%20show%20/%20hide">1 comment</a></span></p><a name="types.ghci:different"></a><pre id="types.ghci:different" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>3 + 2</code></strong>
+5
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t it</code></strong>
+it :: Integer
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t 3 + 2</code></strong>
+3 + 2 :: (Num t) =&gt; t
+</pre> <span id="comments_types.ghci:different" class="comment"><a class="commenttoggle" id="toggle_types.ghci:different" pid="types.ghci:different" onclick='return loadComments("types.ghci:different")' href="comments:%20show%20/%20hide">1 comment</a></span><p id="x_FB1"><a name="x_FB1"></a>
+	Haskell tem vários tipos numéricos. Por exemplo, um número literal, como <code class="literal">1</code> poderia, dependendo do contexto em que ela aparece, seja um número inteiro ou um valor de ponto flutuante. Quando forçamos <span class="command"><strong>ghci</strong></span> para avaliar a expressão <code class="code">3
+	+ 2</code>, ele tem que escolher um tipo de forma que ele pode imprimir o valor, eo padrão é <span class="type">Integer</span>. No segundo caso, pedimos <span class="command"><strong>ghci</strong></span>
+para imprimir o tipo de expressão, sem realmente avaliar se, por isso
+não precisa ser tão específico. Ela responde, com efeito, “<span class="quote">o seu tipo é numérico</span>”. Veremos mais desse estilo de tipo de anotação no <a class="xref" href="using-typeclasses.html" title="Capítulo&nbsp;6.&nbsp;Usando Typeclasses">Capítulo&nbsp;6, <i>Usando Typeclasses</i></a>. <span id="comments_x_FB1" class="comment"><a class="commenttoggle" id="toggle_x_FB1" pid="x_FB1" onclick='return loadComments("x_FB1")' href="comments:%20show%20/%20hide">2 comments</a></span></p></div><div class="sect1" lang="en"><div class="titlepage"><div>
+	
+	
+	<div><h2 class="title" style="clear: both;" id="id577314">Um programa simples</h2></div></div></div><p id="x_GB1"><a name="x_GB1"></a>
+Vamos dar um pequeno salto em frente, e escrever um pequeno programa
+que conta o número de linhas em sua entrada. Não espere entender isso
+ainda, é apenas diversão para sujar as mãos. Em um editor de texto,
+digite o seguinte código em um arquivo e salvá-lo como <code class="filename">WC.hs</code>. 
+	<span id="comments_x_GB1" class="comment"><a class="commenttoggle" id="toggle_x_GB1" pid="x_GB1" onclick='return loadComments("x_GB1")' href="comments:%20show%20/%20hide">6 comments</a></span></p><a name="WC.hs:main"></a><pre id="WC.hs:main" class="programlisting">-- arquivo: ca01/WC.hs<br>-- linhas começando com "--" são comentários.<br><br>main = interact númeroLinhas<br>    where númeroLinhas entrada = show (length (lines entrada)) ++ "\n"</pre> <span id="comments_WC.hs:main" class="comment"><a class="commenttoggle" id="toggle_WC.hs:main" pid="WC.hs:main" onclick='return loadComments("WC.hs:main")' href="comments:%20show%20/%20hide">5 comments</a></span><p id="x_HB1"><a name="x_HB1"></a>
+    Localizar ou criar um arquivo de texto, vamos chamá-lo
+      <code class="filename">qualquer.txt</code><sup>[<a name="id577349" href="getting-started.html#ftn.id577349" class="footnote">1</a>]</sup>. <span id="comments_x_HB1" class="comment"><a class="commenttoggle" id="toggle_x_HB1" pid="x_HB1" onclick='return loadComments("x_HB1")' href="comments:%20show%20/%20hide">3 comments</a></span></p><pre id="id577358" class="screen"><code class="prompt">$</code> <strong class="userinput"><code>cat qualquer.txt</code></strong>
+Teignmouth, Inglaterra
+Paris, França
+Ulm, Alemanha
+Auxerre, França
+Braunschweig, Alemanha
+Beaumont-en-Auge, França
+Рязань, Rússia</pre> <span id="comments_id577358" class="comment"><a class="commenttoggle" id="toggle_id577358" onclick='return loadComments("id577358")' href="comment:%20add">No comments</a></span><p id="x_JB1"><a name="x_JB1"></a>
+De um shell ou prompt de comando, execute o seguinte comando.
+      <span id="comments_x_JB1" class="comment"><a class="commenttoggle" id="toggle_x_JB1" onclick='return loadComments("x_JB1")' href="comment:%20add">No comments</a></span></p><pre id="id577383" class="screen"><code class="prompt">$</code> <strong class="userinput"><code>runghc WC &lt; qualquer.txt</code></strong>
+7</pre> <span id="comments_id577383" class="comment"><a class="commenttoggle" id="toggle_id577383" onclick='return loadComments("id577383")' href="comment:%20add">No comments</a></span><p id="x_KB1"><a name="x_KB1"></a>
+Temos escrito com sucesso um programa simples que interage com o mundo
+real! Nos capítulos que se seguem, iremos sucessivamente preencher as
+lacunas na nossa compreensão, até podemos escrever programas da nossa. <span id="comments_x_KB1" class="comment"><a class="commenttoggle" id="toggle_x_KB1" pid="x_KB1" onclick='return loadComments("x_KB1")' href="comments:%20show%20/%20hide">14 comments</a></span></p></div><div class="sect1" lang="en"><div class="titlepage"><div>
+      
+      <div><h2 class="title" style="clear: both;" id="starting.types.exercises">Exercícios</h2></div></div></div><div class="qandaset"><table summary="Q and A Set" border="0"><col align="left" width="1%"><tbody><tr class="question"><td align="left" valign="top"><a name="id577421"></a><a name="id577423"></a>
+      <p><b>1.</b></p></td><td align="left" valign="top"><p id="x_j2"><a name="x_j2"></a>
+      	Digite as seguintes expressões em
+	    <span class="command"><strong>ghci</strong></span>. Quais são os seus tipos? <span id="comments_x_j2" class="comment"><a class="commenttoggle" id="toggle_x_j2" pid="x_j2" onclick='return loadComments("x_j2")' href="comments:%20show%20/%20hide">11 comments</a></span></p><div class="itemizedlist"><ul type="disc"><li><p id="x_LB1"><a name="x_LB1"></a><code class="code">5 + 8</code> <span id="comments_x_LB1" class="comment"><a class="commenttoggle" id="toggle_x_LB1" onclick='return loadComments("x_LB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_MB1"><a name="x_MB1"></a><code class="code">3 * 5 + 8</code> <span id="comments_x_MB1" class="comment"><a class="commenttoggle" id="toggle_x_MB1" onclick='return loadComments("x_MB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_NB1"><a name="x_NB1"></a><code class="code">2 + 4</code> <span id="comments_x_NB1" class="comment"><a class="commenttoggle" id="toggle_x_NB1" onclick='return loadComments("x_NB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_OB1"><a name="x_OB1"></a><code class="code">(+) 2 4</code> <span id="comments_x_OB1" class="comment"><a class="commenttoggle" id="toggle_x_OB1" onclick='return loadComments("x_OB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_PB1"><a name="x_PB1"></a><code class="code">sqrt 16</code> <span id="comments_x_PB1" class="comment"><a class="commenttoggle" id="toggle_x_PB1" onclick='return loadComments("x_PB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_QB1"><a name="x_QB1"></a><code class="code">succ 6</code> <span id="comments_x_QB1" class="comment"><a class="commenttoggle" id="toggle_x_QB1" onclick='return loadComments("x_QB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_RB1"><a name="x_RB1"></a><code class="code">succ 7</code> <span id="comments_x_RB1" class="comment"><a class="commenttoggle" id="toggle_x_RB1" onclick='return loadComments("x_RB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_SB1"><a name="x_SB1"></a><code class="code">pred 9</code> <span id="comments_x_SB1" class="comment"><a class="commenttoggle" id="toggle_x_SB1" onclick='return loadComments("x_SB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_TB1"><a name="x_TB1"></a><code class="code">pred 8</code> <span id="comments_x_TB1" class="comment"><a class="commenttoggle" id="toggle_x_TB1" onclick='return loadComments("x_TB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_UB1"><a name="x_UB1"></a><code class="code">sin (pi / 2)</code> <span id="comments_x_UB1" class="comment"><a class="commenttoggle" id="toggle_x_UB1" pid="x_UB1" onclick='return loadComments("x_UB1")' href="comments:%20show%20/%20hide">4 comments</a></span></p></li><li><p id="x_VB1"><a name="x_VB1"></a><code class="code">truncate pi</code> <span id="comments_x_VB1" class="comment"><a class="commenttoggle" id="toggle_x_VB1" onclick='return loadComments("x_VB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_WB1"><a name="x_WB1"></a><code class="code">round 3.5</code> <span id="comments_x_WB1" class="comment"><a class="commenttoggle" id="toggle_x_WB1" pid="x_WB1" onclick='return loadComments("x_WB1")' href="comments:%20show%20/%20hide">2 comments</a></span></p></li><li><p id="x_XB1"><a name="x_XB1"></a><code class="code">round 3.4</code> <span id="comments_x_XB1" class="comment"><a class="commenttoggle" id="toggle_x_XB1" onclick='return loadComments("x_XB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_YB1"><a name="x_YB1"></a><code class="code">floor 3.7</code> <span id="comments_x_YB1" class="comment"><a class="commenttoggle" id="toggle_x_YB1" onclick='return loadComments("x_YB1")' href="comment:%20add">No comments</a></span></p></li><li><p id="x_ZB1"><a name="x_ZB1"></a><code class="code">ceiling 3.3</code> <span id="comments_x_ZB1" class="comment"><a class="commenttoggle" id="toggle_x_ZB1" onclick='return loadComments("x_ZB1")' href="comment:%20add">No comments</a></span></p></li></ul></div></td></tr><tr class="question"><td align="left" valign="top"><a name="id577583"></a><a name="id577586"></a>
+	    <p><b>2.</b></p></td><td align="left" valign="top"><p id="x_aB1"><a name="x_aB1"></a>
+	    Do <span class="command"><strong>ghci</strong></span>, tecle <span class="command"><strong>:?</strong></span> para a impressão de ajuda. Defina uma variável, como <code class="code">let x = 1</code>,
+	    digite <code class="code">:show bindings</code>. O que você vê? <span id="comments_x_aB1" class="comment"><a class="commenttoggle" id="toggle_x_aB1" pid="x_aB1" onclick='return loadComments("x_aB1")' href="comments:%20show%20/%20hide">7 comments</a></span></p></td></tr><tr class="question"><td align="left" valign="top"><a name="id577612"></a><a name="id577614"></a>
+	    <p><b>3.</b></p></td><td align="left" valign="top"><p id="x_bB1"><a name="x_bB1"></a>
+	    A função <code class="function">words</code> conta o número de palavras em uma string. Modifique o <code class="filename">WC.hs</code> exemplo para contar o número de palavras em um arquivo. 
+	    <span id="comments_x_bB1" class="comment"><a class="commenttoggle" id="toggle_x_bB1" pid="x_bB1" onclick='return loadComments("x_bB1")' href="comments:%20show%20/%20hide">12 comments</a></span></p></td></tr><tr class="question"><td align="left" valign="top"><a name="id577635"></a><a name="id577637"></a>
+	    <p><b>4.</b></p></td><td align="left" valign="top"><p id="x_cB1"><a name="x_cB1"></a>
+	    	Modifique o <code class="filename">WC.hs</code> do exemplo novamente, para imprimir o número de caracteres em um arquivo.
+	    	<span id="comments_x_cB1" class="comment"><a class="commenttoggle" id="toggle_x_cB1" pid="x_cB1" onclick='return loadComments("x_cB1")' href="comments:%20show%20/%20hide">17 comments</a></span></p></td></tr></tbody></table></div></div><div class="footnotes"><br><hr align="left" width="100"><div class="footnote"><p><sup>[<a name="ftn.id577349" href="getting-started.html#id577349" class="para">1</a>] </sup>Aliás, o que essas cidades têm em comum?</p></div></div></div>
+	    	
+	    	<div class="rwhfooter"><p><img src="support/figs/rss.png"> Quer ficar atualizado? Assine o feed comentário para <a id="chapterfeed" class="feed" href="http://book.realworldhaskell.org/feeds/comments/starting/">este capítulo</a>, ou o <a class="feed" href="http://book.realworldhaskell.org/feeds/comments/">livro inteiro</a>.</p><p>Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart e
+      John Goerzen. Esta obra está licenciada sob uma <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">Creative
+      Commons Attribution-Noncommercial 3.0 License</a>. Ícones por <a href="mailto:mattahan@gmail.com">Paul Davey</a> aka <a href="http://mattahan.deviantart.com/">Mattahan</a>.</p></div><div class="navfooter"><table summary="Navigation footer" width="100%"><tbody><tr><td align="left" width="40%"><a accesskey="p" href="why-functional-programming-why-haskell.html">Anterior</a>&nbsp;</td><td align="center" width="20%">&nbsp;</td><td align="right" width="40%">&nbsp;<a accesskey="n" href="types-and-functions.html">Próximo</a></td></tr><tr><td align="left" valign="top" width="40%">Por programação funcional? Por Haskell?&nbsp;</td><td align="center" width="20%"><a accesskey="h" href="index.html">Casa</a></td><td align="right" valign="top" width="40%">&nbsp;Capítulo&nbsp;2.&nbsp;Tipos e Funções</td></tr></tbody></table></div><script src="support/urchin.js" type="text/javascript"></script><script type="text/javascript">_uacct = "UA-1805907-3"; urchinTracker();</script>
+</body></html>
