@@ -6,6 +6,7 @@
 
 	<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 		
+<div  class=preface id=whyfp>
 	<div class="sect1" ><h2 class="title" id="id1">Já temos uma solução para você!</h2>
 	
 	<p>
@@ -21,17 +22,43 @@
 	<p>
 		Haskell é provavelmente muito diferente do que qualquer linguagem que você já usou antes. Programação funcional nos oferece uma maneira profundamente diferente de pensar sobre softwares.
 		</p>
-	</div>
-	
-	
-	</div>
 
-	<pre id="BookStore.hs:BookInfo" class="programlisting">
-	-- file: ch03/BookStore.hs
-	data BookInfo = Book Int String [String]
-			 deriving (Show)
-	</pre>
-				
+	<p> 
+Em Haskell, nós deixamos de enfatizar códigos que modifica dados. Em
+vez disso, vamos nos concentrar nas funções que têm valores imutáveis
+como entrada e produzem novos valores como saída. Dadas as mesmas
+entradas, estas funções sempre retornam os mesmos resultados. Essa é
+uma idéia central por trás da programação funcional.
+</p>
+
+<p>
+Junto com a não modificação de dados, nossas funções Haskell
+normalmente, não “dialoga” com o mundo externo, chamamos-as de funções <em>puras</em>.
+Nós fazemos uma distinção forte entre o código puro e as partes dos
+nossos programas que lêem ou escrevem arquivos, comunicam-se por meio
+de conexões de rede, ou fazem mover os braços de um robô. Isso torna
+mais fácil organizar, estudar e testar os nossos programas.
+</p>
+
+<p>
+Abandonamos algumas idéias que podem parecer fundamentais, tais como
+ter um <code>for</code> loop incorporadas a linguagem. Temos outras
+formas mais flexíveis de executar tarefas repetitivas.
+</p>
+
+<p>
+Mesmo a maneira pela qual avaliamos as expressões é diferente em
+Haskell. Nós adiamos todos os cálculos até que seu resultado seja
+realmente necessário: Haskell é uma linguagem que tem avalição <em>preguiçosa</em>.
+Esse recurso não é apenas um modo de adiar a avaliação: ela afeta
+profundamente a forma como escrevemos os programas. 
+</p>
+
 	</div>
+	
+
+	</div>
+				
+</div>
 </body>	
 </html>
