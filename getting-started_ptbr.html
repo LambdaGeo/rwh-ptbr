@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+   <meta charset="utf-8"></meta>
+	<title>Why functional programming? Why Haskell?</title>
+	<link rel="stylesheet" href="support/styles.css" type="text/css">
+	
+	</head>
+
+	<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+
+<div class="navheader"><h2 class="booktitle"><a href="/">Real World Haskell</a><span class="authors">by Bryan O'Sullivan, Don Stewart, and John Goerzen</span></h2></div>
+
+<div class="navheader"><table width="100%" summary="Navigation header"><tbody><tr><th colspan="3" align="center">Why functional programming?  Why Haskell?</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="index.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="getting-started.html">Next</a></td></tr></tbody></table></div>
+
+		
+<div  class=preface id=whyfp>
+	
+<div class="titlepage"><div><div><h2 class="title">Capítulo 1. Começando</h2></div></div></div>
+
+	<p>Enquanto lê os
+primeiros capítulos deste livro, tenha em mente que iremos as vezes
+apresentar alguns conceitos de modo restrito e simplificado. Haskell é
+uma linguagem ampla, e apresentar todos os aspectos de um determinado
+assunto de uma vez só pode atrapalhar o seu aprendizado. Como queremos
+construir uma base sólida em Haskell, iremos expandir estas explicações
+iniciais mais a frente.</p>
+
+<div class="sect1" >
+<h2 class="title" id="id1">Seu ambiente Haskell</h2>
+	
+	<p>
+		Haskell é uma linguagem com muitas implementações, dos quais dois estão
+		em ampla utilização. Hugs é um intérpretador que é usado principalmente
+		para o ensino. Para aplicações reais, o Glasgow Haskell Compiler (GHC) é muito mais popular. Comparado com Hugs, GHCé mais adequado para o “trabalho real”:
+		ele compila para código nativo, suporta a execução paralela e fornece
+		ferramentas de análise de desempenho e de depuração. Por estas razões, GHC é a implementação Haskell que iremos utilizar ao longo deste livro.
+	
+	</p>
+	
+	<p>
+	<span class="application">GHC</span> tem três componentes principais.	
+	</p>
+
+	<ul type="disc">
+      <li>
+	<strong>ghc</strong> é um compilador otimizado que gera código nativo rápido.
+		</li>
+		<li>
+		<strong>ghci</strong> é um intérpretador interativo e depurador.	
+		</li>
+		<li>
+		<strong>runghc</strong> é um programa para a execução de programas Haskell como scripts, sem a necessidade de compilá-los em primeiro lugar.	
+		</li>
+	</ul>
+	
+	
+	<div class="note">
+		<img alt="[Note]" src="support/figs/note.png" style="float:left">
+		<p>Como nos referimos aos componentes do GHC<p>
+		<p>Quando discutimos o sistema GHC como um todo, vamos nos referir a ele como GHC. Quando precisarmos falar de um comando específico, vamos falar ghc, ghci ou runghc pelo nome.</p>
+		
+	</div>
+
+<p>
+	Neste livro, vamos supor que você está usando pelo menos a versão 6.12.2 do <span class="application">GHC</span>, que foi lançado em 2010. Muitos dos nossos exemplos irá funcionar sem modificações em versões mais antigas. No entanto,
+      <span class="emphasis"><em>recomendamos</em></span>
+usar a versão mais recente disponível para sua plataforma. Se você
+estiver usando Windows ou Mac OS X, você pode começar rápidamente e
+facilmente usando um instalador pré-construído. Para obter uma cópia do
+<span class="application">GHC</span> para essas plataformas, visite
+      <a class="ulink" href="http://www.haskell.org/ghc/download.html" target="_top">a página de download do <span class="application">GHC</span></a>, e olhe na lista de pacotes binários e instaladores.	
+</p>
+
+<p>
+	Muitas distribuições Linux, BSD Unix e outras variantes, tem disponível pacotes binários personalizado do GHC.
+Como estes pacotes são construídos especificamente para cada ambiente,
+eles são muito mais fáceis de instalar e de usar do que os pacotes
+binários genéricos que estão disponíveis na página de download do GHC. Você pode encontrar uma lista de distribuições de custom-build GHC na página GHC <a class="ulink" href="http://www.haskell.org/ghc/distribution_packages.html" target="_top">pacotes de distribuição</a>.	
+</p>
+
+<p>
+Para obter informações mais detalhadas sobre como instalar o <span class="application">GHC</span> em uma variedade de plataformas populares, nós fornecemos algumas instruções no <a class="xref" href="installing-ghc-and-haskell-libraries.html" title="Apêndice;Instalação de GHC e bibliotecas Haskell">Apêndice A, <i> Instalação de GHC e bibliotecas Haskell</i></a>. 	
+</p>
+
+</div>
+<div class=“sect1”>
+<h2 class=“title” id=“id12”>Começando com ghci, o intérpretador</h2>
+
+<p> 
+	O interpretador interativo para GHC é um programa chamado <span class="command"><strong>ghci</strong></span>.
+Nele nós podemos entrar e avaliar expressões Haskell, explorara os
+módulos, e depurar o nosso código. Se você estiver familiarizado com o
+Python e Ruby, <strong>ghci</strong>é algo semelhante ao
+      <code class="filename">python</code> e <code class="filename">irb</code>, os intérpretadores interativos do Python e Ruby.
+</p>
+
+
+<div class="note">
+	<img alt="[Note]" src="support/figs/note.png" style="float:left">
+	<p>O comando ghci tem um foco estreito<p>
+	<p>	Nós normalmente não podemos copiar algum arquivo código de fonte Haskell e colá-lo em <strong>ghci</strong>.
+	Isto não tem um efeito significativo na depuração pedaços de código,
+	mas pode inicialmente ser surpreendente se você está acostumado, por
+	exemplo, o interpretador Python interativo.</p>
+	
+</div>
+
+<p> 
+Em sistemas Unix-like, rodamos ghci como um comando em uma janela shell. No Windows, está disponível através do Menu Iniciar. Por exemplo, se você instalou usando o instalador do GHC no Windows XP, você deve ir para “Todos programas”, depois “GHC”; então você vai ver ghci na lista. (Veja a seção chamada "Windows".)
+</p>
+
+<p>
+Quando rodamos ghci, ele exibe um banner de inicialização, seguido de um prompt Prelude>. Aqui, estamos mostrando a versão 6.12.2 em uma máquina Linux.
+</p>
+
+<pre id="id574609" class="screen"><code class="prompt">$</code> <strong class="userinput"><code>ghci</code></strong>
+GHCi, version 6.12.2: http://www.haskell.org/ghc/  :? for help
+Loading package ghc-prim ... linking ... done.
+Loading package integer-gmp ... linking ... done.
+Loading package base ... linking ... done.
+Loading package ffi-1.0 ... linking ... done.
+<code class="prompt">Prelude&gt;</code>
+</pre>
+
+<p>
+	A palavra <code class="code">Prelude</code> no prompt indica que <code class="classname">Prelude</code>,
+	uma biblioteca padrão de funções úteis, está carregada e pronto para
+	uso. Quando carregar outros módulos ou arquivos de origem, eles vão
+	aparecer no prompt, também.
+</p>
+
+<div class="tip">
+	<img alt="[Tip]" src="support/figs/tip.png" style="float:left">
+	<p> Obtendo ajuda</p>
+	<p> Se você digitar <code class="code">:?</code> no prompt <strong>ghci</strong>
+		ele irá imprimir uma detalhada mensagem de ajuda.</p>
+</div>
+
+	
+	<p>
+		O módulo <code class="classname">Prelude</code> é muitas vezes referida como “the standard prelude”, porque seu conteúdo é definido pelo padrão Haskell 98. Normalmente, ele é simplesmente reduzido à
+	      “o prelude”.
+	</p>
+
+	<div class="note">
+		<img alt="[Note]" src="support/figs/note.png" style="float:left">
+		<p>Sobre o prompt ghci<p>
+		<p>	O prompt exibido pelo ghci muda freqüentemente, dependendo de quais módulos temos carregados. Que muitas vezes pode crescer o suficiente para deixar poco espaço visual e uma única linha para a nossa entrada</p>
+
+		<p>
+		Por questões de brevidade e coerência, ao longo deste livro, temos substituído o prompt padrão ghci pelo seguinte prompt <code class="code">ghci></code>	
+		</p>
+		<p>
+		Se você quiser fazer isso, use a directiva<code class="code"> :set prompt</code> de ghci, como se segue.	
+		</p>
+		<pre id="id574731" class="screen"><code class="prompt">Prelude</code> <strong class="userinput"><code>:set prompt "ghci"</code></strong>
+<code class="prompt">ghci></code></pre>
+	</div>
+	<p>
+	O prelude está sempre implicitamente disponível, nós não precisamos de tomar quaisquer medidas para utilizar os tipos, valores ou funções que ele define. Para utilizar as definições de outros módulos, devemos carregá-los em ghci, utilizando o :module ou :m.	
+	</p>
+	
+	<pre id="basics.ghci:module" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:m +Data.Ratio</code></strong>
+	</pre>
+	<p>
+		Agora podemos usar as funcionalidades do módulo <code class="prompt">Data.Ratio</code>, que nos permite trabalhar com números racionais (frações)
+	</p>
+	
+	</div>
+
+
+<div class=“sect1”>
+<h2 class=“title” id=“”>Interação básica: usando ghci como uma calculadora</h2>
+<p>
+Além de fornecer uma interface conveniente para testar fragmentos de código, ghci pode funcionar como uma calculadora de desktop facilmente acessível. Podemos facilmente exprimir qualquer operação na calculadora ghci e, como bônus, podemos acrescentar operações mais complexas quando nós nos tornamos mais familiarizado com Haskell. Mesmo utilizando o intérprete desta forma simples, ele pode ajudar-nos a tornar-se mais confortáveis com o modo que o Haskell funciona.
+</p>
+
+
+<div class="sect2" >
+<h3 class="title" id="starting.calc.arithmetic">Aritméticas simples</h3>
+
+<p>
+Podemos começar imediatamente a entrar expressões, para ver o que ghci vai fazer com eles. Aritmética simples funciona de forma semelhante a linguagens como C e Python: nós escrevemos expressões na forma infixa onde o operador aparece entre os seus operandos.
+</p>
+
+<pre id="basics.ghci:arithmetic" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 + 2</code></strong>
+4
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>31337 * 101</code></strong>
+3165037
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>7.0 / 2.0</code></strong>
+3.5
+</pre>
+
+<p>
+O estilo de escrever um infixo expressão é apenas uma conveniência: também podemos escrever uma expressão em forma de prefixo, onde o operador precede os seus argumentos. Para fazer isso, devemos colocar o operador em parênteses.
+</p>
+
+<pre id="basics.ghci:prefix" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 + 2</code></strong>
+4
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>(+) 2 2</code></strong>
+4
+</pre>
+
+<p>
+Como as expressões acima implicam, ao Haskell ter uma noção de números inteiros e de ponto flutuante. Inteiros podem ser arbitrariamente grande. Aqui, (^) fornece exponenciação inteiro.
+</p>
+
+<pre id="basics.ghci:bignum" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>313 ^ 15</code></strong>
+27112218957718876716220410905036741257
+</pre>
+
+
+
+</div>
+
+<div class="sect2" >
+<h3 class="title"  id=“”>Um equívoco aritmético: escrever números negativos</h3>
+<p>
+Haskell nos apresenta uma peculiaridade no modo como devemos escrever números: é muitas vezes necessário colocar um número negativo entre parênteses. Isto afeta-nos logo que ir além da simples expressões.
+</p>
+
+<p>
+Vamos começar por escrever um número negativo.
+</p>
+<pre id="basics.ghci:neg.simple" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>-3</code></strong>
+-3
+</pre>
+
+<p>
+O - acima, é um operador unário. Em outras palavras, não escrevemos o número único “-3”; nós escrevemos o número “3”, e aplicado o operador - para ele. O operador - é apenas um operador unário do Haskell, e não podemos misturá-la com os operadores infixo.
+</p>
+
+<pre id="basics.ghci:neg.error" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 + -3</code></strong>
+
+&lt;interactive&gt;:1:0:
+    precedence parsing error
+        cannot mix `(+)' [infixl 6] and prefix `-' [infixl 6] in the same infix expression
+</pre>
+
+<p>
+Se quisermos usar o menos unário perto de um operador infixo, devemos envolver a expressão que se aplica a entre parênteses.
+</p>
+
+<pre id="basics.ghci:neg.better" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 + (-3)</code></strong>
+-1
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>3 + (-(13 * 37))</code></strong>
+-478
+</pre>
+
+<p>
+Isso evita uma ambigüidade análise. Quando se aplica uma função em Haskell, nós escrevemos o nome da função, seguido do argumento, por exemplo, <code class="code">f 3</code>. Se não tivéssemos necessidade de envolver um número negativo entre parênteses, teríamos duas diferentes maneiras de ler profundamente <code class="code">f-3</code>: poderia ser “aplicada a função <code class="code">f</code> para o número <code class="code">-3</code>”, ou “subtrair o número <code class="code">3</code> de <code class="code">f</code>”
+</p>
+
+<p>
+Na maioria das vezes, podemos omitir o espaço em branco (“blank” caracteres, como espaço e guia) de expressões e Haskell irá analisá-los à medida que se destina. Mas nem sempre. Aqui está uma expressão que funciona: 
+</p>
+
+<pre id="basics.ghci:whitespace.ok" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2*3</code></strong>
+6
+</pre>
+
+<p>
+E aqui está um caso que parece similar ao exemplo problemático de número negativo acima, mas a mensagem de erro resultante é diferente.
+</p>
+
+<pre id="basics.ghci:whitespace.eek" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2*-3</code></strong>
+
+&lt;interactive&gt;:1:1: Not in scope: `*-'
+</pre>
+<p>
+	Aqui, a aplicação Haskell está lendo *- como um único operador. Haskell nos permite definir novos operadores (um assunto que voltaremos mais tarde), mas não temos definido *-. Mais uma vez, uns poucos parênteses nos permite resolver este problema.
+</p>
+
+<pre id="basics.ghci:whitespace.whew" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2*(-3)</code></strong>
+-6
+</pre>
+
+<p>
+	Em comparação com outras linguagens, este tratamento incomum de números negativos pode parecer chato, mas representa um trade-off fundamentado. Haskell nos permite definir operadores novos a qualquer momento. O que não é um tipo de recurso de comun a linguagens, vamos ver bastante operadores definidos pelo usuário nos próximos capítulos. Os projetistas da linguagem decidiram aceitar uma sintaxe um pouco pesado para números negativos em troca deste poder expressivo
+</p>
+
+</div>
+
+
+<div class="sect2" >
+<h3 class="title"  id=“”>Lógica Booleana, operadores e comparações de valores
+</h3>
+
+		Os valores da lógica booleana em Haskell são
+		<code class="literal">True</code> e <code class="literal">False</code>.
+	A capitalização destes nomes é importante. A linguagem foi influenciada
+	por C na definição dos operadores para valores booleanos: <code class="function">(&amp;&amp;)</code> é lógico “<span class="quote">e</span>”, e <code class="function">(||)</code>
+		é lógico.
+</p>
+
+<pre id="basics.ghci:boolean" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>True &amp;&amp; False</code></strong>
+False
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>False || True</code></strong>
+True
+</pre>
+
+<p id="x_k1"><a name="x_k1"></a>
+	Embora algumas linguagens de programação trate o número zero como sinônimo de <code class="literal">False</code>,
+	Haskell não, nem considera que um valor diferente de zero deve ser <code class="literal">True</code>. 
+	</p>
+
+	<pre id="basics.ghci:boolean.bad" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>True &amp;&amp; 1</code></strong>
+
+	&lt;interactive&gt;:1:8:
+	    No instance for (Num Bool)
+	      arising from the literal `1' at &lt;interactive&gt;:1:8
+	    Possible fix: add an instance declaration for (Num Bool)
+	    In the second argument of `(&amp;&amp;)', namely `1'
+	    In the expression: True &amp;&amp; 1
+	    In the definition of `it': it = True &amp;&amp; 1
+	</pre>
+	
+	<p id="x_fM">
+		Mais uma vez, somos confrontados com uma mensagem de erro substancial. Em resumo, diz-nos que o tipo Boolean, <span class="type">Bool</span>, não é um membro da família de tipos numéricos, <code class="code">Num</code>.  A mensagem de erro é bastante longa, pois <span class="command"><strong>ghci</strong></span>
+	está a apontar a localização do problema, e sugerindo uma possível
+	mudança que nós poderíamos fazer de modo que possa resolver o problema.
+	</p>
+	
+	<p>
+	Aqui está uma divisão mais detalhada da mensagem de erro.
+	</p>
+	
+	<ul type="disc"><li><p id="x_wA1">
+		“<code class="code">No instance for (Num Bool)</code>”
+		    diz-nos que <strong>ghci</strong> está tentando tratar o valor numérico
+		    <span class="type">1</span> como tendo um tipo <span class="type">Bool</span>, mas não conseguiu.
+		   </p></li><li><p id="x_xA1"><a name="x_xA1"></a>
+		    “<span class="quote"><code class="code">arising from the literal
+			`1'</code></span>” indica que foi o nosso uso do número <code class="code">1</code> que causou o problema. 
+			</p></li><li><p id="x_yA1"><a name="x_yA1"></a>
+			“<span class="quote"><code class="code">In the definition of `it'</code></span>”
+		    se refere a uma abreviação <span class="command"><strong>ghci</strong></span> que iremos rever em algumas páginas a frente. </p></li></ul>
+	
+</div>
+</div>
+
+				
+</div>
+
+<div class="rwhfooter"> 
+<p>Copyright
+	2007, 2008 Bryan O'Sullivan, Don Stewart, and John Goerzen. This
+	work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">Creative
+	  Commons Attribution-Noncommercial 3.0 License</a>. Icons by
+	  <a href="mailto:mattahan@gmail.com">Paul Davey</a> aka <a href="http://mattahan.deviantart.com/">Mattahan</a>.</p>
+    </div>
+
+<div class="navfooter"><table width="100%" summary="Navigation footer"><tbody><tr><td width="40%" align="left"><a accesskey="p" href="index.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="getting-started.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Real World Haskell&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;1.&nbsp;Getting Started</td></tr></tbody></table></div>
+
+
+</body>	
+</html>
