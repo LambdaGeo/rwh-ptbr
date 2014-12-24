@@ -26,7 +26,7 @@ assunto de uma vez só pode atrapalhar o seu aprendizado. Como queremos
 construir uma base sólida em Haskell, iremos expandir estas explicações
 iniciais mais a frente.</p>
 
-<div class="sect1" >
+
 <h2 class="title" id="id1">Seu ambiente Haskell</h2>
 	
 	<p>
@@ -39,7 +39,7 @@ iniciais mais a frente.</p>
 	</p>
 	
 	<p>
-	<span class="application">GHC</span> tem três componentes principais.	
+	GHC tem três componentes principais.	
 	</p>
 
 	<ul type="disc">
@@ -56,7 +56,6 @@ iniciais mais a frente.</p>
 	
 	
 	<div class="note">
-		<img alt="[Note]" src="support/figs/note.png" style="float:left">
 		<p>Como nos referimos aos componentes do GHC<p>
 		<p>Quando discutimos o sistema GHC como um todo, vamos nos referir a ele como GHC. Quando precisarmos falar de um comando específico, vamos falar ghc, ghci ou runghc pelo nome.</p>
 		
@@ -83,8 +82,8 @@ binários genéricos que estão disponíveis na página de download do GHC. Voc�
 Para obter informações mais detalhadas sobre como instalar o <span class="application">GHC</span> em uma variedade de plataformas populares, nós fornecemos algumas instruções no <a class="xref" href="installing-ghc-and-haskell-libraries.html" title="Apêndice;Instalação de GHC e bibliotecas Haskell">Apêndice A, <i> Instalação de GHC e bibliotecas Haskell</i></a>. 	
 </p>
 
-</div>
-<div class=“sect1”>
+
+
 <h2 class=“title” id=“id12”>Começando com ghci, o intérpretador</h2>
 
 <p> 
@@ -97,7 +96,6 @@ Python e Ruby, <strong>ghci</strong>é algo semelhante ao
 
 
 <div class="note">
-	<img alt="[Note]" src="support/figs/note.png" style="float:left">
 	<p>O comando ghci tem um foco estreito<p>
 	<p>	Nós normalmente não podemos copiar algum arquivo código de fonte Haskell e colá-lo em <strong>ghci</strong>.
 	Isto não tem um efeito significativo na depuração pedaços de código,
@@ -131,7 +129,6 @@ Loading package ffi-1.0 ... linking ... done.
 </p>
 
 <div class="tip">
-	<img alt="[Tip]" src="support/figs/tip.png" style="float:left">
 	<p> Obtendo ajuda</p>
 	<p> Se você digitar <code class="code">:?</code> no prompt <strong>ghci</strong>
 		ele irá imprimir uma detalhada mensagem de ajuda.</p>
@@ -144,7 +141,6 @@ Loading package ffi-1.0 ... linking ... done.
 	</p>
 
 	<div class="note">
-		<img alt="[Note]" src="support/figs/note.png" style="float:left">
 		<p>Sobre o prompt ghci<p>
 		<p>	O prompt exibido pelo ghci muda freqüentemente, dependendo de quais módulos temos carregados. Que muitas vezes pode crescer o suficiente para deixar poco espaço visual e uma única linha para a nossa entrada</p>
 
@@ -167,10 +163,10 @@ Loading package ffi-1.0 ... linking ... done.
 		Agora podemos usar as funcionalidades do módulo <code class="prompt">Data.Ratio</code>, que nos permite trabalhar com números racionais (frações)
 	</p>
 	
-	</div>
+	
 
 
-<div class=“sect1”>
+
 <h2 class=“title” id=“”>Interação básica: usando ghci como uma calculadora</h2>
 <p>
 Além de fornecer uma interface conveniente para testar fragmentos de código, ghci pode funcionar como uma calculadora de desktop facilmente acessível. Podemos facilmente exprimir qualquer operação na calculadora ghci e, como bônus, podemos acrescentar operações mais complexas quando nós nos tornamos mais familiarizado com Haskell. Mesmo utilizando o intérprete desta forma simples, ele pode ajudar-nos a tornar-se mais confortáveis com o modo que o Haskell funciona.
@@ -212,7 +208,7 @@ Como as expressões acima implicam, ao Haskell ter uma noção de números intei
 
 
 
-</div>
+
 
 <div class="sect2" >
 <h3 class="title"  id=“”>Um equívoco aritmético: escrever números negativos</h3>
@@ -280,7 +276,7 @@ E aqui está um caso que parece similar ao exemplo problemático de número nega
 	Em comparação com outras linguagens, este tratamento incomum de números negativos pode parecer chato, mas representa um trade-off fundamentado. Haskell nos permite definir operadores novos a qualquer momento. O que não é um tipo de recurso de comun a linguagens, vamos ver bastante operadores definidos pelo usuário nos próximos capítulos. Os projetistas da linguagem decidiram aceitar uma sintaxe um pouco pesado para números negativos em troca deste poder expressivo
 </p>
 
-</div>
+
 
 
 <div class="sect2" >
@@ -336,8 +332,16 @@ True
 			</p></li><li><p id="x_yA1"><a name="x_yA1"></a>
 			“<span class="quote"><code class="code">In the definition of `it'</code></span>”
 		    se refere a uma abreviação <span class="command"><strong>ghci</strong></span> que iremos rever em algumas páginas a frente. </p></li></ul>
+		
+			<div class="tip">
+				<p> Permaneça sem medo diante das mensagens de erro</p>
+				<p> Temos uma importante consideração a fazer aqui, que vamos repetir em todo o trecho inicial do livro. Se você tiver problemas ou mensagens de erro que você ainda não entender, não se desespere. No início, tudo que você precisa fazer é descobrir o suficiente para progredir em um problema. Como você adquirir experiência, será mais fácil de entender as partes das mensagens de erro que inicialmente parece obscuro.</p>
+				<p>
+					As várias mensagens de erro têm uma finalidade: eles realmente nos ajudar a escrever o código correto, fazendo-nos executar uma certa quantidade de depuração “a frente”, antes que nós executarmos um programa. Se você estiver vindo de um background de trabalho com linguagens mais permissivas, essa forma de trabalho pode vir como uma espécie de choque. 
+					</p>
+			
 	
-</div>
+
 </div>
 
 				

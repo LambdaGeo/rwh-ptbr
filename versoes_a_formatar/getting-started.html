@@ -3,7 +3,7 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Capítulo&nbsp;1.&nbsp;Começando</title><link rel="stylesheet" href="support/styles.css" type="text/css"><meta name="generator" content="Bluefish 1.0.7"><link rel="start" href="index.html" title="Real World Haskell"><link rel="up" href="index.html" title="Real World Haskell"><link rel="prev" href="why-functional-programming-why-haskell.html" title="Why functional programming? Why Haskell?"><link rel="next" href="types-and-functions.html" title="Chapter&nbsp;2.&nbsp;Types and Functions"><link rel="alternate" type="application/atom+xml" title="Comments" href="http://book.realworldhaskell.org/feeds/comments/"><link rel="shortcut icon" type="image/png" href="http://book.realworldhaskell.org/support/figs/favicon.png"><script type="text/javascript" src="support/jquery-min.js"></script><script type="text/javascript" src="support/form.js"></script><script type="text/javascript" src="support/hsbook.js"></script></head><body alink="#0000ff" bgcolor="white" link="#0000ff" text="black" vlink="#840084"><div class="navheader"><h2 class="booktitle"><a href="http://book.realworldhaskell.org/">Real World Haskell</a><span class="authors">por Bryan O'Sullivan, Don Stewart e John Goerzen</span></h2></div><div class="navheader"><table summary="Navigation header" width="100%"><tbody><tr><th colspan="3" align="center">Capítulo&nbsp;1.&nbsp;Começando<br>
 </th></tr><tr><td align="left" width="20%"><a accesskey="p" href="why-functional-programming-why-haskell.html">Anterior</a>&nbsp;</td><th align="center" width="60%">&nbsp;<br>
-</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="types-and-functions.html">Próximo</a></td></tr></tbody></table></div><div class="chapter" id="starting" lang="en"><div class="titlepage"><div><div><h2 class="title">Capítulo&nbsp;1.&nbsp;Começando</h2></div></div></div><div class="toc"><p style="opacity: 0.35;"><b>Índice analítico</b></p><p style="display: none;"><a onclick="return loadAllComments()">Load all comments (<b>slow</b>)</a></p>
+</th><td align="right" width="20%">&nbsp;<a accesskey="n" href="types-and-functions.html">Próximo</a></td></tr></tbody></table></div><div class="chapter" id="starting" lang="en"><div class="titlepage"><div><div><h2 class="title">Capítulo 1. Começando</h2></div></div></div><div class="toc"><p style="opacity: 0.35;"><b>Índice analítico</b></p><p style="display: none;"><a onclick="return loadAllComments()">Load all comments (<b>slow</b>)</a></p>
 <dl><dt><span class="sect1"><a href="getting-started.html#starting.ghc">Seu ambiente Haskell</a></span><br>
 </dt>
 <dt><span class="sect1"><a href="getting-started.html#starting.ghci">Começando com ghci, o intérpretador</a></span><br>
@@ -28,7 +28,9 @@
 </dt><dt><span class="sect1"><a href="getting-started.html#starting.types">Primeiros passos com os tipos</a></span><br>
 </dt><dt><span class="sect1"><a href="getting-started.html#id577314">Um programa simples</a></span><br>
 </dt><dt><span class="sect1"><a href="getting-started.html#starting.types.exercises">Exercícios</a></span><br>
-</dt></dl></div><p id="x_TM"><a name="x_TM"></a>Enquanto lê os
+</dt></dl></div><p id="x_TM"><a name="x_TM"></a>
+	
+	Enquanto lê os
 primeiros capítulos deste livro, tenha em mente que iremos as vezes
 apresentar alguns conceitos de modo restrito e simplificado. Haskell é
 uma linguagem ampla, e apresentar todos os aspectos de um determinado
@@ -43,10 +45,14 @@ em ampla utilização. Hugs é um intérpretador que é usado principalmente
 para o ensino. Para aplicações reais, o Glasgow Haskell Compiler (<span class="application">GHC</span>) é muito mais popular. Comparado com <span class="application">Hugs</span>, <span class="application">GHC</span> é mais adequado para o “<span class="quote">trabalho real</span>”:
 ele compila para código nativo, suporta a execução paralela e fornece
 ferramentas de análise de desempenho e de depuração. Por estas razões, <span class="application">GHC</span> é a implementação Haskell que iremos utilizar ao longo deste livro.
-      <span id="comments_x_g" class="comment"><a class="commenttoggle" id="toggle_x_g" pid="x_g" onclick='return loadComments("x_g")' href="comments:%20show%20/%20hide">6 comments</a></span></p><p id="x_h"><a name="x_h"></a><span class="application">GHC</span> tem três componentes principais. <span id="comments_x_h" class="comment"><a class="commenttoggle" id="toggle_x_h" pid="x_h" onclick='return loadComments("x_h")' href="comments:%20show%20/%20hide">7 comments</a></span></p><div class="itemizedlist"><ul type="disc">
-      <li><p id="x_jl"><a name="x_jl"></a><span class="command"><strong>ghc</strong></span> é um compilador otimizado que gera código nativo rápido. <span id="comments_x_jl" class="comment"><a class="commenttoggle" id="toggle_x_jl" onclick='return loadComments("x_jl")' href="comment:%20add">No comments</a></span></p></li>
+      <span id="comments_x_g" class="comment"><a class="commenttoggle" id="toggle_x_g" pid="x_g" onclick='return loadComments("x_g")' href="comments:%20show%20/%20hide">6 comments</a></span></p><p id="x_h"><a name="x_h"></a><span class="application">GHC</span> tem três componentes principais. <span id="comments_x_h" class="comment"><a class="commenttoggle" id="toggle_x_h" pid="x_h" onclick='return loadComments("x_h")' href="comments:%20show%20/%20hide">7 comments</a></span></p><div class="itemizedlist">
+	<ul type="disc">
+      <li>
+	<p id="x_jl"><a name="x_jl"></a><span class="command"><strong>ghc</strong></span> é um compilador otimizado que gera código nativo rápido. <span id="comments_x_jl" class="comment"><a class="commenttoggle" id="toggle_x_jl" onclick='return loadComments("x_jl")' href="comment:%20add">No comments</a></span></p></li>
       <li><p id="x_kl"><a name="x_kl"></a><span class="command"><strong>ghci</strong></span> é um intérpretador interativo e depurador. <span id="comments_x_kl" class="comment"><a class="commenttoggle" id="toggle_x_kl" onclick='return loadComments("x_kl")' href="comment:%20add">No comments</a></span></p></li>
-      <li><p id="x_ll"><a name="x_ll"></a><span class="command"><strong>runghc</strong></span> é um programa para a execução de programas Haskell como scripts, sem a necessidade de compilá-los em primeiro lugar. <span id="comments_x_ll" class="comment"><a class="commenttoggle" id="toggle_x_ll" pid="x_ll" onclick='return loadComments("x_ll")' href="comments:%20show%20/%20hide">3 comments</a></span></p></li></ul></div><div class="note">
+      <li><p id="x_ll"><a name="x_ll"></a><span class="command"><strong>runghc</strong></span> é um programa para a execução de programas Haskell como scripts, sem a necessidade de compilá-los em primeiro lugar. <span id="comments_x_ll" class="comment"><a class="commenttoggle" id="toggle_x_ll" pid="x_ll" onclick='return loadComments("x_ll")' href="comments:%20show%20/%20hide">3 comments</a></span></p></li></ul></div>
+
+<div class="note">
       <table summary="Note: How we refer to the components of GHC" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
       <th align="left">Como nos referimos aos componentes do GHC</th></tr><tr><td align="left" valign="top"><p id="x_i"><a name="x_i"></a>
       Quando discutimos o sistema <span class="application">GHC</span> como um todo, vamos nos referir a ele como <span class="application">GHC</span>. Quando precisarmos falar de um comando específico, vamos falar <span class="command"><strong>ghc</strong></span>, <span class="command"><strong>ghci</strong></span> ou <span class="command"><strong>runghc</strong></span> pelo nome. 
@@ -64,7 +70,7 @@ Como estes pacotes são construídos especificamente para cada ambiente,
 eles são muito mais fáceis de instalar e de usar do que os pacotes
 binários genéricos que estão disponíveis na página de download do <span class="application">GHC</span>. Você pode encontrar uma lista de distribuições de custom-build <span class="application">GHC</span> na página <span class="application">GHC</span> <a class="ulink" href="http://www.haskell.org/ghc/distribution_packages.html" target="_top">pacotes de distribuição</a>. 
 	<span id="comments_x_k" class="comment"><a class="commenttoggle" id="toggle_x_k" pid="x_k" onclick='return loadComments("x_k")' href="comments:%20show%20/%20hide">2 comments</a></span></p><p id="x_nL"><a name="x_nL"></a>
-	Para obter informações mais detalhadas sobre como instalar o <span class="application">GHC</span> em uma variedade de plataformas populares, nós fornecemos algumas instruções no <a class="xref" href="installing-ghc-and-haskell-libraries.html" title="Apêndice&nbsp;A.&nbsp;Instalação de GHC e bibliotecas Haskell">Apêndice&nbsp;A, <i> Instalação de GHC e bibliotecas Haskell</i></a>. 
+	Para obter informações mais detalhadas sobre como instalar o <span class="application">GHC</span> em uma variedade de plataformas populares, nós fornecemos algumas instruções no <a class="xref" href="installing-ghc-and-haskell-libraries.html" title="Apêndice;Instalação de GHC e bibliotecas Haskell">Apêndice A, <i> Instalação de GHC e bibliotecas Haskell</i></a>. 
       <span id="comments_x_nL" class="comment"><a class="commenttoggle" id="toggle_x_nL" pid="x_nL" onclick='return loadComments("x_nL")' href="comments:%20show%20/%20hide">1 comment</a></span></p></div><div class="sect1" lang="en"><div class="titlepage"><div>
       
       
@@ -73,19 +79,25 @@ binários genéricos que estão disponíveis na página de download do <span cla
 Nele nós podemos entrar e avaliar expressões Haskell, explorara os
 módulos, e depurar o nosso código. Se você estiver familiarizado com o
 Python e Ruby, <span class="command"><strong>ghci</strong></span> é algo semelhante ao
-      <code class="filename">python</code> e <code class="filename">irb</code>, os intérpretadores interativos do Python e Ruby. <span id="comments_x_L1" class="comment"><a class="commenttoggle" id="toggle_x_L1" pid="x_L1" onclick='return loadComments("x_L1")' href="comments:%20show%20/%20hide">8 comments</a></span></p><div class="note">      
+      <code class="filename">python</code> e <code class="filename">irb</code>, os intérpretadores interativos do Python e Ruby. <span id="comments_x_L1" class="comment"><a class="commenttoggle" id="toggle_x_L1" pid="x_L1" onclick='return loadComments("x_L1")' href="comments:%20show%20/%20hide">8 comments</a></span></p>
+
+<div class="note">      
       <table summary="Note: The ghci command has a narrow focus" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
       <th align="left">O comando ghci tem um foco estreito</th></tr><tr><td align="left" valign="top"><p id="x_UM"><a name="x_UM"></a>Nós normalmente não podemos copiar algum arquivo código de fonte Haskell e colá-lo em <span class="command"><strong>ghci</strong></span>.
 Isto não tem um efeito significativo na depuração pedaços de código,
 mas pode inicialmente ser surpreendente se você está acostumado, por
-exemplo, o interpretador Python interativo. <span id="comments_x_UM" class="comment"><a class="commenttoggle" id="toggle_x_UM" pid="x_UM" onclick='return loadComments("x_UM")' href="comments:%20show%20/%20hide">8 comments</a></span></p></td></tr></tbody></table></div><p id="x_VM"><a name="x_VM"></a>
+exemplo, o interpretador Python interativo. <span id="comments_x_UM" class="comment"><a class="commenttoggle" id="toggle_x_UM" pid="x_UM" onclick='return loadComments("x_UM")' href="comments:%20show%20/%20hide">8 comments</a></span></p></td></tr></tbody></table></div>
+
+<p id="x_VM"><a name="x_VM"></a>
       Em sistemas Unix-like, rodamos <span class="command"><strong>ghci</strong></span>
 como um comando em uma janela shell. No Windows, está disponível
 através do Menu Iniciar. Por exemplo, se você instalou usando o
 instalador do <span class="application">GHC</span> no Windows XP, você deve ir para “<span class="quote">Todos programas</span>”,
       depois “<span class="quote">GHC</span>”; então você vai ver <span class="command"><strong>ghci</strong></span> na lista. (Veja <a class="xref" href="installing-ghc-and-haskell-libraries.html#install.win" title="Windows">a seção chamada "Windows"</a>.) 
       <span id="comments_x_VM" class="comment"><a class="commenttoggle" id="toggle_x_VM" pid="x_VM" onclick='return loadComments("x_VM")' href="comments:%20show%20/%20hide">2 comments</a></span></p><p id="x_M1"><a name="x_M1"></a>
-      Quando rodamos <span class="command"><strong>ghci</strong></span>, ele exibe um banner de inicialização, seguido de um prompt <code class="prompt">Prelude&gt;</code>. Aqui, estamos mostrando a versão 6.12.2 em uma máquina Linux. <span id="comments_x_M1" class="comment"><a class="commenttoggle" id="toggle_x_M1" pid="x_M1" onclick='return loadComments("x_M1")' href="comments:%20show%20/%20hide">4 comments</a></span></p><pre id="id574609" class="screen"><code class="prompt">$</code> <strong class="userinput"><code>ghci</code></strong>
+      Quando rodamos <span class="command"><strong>ghci</strong></span>, ele exibe um banner de inicialização, seguido de um prompt <code class="prompt">Prelude&gt;</code>. Aqui, estamos mostrando a versão 6.12.2 em uma máquina Linux. <span id="comments_x_M1" class="comment"><a class="commenttoggle" id="toggle_x_M1" pid="x_M1" onclick='return loadComments("x_M1")' href="comments:%20show%20/%20hide">4 comments</a></span></p>
+
+<pre id="id574609" class="screen"><code class="prompt">$</code> <strong class="userinput"><code>ghci</code></strong>
 GHCi, version 6.12.2: http://www.haskell.org/ghc/  :? for help
 Loading package ghc-prim ... linking ... done.
 Loading package integer-gmp ... linking ... done.
@@ -96,14 +108,21 @@ Loading package ffi-1.0 ... linking ... done.
 A palavra <code class="code">Prelude</code> no prompt indica que <code class="classname">Prelude</code>,
 uma biblioteca padrão de funções úteis, está carregada e pronto para
 uso. Quando carregar outros módulos ou arquivos de origem, eles vão
-aparecer no prompt, também. <span id="comments_x_uK" class="comment"><a class="commenttoggle" id="toggle_x_uK" pid="x_uK" onclick='return loadComments("x_uK")' href="comments:%20show%20/%20hide">4 comments</a></span></p><div class="tip">
+aparecer no prompt, também. <span id="comments_x_uK" class="comment"><a class="commenttoggle" id="toggle_x_uK" pid="x_uK" onclick='return loadComments("x_uK")' href="comments:%20show%20/%20hide">4 comments</a></span></p>
+
+<div class="tip">
 
 <table summary="Tip: Getting help" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="support/figs/tip.png"></td><th align="left">Obtendo ajuda</th></tr><tr><td align="left" valign="top"><p id="x_ml"><a name="x_ml"></a>Se você digitar <code class="code">:?</code> no prompt <span class="command"><strong>ghci</strong></span>
 	ele irá imprimir uma mensagem de ajuda muito. 
-	<span id="comments_x_ml" class="comment"><a class="commenttoggle" id="toggle_x_ml" onclick='return loadComments("x_ml")' href="comment:%20add">No comments</a></span></p></td></tr></tbody></table></div><p id="x_o1"><a name="x_o1"></a>
+	<span id="comments_x_ml" class="comment"><a class="commenttoggle" id="toggle_x_ml" onclick='return loadComments("x_ml")' href="comment:%20add">No comments</a></span></p></td></tr></tbody></table></div>
+	
+	<p id="x_o1"><a name="x_o1"></a>
 	O módulo <code class="classname">Prelude</code> é muitas vezes referida como “<span class="quote">the standard prelude</span>”, porque seu conteúdo é definido pelo padrão Haskell 98. Normalmente, ele é simplesmente reduzido à
       “<span class="quote">o prelude</span>”. 
-      <span id="comments_x_o1" class="comment"><a class="commenttoggle" id="toggle_x_o1" pid="x_o1" onclick='return loadComments("x_o1")' href="comments:%20show%20/%20hide">3 comments</a></span></p><div class="note">
+
+      <span id="comments_x_o1" class="comment"><a class="commenttoggle" id="toggle_x_o1" pid="x_o1" onclick='return loadComments("x_o1")' href="comments:%20show%20/%20hide">3 comments</a></span></p>
+
+<div class="note">
       
       <table summary="Note: About the ghci prompt" border="0"><tbody><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="support/figs/note.png"></td>
       <th align="left">Sobre o prompt ghci</th></tr><tr><td align="left" valign="top"><p id="x_N1"><a name="x_N1"></a>
@@ -112,8 +131,13 @@ muda freqüentemente, dependendo de quais módulos temos carregados. Que
 muitas vezes pode crescer o suficiente para deixar poco espaço visual e
 uma única linha para a nossa entrada. <span id="comments_x_N1" class="comment"><a class="commenttoggle" id="toggle_x_N1" pid="x_N1" onclick='return loadComments("x_N1")' href="comments:%20show%20/%20hide">2 comments</a></span></p><p id="x_WM"><a name="x_WM"></a>
       Por questões de brevidade e coerência, ao longo deste livro, temos substituído o prompt padrão <span class="command"><strong>ghci</strong></span> pelo seguinte prompt <code class="prompt">ghci&gt;</code>. <span id="comments_x_WM" class="comment"><a class="commenttoggle" id="toggle_x_WM" pid="x_WM" onclick='return loadComments("x_WM")' href="comments:%20show%20/%20hide">3 comments</a></span></p><p id="x_nl"><a name="x_nl"></a>
-	Se você quiser fazer isso, use a directiva <code class="code">:set prompt</code> de <span class="command"><strong>ghci</strong></span>, como se segue. <span id="comments_x_nl" class="comment"><a class="commenttoggle" id="toggle_x_nl" pid="x_nl" onclick='return loadComments("x_nl")' href="comments:%20show%20/%20hide">7 comments</a></span></p><pre id="id574731" class="screen"><code class="prompt">Prelude&gt;</code> <strong class="userinput"><code>:set prompt "ghci&gt; "</code></strong>
-<code class="prompt">ghci&gt;</code></pre> <span id="comments_id574731" class="comment"><a class="commenttoggle" id="toggle_id574731" onclick='return loadComments("id574731")' href="comment:%20add">No comments</a></span></td></tr></tbody></table></div><p id="x_p1"><a name="x_p1"></a>
+	Se você quiser fazer isso, use a directiva <code class="code">:set prompt</code> de <span class="command"><strong>ghci</strong></span>, como se segue. <span id="comments_x_nl" class="comment"><a class="commenttoggle" id="toggle_x_nl" pid="x_nl" onclick='return loadComments("x_nl")' href="comments:%20show%20/%20hide">7 comments</a></span></p>
+	<pre id="id574731" class="screen"><code class="prompt">Prelude&gt;</code> <strong class="userinput"><code>:set prompt "ghci&gt; "</code></strong>
+<code class="prompt">ghci&gt;</code></pre> 
+<span id="comments_id574731" class="comment"><a class="commenttoggle" id="toggle_id574731" onclick='return loadComments("id574731")' href="comment:%20add">No comments</a></span></td></tr></tbody></table></div>
+
+
+<p id="x_p1"><a name="x_p1"></a>
 O prelude está sempre implicitamente disponível, nós não precisamos de
 tomar quaisquer medidas para utilizar os tipos, valores ou funções que
 ele define. Para utilizar as definições de outros módulos, devemos

@@ -187,15 +187,26 @@ span.remark {
   color: #448844;
 }
 
+
 div.note, div.tip {
   background: #ffffc9;
   border-color: #B4BAEA;
 }
 
+div.note {
+ background-image: url(figs/note.png);	
+ background-repeat: no-repeat;
+}
+
+ div.tip {
+ background-image: url(figs/tip.png);	
+ background-repeat: no-repeat;
+}
+
 div.note, div.warning, div.tip {
   border-style: solid;
   border-width: 1px;
-  padding: 1em;
+  padding: 2em;
 }
 
 .note .title {
