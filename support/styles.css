@@ -203,10 +203,16 @@ div.note {
  background-repeat: no-repeat;
 }
 
+ div.warning {
+ background-image: url(figs/warning.png);	
+ background-repeat: no-repeat;
+}
+
 div.note, div.warning, div.tip {
   border-style: solid;
   border-width: 1px;
-  padding: 2em;
+  padding-left: 4em;
+ 
 }
 
 .note .title {

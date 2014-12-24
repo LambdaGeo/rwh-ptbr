@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
    <meta charset="utf-8"></meta>
-	<title>Why functional programming? Why Haskell?</title>
+	<title>Capítulo 1. Começando</title>
 	<link rel="stylesheet" href="support/styles.css" type="text/css">
 	
 	</head>
@@ -339,11 +339,138 @@ True
 				<p>
 					As várias mensagens de erro têm uma finalidade: eles realmente nos ajudar a escrever o código correto, fazendo-nos executar uma certa quantidade de depuração “a frente”, antes que nós executarmos um programa. Se você estiver vindo de um background de trabalho com linguagens mais permissivas, essa forma de trabalho pode vir como uma espécie de choque. 
 					</p>
-			
-	
-
 </div>
 
+<p>
+	A maioria dos operadores de comparação Haskell são similares àqueles usados em C e muitas linguagens que foram influencidas
+</p>
+
+<pre id="basics.ghci:comparison" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>1 == 1</code></strong>
+True
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 &lt; 3</code></strong>
+True
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>4 &gt;= 3.99</code></strong>
+True
+</pre>
+
+<p>
+Um operador que difere de C é o “não é igual”. Em C, este é escrito como !=. Em Haskell, escrevemos (/=), que se assemelha a notação ≠ usada em matemática.
+</p>
+
+<pre id="basics.ghci:neq" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>2 /= 3</code></strong>
+True
+</pre>
+
+<p>
+Além disso, onde linguagens similares C costumam usar ! para a negação lógica, Haskell usa a função not.
+</p>
+
+<h3 class="title" id="starting.calc.precedence">Precedência de operadores e associatividade</h3>
+
+<p>
+Como em álgebra e outras linguagens de programação que usa operadores infixo, Haskell tem uma noção de precedência de operadores. Podemos usar parênteses para explicitamente agrupar partes de uma expressão, e a precedência nos permite omitir alguns parênteses. Por exemplo, o operador de multiplicação tem precedência maior do que o operador de adição, de modo que Haskell trata as seguinte expressões como equivalentes.
+</p>
+
+<pre id="basics.ghci:parens" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>1 + (4 * 4)</code></strong>
+17
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>1 + 4 * 4</code></strong>
+17
+</pre>
+
+<p>
+Haskell atribui valores numéricos a precedência dos operadores, sendo 1 a menor precedência e 9 a maior. Um operador de prioridade maior é aplicada antes de um operador de prioridade inferior. Podemos usar ghci para inspecionar os níveis de precedência de operadores individuais, utilizando o seu comando :info ou :i.
+</p>
+<pre id="basics.ghci:precedence" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:i (+)</code></strong>
+class (Eq a, Show a) =&gt; Num a where
+  (+) :: a -&gt; a -&gt; a
+  ...
+  	-- Defined in GHC.Num
+infixl 6 +
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>:i (*)</code></strong>
+class (Eq a, Show a) =&gt; Num a where
+  ...
+  (*) :: a -&gt; a -&gt; a
+  ...
+  	-- Defined in GHC.Num
+infixl 7 *
+</pre>
+
+
+<p>
+A informação que nós buscamos é na linha “infixl 6 +”, que indica que o (+) operador tem uma precedência de 6. (Nós vamos explicar a saída de outros em um capítulo posterior.) O “infixl 7 *” diz-nos que o (*) operador tem uma precedência de 7. Desde (*) tem uma precedência maior do que (+), podemos ver agora porque 1 + 4 * 4 é avaliado como 1 + (4 * 4), e não (1 + 4) * 4.
+</p>
+
+<p>
+Haskell também define associatividade dos operadores. Isso determina se uma expressão contendo múltiplos usos de um operador é avaliada da esquerda para a direita ou para a direita para a esquerda. Os operadores (+) e (*) ficam associativos esquerdos, que é representado como infixl infixl na saída ghci acima. Um operador de direito associativo é exibida com infixr.
+</p>
+
+<p>
+A combinação de regras de precedência e associatividade são geralmente referidos como as fixity rules.
+</p>
+
+<h3 class="title" id="starting.calc.undef">Valores indefinidos, e introduzindo variáveis</h3>
+
+<p>
+O prelude de Haskell, a biblioteca padrão mencionado anteriormente, define pelo menos um conhecido constante matemática para nós.
+</p>
+
+<pre id="basics.ghci:pi" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>pi</code></strong>
+3.141592653589793
+</pre>
+
+<p>
+Mas a sua abrangência de constantes matemáticas não é abrangente, como podemos ver rapidamente. Olhemos para o número de Euler, e. 
+</p>
+
+<pre id="basics.ghci:e" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>e</code></strong>
+
+&lt;interactive&gt;:1:0: Not in scope: `e'
+</pre>
+<p>
+Tudo bem. Nós temos que defini-lo nós mesmos.
+</p>
+
+<div class="note">
+	<p>Não se preocupe com a mensagem de erro</p>
+	<p>Se a mensagem de erro “not in scope” acima parece um pouco assustador, não se preocupe. Tudo isto significa é que não há nenhuma variável definida com o nome e.</p>
+</div>
+
+
+<p>
+Usando a construção let de ghci, nós podemos fazer uma definição temporária e de nós mesmos.
+</p>
+
+<pre id="basics.ghci:let" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>let e = exp 1
+	</code></strong>
+</pre>
+
+<p>
+Esta é uma aplicação da função exponencial, exp, e nosso primeiro exemplo de aplicação de uma função em Haskell. Enquanto linguagens como Python exigem parênteses os argumentos para uma função, Haskell não.
+</p>
+
+<p>
+Com <code class="varname">e</code> definido, agora podemos usá-lo em expressões aritméticas. O operador (^) de exponenciação que introduzimos anteriormente só pode elevar um número a uma potência inteira. Para usar um número de ponto flutuante como o expoente, usamos o operador de exponenciação (**). 
+</p>
+
+<div class="warning">
+	<p>Essa sintaxe é específica do ghci</p>
+	<p>A sintaxe para let que o ghci aceita não é o mesmo que iremos usar no alto nível "de um programa Haskell normal. Vamos ver a sintaxe normal na <a class="xref" href="defining-types-streamlining-functions.html#deftypes.locals" title="Introducing local variables"> seção chamada “Introduzir variáveis locais”</a></p>
+</div>
+
+<h3 class="title" id="id575887">Lidar com as regras de precedência e associatividade</h3>
+
+<p>
+Às vezes é melhor deixar pelo menos alguns parênteses no lugar, mesmo quando Haskell permite omitir-los. Sua presença pode ajudar os futuros leitores (incluindo nós mesmos) para entender o que se destina.
+</p>
+
+
+<p>
+Ainda mais importante, expressões complexas que confiam totalmente na precedência do operador são fontes notórias de bugs. Um compilador e um ser humano pode facilmente acabar com noções diferentes do que até mesmo um parêntese, livre expressão curta é suposto fazer.
+</p>
+
+<p>
+Não há necessidade de lembrar todas as regras de precedência e associatividade números: é mais simples de adicionar parênteses se tiver dúvidas.
+</p>
 				
 </div>
 
