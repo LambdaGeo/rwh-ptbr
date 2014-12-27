@@ -3,7 +3,9 @@ body {
   font-family: verdana,sans-serif;
 }
 
-.navheader, .book, article, .chapter, .appendix, .bibliography, .navfooter, .basetemplate {
+
+
+header, .book, article, .chapter, .appendix, .bibliography, .navfooter, .basetemplate {
   width: 50em;
   margin-left: auto;
   margin-right: auto;
@@ -72,11 +74,11 @@ div.note th, div.tip th, div.warning th {
   font-size: 110%;
 }
 
-div.navheader th, div.navfooter td {
+divheader th, div.navfooter td {
   font-family: georgia,serif;
 }
 
-div.navheader th {
+divheader th {
   opacity: 0;
   font-size: 0;
 }
