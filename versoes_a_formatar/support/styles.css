@@ -3,7 +3,9 @@ body {
   font-family: verdana,sans-serif;
 }
 
-.navheader, .book, .preface, .chapter, .appendix, .bibliography, .navfooter, .basetemplate {
+
+
+header, .book, article, .chapter, .appendix, .bibliography, .navfooter, .basetemplate {
   width: 50em;
   margin-left: auto;
   margin-right: auto;
@@ -17,7 +19,7 @@ a:hover, a:active {
   border-bottom: 1px solid #aaaaaa;
 }
 
-.book, .preface, .chapter, .appendix, .bibliography, .basetemplate {
+.book, article, .chapter, .appendix, .bibliography, .basetemplate {
   background: white;
   padding: 2em;
 }
@@ -72,11 +74,11 @@ div.note th, div.tip th, div.warning th {
   font-size: 110%;
 }
 
-div.navheader th, div.navfooter td {
+divheader th, div.navfooter td {
   font-family: georgia,serif;
 }
 
-div.navheader th {
+divheader th {
   opacity: 0;
   font-size: 0;
 }
@@ -187,15 +189,32 @@ span.remark {
   color: #448844;
 }
 
+
 div.note, div.tip {
   background: #ffffc9;
   border-color: #B4BAEA;
 }
 
+div.note {
+ background-image: url(figs/note.png);	
+ background-repeat: no-repeat;
+}
+
+ div.tip {
+ background-image: url(figs/tip.png);	
+ background-repeat: no-repeat;
+}
+
+ div.warning {
+ background-image: url(figs/warning.png);	
+ background-repeat: no-repeat;
+}
+
 div.note, div.warning, div.tip {
   border-style: solid;
   border-width: 1px;
-  padding: 1em;
+  padding-left: 4em;
+ 
 }
 
 .note .title {
@@ -269,7 +288,7 @@ div.new_comment {
   color: darkred;
 }
 
-.rwhfooter {
+footer {
   width: 60em;
   margin-left: auto;
   margin-right: auto;
@@ -279,14 +298,14 @@ div.new_comment {
   color: #727272;
 }
 
-.rwhfooter a {
+footer a {
   color: #5555ff;
 }
 
-.rwhfooter a:visited {
+footer a:visited {
   opacity: 0.7;
 }
 
-.rwhfooter img {
+footer img {
   vertical-align: -45%;
 }
