@@ -647,7 +647,7 @@ mensagem de erro, porque o primeiro argumento <code>(:) </code>deve ser um eleme
 <p>Como em muitas linguagens, podemos representar caracteres hard-to-see através de “escaping” delas. 
 Escapes in Haskell e as regras de escaping segue as convenções utilizadas e amplamente estabelecida pela linguagem C.
  Por exemplo, <code>'\n' </code>denota um caractere de nova linha, e <code>'\t'</code> é um caracter de tabulação. Para detalhes completos, 
- consulte <a class="xref" href="characters-strings-and-escaping-rules.html" title="Apêndice&nbsp;B.&nbsp;Caracteres, strings, e regras escapando">Apêndice B, <i>Caracteres, strings, e regras escapando</i></a></p>
+ consulte <a class="xref" href="characters-strings-and-escaping-rules.html" title="Apêndice&nbsp;B.&nbsp;Caracteres, strings, e regras escapando">Apêndice&nbsp;B, <i>Caracteres, strings, e regras escapando</i></a></p>
 
 
 <pre id="basics.ghci:newline" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>putStrLn "Aqui está uma nova linha --&gt;\n&lt;-- Viu?"</code></strong>
