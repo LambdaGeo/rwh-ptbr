@@ -647,7 +647,7 @@ mensagem de erro, porque o primeiro argumento <code>(:) </code>deve ser um eleme
 <p>Como em muitas linguagens, podemos representar caracteres hard-to-see através de “escaping” delas. 
 Escapes in Haskell e as regras de escaping segue as convenções utilizadas e amplamente estabelecida pela linguagem C.
  Por exemplo, <code>'\n' </code>denota um caractere de nova linha, e <code>'\t'</code> é um caracter de tabulação. Para detalhes completos, 
- consulte <a class="xref" href="characters-strings-and-escaping-rules.html" title="Apêndice&nbsp;B.&nbsp;Caracteres, strings, e regras escapando">Apêndice&nbsp;B, <i>Caracteres, strings, e regras escapando</i></a></p>
+ consulte <a class="xref" href="characters-strings-and-escaping-rules.html" title="Apêndice&nbsp;B.&nbsp;Caracteres, strings, e regras escapando">Apêndice B, <i>Caracteres, strings, e regras escapando</i></a></p>
 
 
 <pre id="basics.ghci:newline" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>putStrLn "Aqui está uma nova linha --&gt;\n&lt;-- Viu?"</code></strong>
@@ -688,6 +688,50 @@ a construção de novas cadeias.</p>
 "foobar"
 </pre>
 
+<h2 class="title" style="clear: both;" id="starting.types">Primeiros passos com os tipos</h2>
+
+
+<p>Enquanto nós ja falamos um pouco sobre os tipos, nossas interações com ghci têm sido até agora 
+livre de pensamento do tipo. Nós não disse que tipos em ghci que nós vimos utilizando, e é na sua maioria, 
+dispostos a aceitar a nossa entrada. </p>
+
+<p>Haskell exige que nomes de tipo inicie com uma letra maiúscula e nomes de variáveis
+ devem começar com uma letra minúscula. Tenha isso em mente sobre como você lê, 
+ que torna muito mais fácil seguir os nomes. </p>
+
+<p>A primeira coisa que podemos fazer para começar a explorar o mundo de tipos é pedir 
+ao <strong>ghci</strong> para nos dizer mais sobre o que ele é usandondo um comando <strong>ghci</strong>, <code>:set</code> ou <code>:s,</code> que 
+nos permite alterar alguns dos seus comportamentos padrão. Podemos pedir que imprima 
+mais informações sobre tipo, como a seguir.</p>
+
+
+<pre id="types.ghci:set_t_on" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:s +t</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>'c'</code></strong>
+'c'
+it :: Char
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>"foo"</code></strong>
+"foo"
+it :: [Char]
+</pre>
+
+O que <code>+t</code> faz é dizer ghci para imprimir o tipo de expressão após a expressão. 
+O enigmático <code>it </code>na saída pode ser muito útil: ele é realmente o nome de uma variável especial, 
+que armazena no <strong>ghci</strong> o resultado da última expressão avaliada. (Esta não é uma característica da
+ linguagem Haskell, é específico para <strong>ghci</strong>.) Vamos quebrar o significado da última linha de saída <strong>ghci</strong>.
+
+<ul type="disc">
+      <li>
+ <p>     Ele está nos dizendo sobre a variável especial <code class="varname">it</code>. 
+ </p>   </li>
+	  <li>
+	  
+	<p>  Podemos ler o texto da forma <code class="code">x :: y</code> no sentido de “a expressão <code class="code">x</code> com o tipo <code class="code">y</code>”. 
+	</p>  </li>
+	    <li>
+	   <p> Aqui, a expressão “it” tem o tipo <span class="type">[Char]</span>.  (O nome <span class="type">String</span> é frequentemente utilizado em vez de <span class="type">[Char]</span>. É simplesmente um sinônimo para <span class="type">[Char]</span>.) 
+	 </p>
+	    </li></ul>
+	    
 </article>
 
 <footer> 

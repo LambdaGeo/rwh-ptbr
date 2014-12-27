@@ -168,30 +168,30 @@ minima k xs = take k (sort xs)</pre>
             nós vamos mostrar-lhe como desenvolver.
          </p>
          <ul type="disc">
-            <li><p>
+            <li>
                Criar um aplicativo que
                baixa os episódios de podcast da internet e armazene-o em um
                banco de dados SQL
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Testar o seu código de um modo poderosa e
                intuitiva. Descrever as propriedades que devem ser
                verdade, então deixe a biblioteca QuickCheck gerar casos de teste
                automaticamente. 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Pegar um telefone com câmera que captura um
                código de barras, e transforme-o
                em um identificador que você pode usar para consulta uma biblioteca ou
                web site de uma libraria. 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Escrever o código que
                percorra a web. Troque dados com os servidores e clientes escritos
                em
                outras linguagens usando a notação JSON. Desenvolver um verificador da
                ligação concorrente. 
-            </li></p>
+            </li>
          </ul>
          <h3 class="title"  id=“”>Um pouco sobre você</h3>
          <p>
@@ -353,47 +353,47 @@ minima k xs = take k (sort xs)</pre>
             enquanto outros são produtos patenteados.
          </p>
          <ul type="disc">
-            <li><p>
+            <li>
                ASIC e FPGA design software (Lava, produtos da
                Bluespec Inc.) 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Software de composição musical (Haskore)
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Compiladores e ferramentas relacionadas com
                compilador (principalmente GHC)
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Controle de distribuição e revisão (Darcs)
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Web middleware (Happstack, produtos de Galois
                Inc.) 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                ABN AMRO é um banco internacional. Ele usa
                Haskell em investimentos, para medir o risco de contraparte de
                carteiras de derivativos financeiros. 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Anygma é uma empresa de inicialização.
                Desenvolve ferramentas de criação multimídia conteúdo usando Haskell.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Amgen é uma empresa de biotecnologia. Ele
                cria modelos matemáticos e outras aplicações complexas em Haskell.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Bluespec é um ASIC e FPGA fornecedor de
                software de design. Seus produtos são desenvolvidos em Haskell, e as
                Linguagens de design de chips que fornecem seus produtos são
                influenciados pelo Haskell.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Eaton utiliza Haskell para a concepção e
                verificação de sistemas hidráulicos de veículos híbridos.
-            </li></p>
+            </li>
          </ul>
          <h3 class="title"  id=“”>Compilação, depuração e análise de desempenho</h3>
          <p>
@@ -406,31 +406,31 @@ minima k xs = take k (sort xs)</pre>
             de 15 anos, e fornece um conjunto maduro e estável de recursos.
          </p>
          <ul type="disc">
-            <li><p>
+            <li>
                Compila para código nativo eficiente em todos
                os principais sistemas operacionais modernos e arquiteturas de CPU
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Fácil implantação dos binários compilados,
                livre de restrições de licenciamento
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Análise da cobertura de código
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Detalhado perfis de desempenho e uso de
                memória 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Documentação completa
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Apoio escalável e massivo para multicore e
                programação concorrente 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Interpretador e depurador interativo 
-            </li></p>
+            </li>
          </ul>
          <h3 class="title"  id=“”>Bibliotecas bundled e a terceira parte</h3>
          <p>
@@ -439,25 +439,25 @@ minima k xs = take k (sort xs)</pre>
             face a estes. 
          </p>
          <ul type="disc">
-            <li><p>
+            <li>
                I/O arquivo, e de passagem e manipulação de
                sistema de arquivos 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Programação de cliente e servidor de rede 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Expressões regulares e análise sintática
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Programação concorrente 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Testes automatizados
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Som e gráficos 
-            </li></p>
+            </li>
          </ul>
          <p>
             O banco de dados do pacote Hackage é uma coleção de
@@ -468,25 +468,25 @@ minima k xs = take k (sort xs)</pre>
             abrangidas pelas bibliotecas de código aberto incluem o seguinte.
          </p>
          <ul type="disc">
-            <li><p>
+            <li>
                Interfaces para todas as principais banco de dados open source
                e comercial.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Processamento de XML, HTML e XQuery 	
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Desenvolvimento de cliente e servidor de redes
                e web
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                GUIs Desktop, incluindo toolkits
                e cross-platform 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Suporte para Unicode e outras codificações de
                texto
-            </li></p>
+            </li>
          </ul>
          <h2 class=“title” id=“”>Um breve resumo da
             história do Haskell
@@ -608,27 +608,27 @@ minima k xs = take k (sort xs)</pre>
          </p>
          <h3 class="title"  id=“”>Material de referência</h3>
          <ul type="disc">
-            <li><p>
+            <li>
                <a class="ulink" href="http://www.haskell.org/ghc/docs/latest/html/libraries/index.html" target="_top">The Haskell Hierarchical Libraries reference</a> fornece
                a documentação para a biblioteca padrão que vem com o compilador. Este
                é um dos mais valiosos activos online para programadores Haskell. 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Para perguntas sobre a sintaxe e recursos da
                linguage o <a href="http://haskell.org/onlinereport/" target="_top">Haskell
                98 Report</a> descreve ao padrão da linguagem Haskell 98.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Diversas extensões à linguagem tornaram-se
                comuns desde o Haskell 98 Report foi liberado. O <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html" target="_top">Guia do usuário do GHC</a> contém documentação detalhada
                sobre as extensões suportadas pelo GHC, bem como algumas
                características específicas do GHC.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                <a href="http://haskell.org/hoogle/" target="_top">Hoogle</a> e <a href="http://holumbus.fh-wedel.de/hayoo/hayoo.html" target="_top">Hayoo</a>
                são os motores de busca da API Haskell. Eles podem procurar as funções
                pelo nome ou por tipo. 
-            </li></p>
+            </li>
          </ul>
          <h3 class="title"  id=“”> Aplicativos e bibliotecas</h3>
          <p>
@@ -637,17 +637,17 @@ minima k xs = take k (sort xs)</pre>
             seguintes recursos.
          </p>
          <ul type="disc">
-            <li><p>
+            <li>
                A comunidade Haskell mantém um repositório
                central de bibliotecas de código aberto e aplicações Haskell. É chamado
                <a href="http://hackage.haskell.org/" target="_top">Hackage</a>, e
                permite que você procure software para download, ou procurar a sua
                coleção por categoria.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                O <a href="http://haskell.org/haskellwiki/Applications_and_libraries" target="_top">Haskell Wiki</a> contém uma seção dedicada à informação
                sobre algumas bibliotecas Haskell.
-            </li></p>
+            </li>
          </ul>
          <h3 class="title"  id=“”>A comunidade Haskell</h3>
          <p>Há uma série de maneiras que você pode entrar em contato com outros
@@ -655,43 +655,43 @@ minima k xs = take k (sort xs)</pre>
             estão falando, e simplesmente fazer alguma rede social com seus pares.
          </p>
          <ul type="disc">
-            <li><p>
+            <li>
                A primeira parada em sua busca por recursos da
                comunidade deve ser o <a href="http://www.haskell.org/" target="_top">site
                Haskell</a>. Esta página contém os links mais atuais para várias
                comunidades e informação, bem como um wiki e mantida ativamente.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Haskellers utilizar uma série de <a href="http://haskell.org/haskellwiki/Mailing_lists" target="_top">listas</a>
                para os debates de atualidade. Destes, o geralmente mais interessante é
                chamado <code>haskell-cafe</code>. Tem uma atmosfera tranquila e
                amigável, onde profissionais e acadêmicos trocam informações com
                hackers casuais e novatos. 
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Para bate-papo em tempo real, o <a href="http://haskell.org/haskellwiki/IRC_channel" target="_top">canal
                de IRC Haskell</a>, chamado <code>#haskell</code>, é grande e animado.
                Parecido como o <code>haskell-cafe</code>, a atmosfera e amigável e
                prestativos, apesar do grande número de usuários simultâneos.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                Há muitos grupos de usuários locais, meetups,
                workshops acadêmicos, e assim por diante, aqui está <a href="http://haskell.org/haskellwiki/User_groups" target="_top">uma
                lista dos grupos de usuários conhecidos e workshops</a>.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                O <a href="http://sequence.complete.org/" target="_top">Haskell Weekly News</a> é um-quase-resumo semanal de
                muitas atividades na comunidade Haskell. Você pode encontrar links para
                listas de discussões interessantes, novas versões de softwares, e assim
                por diante.
-            </li></p>
-            <li><p>
+            </li>
+            <li>
                <a class="ulink" href="http://haskell.org/communities/" target="_top">Haskell
                Communities and Activities Report</a> recolhe informações sobre as
                pessoas que usam Haskell, e o que eles estão fazendo com ele. Ela tem
                funcionada durante anos, por isso oferece uma boa maneira de descobrir
                o passado do Haskell. 
-            </li></p>
+            </li>
          </ul>
          <h2 class=“title” id=“”> Agradecimentos </h2>
       </article>
