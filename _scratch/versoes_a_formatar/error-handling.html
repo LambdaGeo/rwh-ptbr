@@ -1,0 +1,582 @@
+﻿<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Capítulo 19. Manipulação de Erro</title><link rel="stylesheet" href="style.css" type="text/css">
+</head>
+
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><h2 class="booktitle"><a href="/">O mundo real do Haskell</a><span class="authors">by Bryan O'Sullivan, Don Stewart, and John Goerzen</span></h2></div><div class="navheader"><table width="100%" summary="Navigation header"><tr><th width="100%" align="center">Capítulo 19. Manipulação de Erro</th></tr></table></div><div class="chapter" lang="en" id="errors"><div class="titlepage"><div><div><h2 class="title">Capítulo 19. Manipulação de Erro</h2></div></div></div>
+<p id="x_xy">
+A manipulação de erros é uma dos temas mais importantes e negligenciados para os programadores, independente da linguagem utilizada. Em Haskell, você vai encontrar dois tipos principais de erro de manipulação empregado: "erro de manipulação pura" e exceções.
+  </p><p id="x_yy">
+    Quando falamos de "erro de manipulação pura", estamos nos referindo a algoritmos que não exigem nada da mônada <span class="type">IO</span>.
+A vantagem do Haskell é que muitas vezes podemos implementar tratamento de erros  usando simplesmente a expressão tipo de sistema de dados. As exceções em Haskell podem ser lançadas em qualquer lugar, mas só pegadas dentro da mônada de <span class="type">IO</span>.
+  </p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="errors.nonexception">Tratamento de erro com tipos de dados</h2></div></div></div><p id="x_zy">
+Vamos começar nossa discussão sobre tratamento de erros com uma função muito simples. Digamos que queremos fazer a divisão de uma série de números. Temos um numerador constante, mas gostaríamos de variar o denominador. Poderíamos chegar a uma função como esta:
+    </p><pre id="divby1.hs:all" class="programlisting">-- file: ch19/divby1.hs
+divBy :: Integral a =&gt; a -&gt; [a] -&gt; [a]
+divBy numerator = map (numerator `div`)</pre><p id="x_Az">
+Exemplo de utilização da função:
+      <span class="command"><strong>ghci</strong></span>:
+    </p><pre id="divby1.ghci:ex1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,5,8,10]</code></strong>
+[50,25,10,6,5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>take 5 (divBy 100 [1..])</code></strong>
+[100,50,33,25,20]
+</pre><p id="x_Bz">
+Funciona como esperado: <code class="literal">50 / 1</code> é <code class="literal">50</code> , <code class="literal">50 / 2</code> é <code class="literal">25</code> , e assim por diante.Este ainda trabalhou com a lista infinita <code class="literal">[1..]</code> um. O que acontece se aparecer 0 em nossa lista em algum lugar? 
+
+    </p><pre id="divby1.ghci:ex2" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,0,8,10]</code></strong>
+[50,25,*** Exception: divide by zero
+</pre><p id="x_Dz">
+Não é interessante? <span class="command"><strong>ghci</strong></span> começou exibindo a saída, então, parou com uma exceção quando ele chegou ao zero. Essa é a avaliação preguiçosa no trabalho, que os resultados calculados conforme a necessidade.
+    </p><p id="x_Ez">
+Como veremos mais adiante neste capítulo, na ausência de um manipulador de exceção explícita, essa exceção será a falha do programa. Isso obviamente não é desejável, então vamos considerar as melhores formas que pode indicar um erro nesta função pura.
+
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="errors.maybe">Uso do Maybe</h3></div></div></div><p id="x_Fz">
+Uma maneira fácil, reconhecível de imediato para indicar falha é usar <code class="literal">Maybe</code>. Ao invés de apenas retornar uma lista e gerar uma exceção em caso de falha, podemos voltar <code class="literal">Nothing</code>  se a entrada contivesse uma lista de zero em qualquer lugar, ou <code class="literal">Just</code> com os resultados de outra maneira. Aqui está uma implementação de tal algoritmo:
+
+      </p><pre id="divby2.hs:all" class="programlisting">-- file: ch19/divby2.hs
+divBy :: Integral a =&gt; a -&gt; [a] -&gt; Maybe [a]
+divBy _ [] = Just []
+divBy _ (0:_) = Nothing
+divBy numerator (denom:xs) =
+    case divBy numerator xs of
+      Nothing -&gt; Nothing
+      Just results -&gt; Just ((numerator `div` denom) : results)</pre><p id="x_Hz">
+Exemplo de utilização da função:
+      </p><pre id="divby2.ghci:ex1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,5,8,10]</code></strong>
+Just [50,25,10,6,5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,0,8,10]</code></strong>
+Nothing
+</pre><p id="x_Iz">
+A função que chama <code class="literal">divBy</code> agora podem usar um <code class="literal">case</code> declaração para ver se a chamada foi bem-sucedido, assim como <code class="literal">divBy</code> faz quando chama a si mesmo.
+      </p><div class="tip"><table border="0" summary="Tip"><tr>
+        <td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="imagens/tip.png"></td><th align="left">Dica</th></tr><tr><td align="left" valign="top"><p id="x_YJ1">Você pode utilizar o método monádica  para implementar o exemplo anterior.
+      </p><pre id="divby2m.hs:all" class="programlisting">-- file: ch19/divby2m.hs
+divBy :: Integral a =&gt; a -&gt; [a] -&gt; Maybe [a]
+divBy numerator denominators = 
+    mapM (numerator `safeDiv`) denominators
+    where safeDiv _ 0 = Nothing
+          safeDiv x y = x `div` y</pre><p id="x_ZJ1">
+        Evitaremos a aplicação monádica neste capítulo, para simplificar, mas queríamos salientar que ela existe.
+        </p></td></tr></table></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title" id="errors.maybe.laziness">Perda e Preservação da Preguiça</h4></div></div></div><p id="x_Jz">
+O uso de <code class="literal">Maybe</code> é conveniente, mas tem um custo. <code class="literal">divBy</code> já não pode lidar com as listas infinitas como entrada. Como o resultado é <code class="literal">Maybe [a]</code>, a lista de entrada inteira deve ser examinada antes de podermos ter a certeza que não vamos retornar <code class="literal">Nothing</code> devido à zero em algum lugar . Você pode verificar se este for o caso, tentando um dos exemplos anteriores:
+        </p><pre id="divby2.ghci:ex2" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 100 [1..] </code></strong>
+*** Exception: stack overflow
+</pre><p id="x_Kz">
+Observe que você não pode ver um resultado parcial aqui, ou seja, você <span class="emphasis"><em>não</em></span> obteve saída. Observe que em cada etapa <code class="literal">divBy</code> (exceto para o caso de uma lista de entrada vazia ou um zero no início da lista), os resultados de cada elemento subseqüente devem ser conhecidos antes dos resultados do elemento atual pode ser conhecido. Assim, este algoritmo não pode trabalhar com listas infinitas, e também não é muito eficiente em termos de espaço para grandes listas finitas.
+        </p><p id="x_Lz">
+  Entre tanto , <code class="literal">Maybe</code> ainda é uma ótima opção. Neste caso particular, não sabemos se vai haver um problema até chegarmos em avaliar a entrada inteira. Às vezes sabemos de um problema na frente, por exemplo: <code class="literal">tail[]</code> em <span class="command"><strong>ghci</strong></span> produz uma exceção capaz. Facilmente poderíamos escrever um infinito- <code class="literal">tail</code> que não possui esse problema: 
+
+        </p><pre id="safetail.hs:all" class="programlisting">-- file: ch19/safetail.hs
+safeTail :: [a] -&gt; Maybe [a]
+safeTail [] = Nothing
+safeTail (_:xs) = Just xs</pre><p id="x_Mz">
+Isso simplesmente retorna <code class="literal">Nothing</code> se lhe for dada uma lista de entrada vazia ou <code class="literal">Just</code> com o resultado de qualquer outra coisa. Como temos apenas que garantir que a lista não esteja vazia antes de saber se temos ou não um erro, usar <code class="literal">Maybe</code> aqui não reduzir a nossa preguiça. Nós podemos testar isso em <span class="command"><strong>ghci</strong></span> e ver como ele se compara com o regular <code class="literal">tail</code>: 
+
+        </p><pre id="safetail.ghci:ex1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>tail [1,2,3,4,5]</code></strong>
+[2,3,4,5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>safeTail [1,2,3,4,5]</code></strong>
+Just [2,3,4,5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>tail []</code></strong>
+*** Exception: Prelude.tail: empty list
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>safeTail []</code></strong>
+Nothing
+</pre><p id="x_Nz">
+Aqui, podemos ver o nosso <code class="literal">safeTail</code> executado  como esperado. Mas que tal listas infinitas? Não queremos imprimir um número infinito de resultados, portanto podemos testar com <code class="literal">take 5 (tail [1..])</code> e uma construção semelhante com <code class="literal">safeTail</code>:
+        </p><pre id="safetail.ghci:ex2" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>take 5 (tail [1..])</code></strong>
+[2,3,4,5,6]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>case safeTail [1..] of {Nothing -&gt; Nothing; Just x -&gt; Just (take 5 x)}</code></strong>
+Just [2,3,4,5,6]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>take 5 (tail [])</code></strong>
+*** Exception: Prelude.tail: empty list
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>case safeTail [] of {Nothing -&gt; Nothing; Just x -&gt; Just (take 5 x)}</code></strong>
+Nothing
+</pre><p id="x_Oz">
+Aqui você pode ver que tanto o tail e <code class="literal">safeTail</code> tratadas as listas infinitas apenas multa. Nota-se que fomos capazes de lidar melhor com uma lista de entrada vazia, em vez de lançar uma exceção, nós decidimos voltar <code class="literal">Nothing</code> nessa situação. Fomos capazes de atingir o tratamento de erros, sem qualquer uso para preguiça.
+
+        </p><p id="x_Pz">
+Mas como fazem aplicamos isto ao nosso <code class="literal">divBy</code> exemplo? Vamos considerar a situação lá: o fracasso é uma propriedade causada pelo indivíduo mal entrada, não da própria lista de entrada.  Isto é, em vez de uma função de tipo <code class="literal">a -> [a] -> Maybe [a],  teremos a -> [a] -> [Maybe a]</code>. Isto terá o benefício de conservar a preguiça, mais o chamador será capaz de determinar exatamente onde na lista o problema foi - ou até somente filtrar os resultados de problema se desejado. Aqui está uma implementação:
+</p><pre id="divby3.hs:all" class="programlisting">-- file: ch19/divby3.hs
+divBy :: Integral a =&gt; a -&gt; [a] -&gt; [Maybe a]
+divBy numerator denominators =
+    map worker denominators
+    where worker 0 = Nothing
+          worker x = Just (numerator `div` x)</pre><p id="x_Qz">
+Dê uma olhada nesta função. Estamos de volta a usar <code class="literal">map</code>, que é uma opção para ambos preguiça e simplicidade. Nós podemos testá-lo em <span class="command"><strong>ghci</strong></span> e ver que ele funciona para listas finito e infinito muito bem:
+
+        </p><pre id="divby3.ghci:ex1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,5,8,10]</code></strong>
+[Just 50,Just 25,Just 10,Just 6,Just 5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,0,8,10]</code></strong>
+[Just 50,Just 25,Nothing,Just 6,Just 5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>take 5 (divBy 100 [1..])</code></strong>
+[Just 100,Just 50,Just 33,Just 25,Just 20]
+</pre><p id="x_Rz">
+Esperamos que você possa tomar desta discussão o ponto que há uma distinção entre a entrada que não é bem-formada (como em caso de <code class="literal">safeTail</code>) e a entrada que potencialmente contém alguns dados ruins, como em caso de <code class="literal">divBy</code>. Estes dois casos muitas vezes podem justificar o manejo diferente dos resultados.
+
+        </p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title" id="errors.maybe.monad">Uso do Maybe Mônada</h4></div></div></div><p id="x_Sz">
+Anteriormente na seção "Utilização de Maybe", denominamos um programa de <code class="literal">exemplodivby2.hs</code>. Este exemplo não conservou a preguiça, mas devolveu um valor do tipo <code class="literal">Maybe [a]</code>. O mesmo algoritmo pode ser expresso usando um estilo monadista. Para mais informação e contexto importante em mônadas, por favor refira-se ao Capítulo 14, Mônadas. Aqui está o nosso novo algoritmo de estilo mônada:
+
+        </p><pre id="divby4.hs:all" class="programlisting">-- file: ch19/divby4.hs
+divBy :: Integral a =&gt; a -&gt; [a] -&gt; Maybe [a]
+divBy _ [] = return []
+divBy _ (0:_) = fail "division by zero in divBy"
+divBy numerator (denom:xs) =
+    do next &lt;- divBy numerator xs
+       return ((numerator `div` denom) : next)</pre><p id="x_Tz">
+O <code class="literal">Maybe</code> a mônada fez a expressão deste algoritmo parecer mais bonita. Para o <code class="literal">Maybe</code> mônada, <code class="literal">return</code> é o mesmo que <code class="literal">Just</code>, e <code class="literal">fail _ = Nothing</code>, portanto a nossa cadeia de explicação incorreta não ocorre sempre. Podemos testar este algoritmo com os mesmos testes contra os quais usamos <code class="literal">divby2.hs</code>:
+
+        </p><pre id="divby4.ghci:ex1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,5,8,10]</code></strong>
+Just [50,25,10,6,5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,0,8,10]</code></strong>
+Nothing
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 100 [1..] </code></strong>
+*** Exception: stack overflow
+</pre><p id="x_Uz">
+O código que escrevemos na verdade não é específico para o <code class="literal">Maybe</code> mônada. Simplesmente mudando o tipo, nós podemos fazê-la funcionar para <span class="emphasis"><em>qualquer</em></span> mônada. Vamos tentar: 
+
+        </p><pre id="divby5.hs:all" class="programlisting">-- file: ch19/divby5.hs
+divBy :: Integral a =&gt; a -&gt; [a] -&gt; Maybe [a]
+divBy = divByGeneric
+ 
+divByGeneric :: (Monad m, Integral a) =&gt; a -&gt; [a] -&gt; m [a]
+divByGeneric _ [] = return []
+divByGeneric _ (0:_) = fail "division by zero in divByGeneric"
+divByGeneric numerator (denom:xs) =
+    do next &lt;- divByGeneric numerator xs
+       return ((numerator `div` denom) : next)</pre><p id="x_Vz">
+A função <code class="literal">divByGeneric</code> contém o mesmo código que <code class="literal">divBy</code> fez antes; somente demos-lhe um tipo mais geral. Também definimos uma função de conveniência <code class="literal">divBy</code> com um tipo mais específico.
+
+        </p><p id="x_Wz">
+          Vamos tentar isso no <span class="command"><strong>ghci</strong></span>.
+        </p><pre id="divby5.ghci:ex1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:l divby5.hs</code></strong>
+[1 of 1] Compiling Main             ( divby5.hs, interpreted )
+Ok, modules loaded: Main.
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,5,8,10]</code></strong>
+Just [50,25,10,6,5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>(divByGeneric 50 [1,2,5,8,10])::(Integral a =&gt; Maybe [a])</code></strong>
+Just [50,25,10,6,5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>divByGeneric 50 [1,2,5,8,10]</code></strong>
+[50,25,10,6,5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>divByGeneric 50 [1,2,0,8,10]</code></strong>
+*** Exception: user error (division by zero in divByGeneric)
+</pre><p id="x_Xz">
+Os dois primeiros exemplos produzem a mesma saída que vimos antes. Desde então <code class="literal">divByGeneric</code> não tem um tipo de retorno específico, devemos dar ou deixar um intérprete inferir a partir do ambiente. Se não dermos um tipo de retorno específico, o <span class="command"><strong>ghci</strong></span> infere a mônada <span class="type">IO</span>. Você pode ver isto no terceiro e no quarto exemplos. O <span class="type">IO</span> converte a mônada <code class="function">fail</code> não em uma exceção, como você pode ver no quarto exemplo.
+        </p><p id="x_Yz">
+O <code class="literal">Control.Monad.Error</code> módulo <code class="literal">mtl</code> faz o pacote <code class="literal">Either String</code> em uma mônada também. Se você utiliza <code class="literal">Either</code>, você pode obter um resultado puro que preserva a mensagem de erro, assim:
+        </p>
+        <pre id="divby5.ghci:ex2" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:m +Control.Monad.Error</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>(divByGeneric 50 [1,2,5,8,10])::(Integral a =&gt; Either String [a])</code></strong>
+Loading package mtl-1.1.0.0 ... linking ... done.
+Right [50,25,10,6,5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>(divByGeneric 50 [1,2,0,8,10])::(Integral a =&gt; Either String [a])</code></strong>
+Left "division by zero in divByGeneric"
+</pre><p id="x_Zz">
+Isto nos leva para o próximo tópico de discussão: usar <code class="literal">Either</code> para retornar informações de erro.
+        </p></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="errors.either">Utilização do Either</h3></div></div></div><p id="x_az">
+<code class="literal">Either</code> é um tipo semelhante ao tipo <code class="literal">Maybe</code>, com uma diferença fundamental: pode transportar dados ligados tanto para um erro como para um sucesso ("<span class="quote">o <code class="code">Right</code> de resposta</span>"). Apesar da linguagem não impor nenhuma restrição, por convenção, uma função retornando <code class="literal">Either</code> usa uma <code class="literal">Left</code> como valor de retorno para indicar um erro, e <code class="literal">Right</code> para indicar o sucesso. Podemos começar com a nossa <code class="literal">divby2.hs</code> exemplo da seção anterior sobre <code class="literal">Maybe</code> e adaptá-lo para trabalhar com <code class="literal">Either</code>:
+      </p><pre id="divby6.hs:all" class="programlisting">-- file: ch19/divby6.hs
+divBy :: Integral a =&gt; a -&gt; [a] -&gt; Either String [a]
+divBy _ [] = Right []
+divBy _ (0:_) = Left "divBy: division by 0"
+divBy numerator (denom:xs) =
+    case divBy numerator xs of
+      Left x -&gt; Left x
+      Right results -&gt; Right ((numerator `div` denom) : results)</pre><p id="x_cz"> 
+Este código é praticamente idêntico ao <code class="literal">Maybe</code> código, substituímos <code class="literal">Right</code> por <code class="literal">Just</code>. E <code class="literal">Left</code> pode ser comparado a <code class="literal">Nothing</code>, mas agora pode levar uma mensagem. Vamos checar a saida no <span class="command"><strong>ghci</strong></span>: </p>
+<pre id="divby6.ghci:ex1" class="screen"><code class="prompt">ghci&gt; </code>
+<strong class="userinput"><code>divBy 50 [1,2,5,8,10]</code></strong>
+Right [50,25,10,6,5]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,0,8,10]</code></strong>
+Left "divBy: division by 0"
+
+</pre><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title" id="id661397">Tipos de dados personalizados para erros</h4></div></div></div><p id="x_dz">
+Enquanto uma <code class="literal">String</code> indica a causa de um erro pode ser útil para os seres humanos abaixo da estrada, é freqüentemente útil usá-la para definir um tipo de erro personalizado que podemos usar na programação para decidir sobre um curso de ação baseado no problema inicial. Por exemplo, digamos que por alguma razão, além de 0, nós também não iremos dividir por 10 ou 20. Nós poderiamos definir um tipo de erro personalizado, assim:
+        </p><pre id="divby7.hs:all" class="programlisting">-- file: ch19/divby7.hs
+data DivByError a = DivBy0
+                 | ForbiddenDenominator a
+                   deriving (Eq, Read, Show)
+ 
+divBy :: Integral a =&gt; a -&gt; [a] -&gt; Either (DivByError a) [a]
+divBy _ [] = Right []
+divBy _ (0:_) = Left DivBy0
+divBy _ (10:_) = Left (ForbiddenDenominator 10)
+divBy _ (20:_) = Left (ForbiddenDenominator 20)
+divBy numerator (denom:xs) =
+    case divBy numerator xs of
+      Left x -&gt; Left x
+      Right results -&gt; Right ((numerator `div` denom) : results)</pre><p id="x_ez">
+Agora, no caso de um erro, por meio do comando <code class="literal">Left</code>, dados podem ser inspecionados para descobrir a causa exata. Ou podem simplesmente ser impressas com <code class="literal">show</code>, que vai gerar uma idéia razoável do problema também. Aqui está essa função em ação: 
+</p><pre id="divby7.ghci:ex1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,5,8]</code></strong>
+Right [50,25,10,6]
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,5,8,10]</code></strong>
+Left (ForbiddenDenominator 10)
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>divBy 50 [1,2,0,8,10]</code></strong>
+Left DivBy0
+</pre><div class="warning"><table border="0" summary="Warning"><tr>
+  <td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="imagens/warning.png"></td><th align="left">Atenção</th></tr><tr><td align="left" valign="top"><p id="x_fz">
+Todos estes exemplos com <code class="literal">Either</code> sofrem da falta preguiça que nossos primeiros exemplo com <code class="literal">Maybe</code> sofreram. Colocamos está questão no final deste capítulo.
+          </p></td></tr></table></div></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title" id="id661523">Utilização da Mônada Either</h4></div></div></div><p id="x_gz">
+No capítulo chamado "Uso da Mônada Maybe", mostramos como usar <code class="literal">Maybe</code> em uma mônada. <code class="literal">Either</code> pode ser usado em uma mônada também, mas pode ser um pouco mais complicado. A razão é que <code class="literal">fail</code> é codificado para aceitar apenas uma <code class="literal">String</code> como o código de falha, portanto temos que ter uma forma de mapear tal sequência de caracteres em qualquer tipo que usamos para <code class="literal">Left</code>. Como você viu anteriormente, <code class="literal">Control.Monad.Error</code> fornece suporte embutido para <code class="literal">Either String a</code>, que não envolve nenhum mapeamento para o argumento <code class="literal">fail</code>. Veja como podemos montar o nosso exemplo, para trabalhar com <code class="literal">Either</code> no estilo monádico:
+        </p><pre id="divby8.hs:all" class="programlisting">-- file: ch19/divby8.hs
+{-# LANGUAGE FlexibleContexts #-}
+ 
+import Control.Monad.Error
+ 
+data Show a =&gt; 
+    DivByError a = DivBy0
+                  | ForbiddenDenominator a
+                  | OtherDivByError String
+                    deriving (Eq, Read, Show)
+ 
+instance Error (DivByError a) where
+    strMsg x = OtherDivByError x
+ 
+divBy :: Integral a =&gt; a -&gt; [a] -&gt; Either (DivByError a) [a]
+divBy = divByGeneric
+ 
+divByGeneric :: (Integral a, MonadError (DivByError a) m) =&gt;
+                 a -&gt; [a] -&gt; m [a]
+divByGeneric _ [] = return []
+divByGeneric _ (0:_) = throwError DivBy0
+divByGeneric _ (10:_) = throwError (ForbiddenDenominator 10)
+divByGeneric _ (20:_) = throwError (ForbiddenDenominator 20)
+divByGeneric numerator (denom:xs) =
+    do next &lt;- divByGeneric numerator xs
+       return ((numerator `div` denom) : next)</pre><p id="x_hz">
+Aqui, precisamos ligar o <code class="literal">FlexibleContexts</code> extensão da linguagem, a fim de fornecer o tipo de assinatura para <code class="literal">divByGeneric</code>. A função <code class="literal">divBy</code> funciona exatamente como antes. Para <code class="literal">divByGeneric</code>, fazemos <code class="literal">divByError</code> um membro do <code class="literal">Error</code> de classe, definindo o que acontece quando alguém chama <code class="literal">fail</code> (o <code class="literal">strMsg</code> função). Também convertemos <code class="literal">Right</code> a return e <code class="literal">Left</code> a <code class="literal">throwError</code> permitir que o código seja genérico.
+        </p></div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="errors.exceptions">Exceções</h2></div></div></div><p id="x_U11">
+A manipulação de exceção é encontrada em muitas linguagens de programação, incluindo Haskell. Pode ser útil, porque, quando ocorre um problema, ela pode fornecer uma maneira fácil de manipulá-la, mesmo que tenha ocorrido várias camadas para baixo através de uma cadeia de chamadas de função. Com algumas exceções, não é necessário para verificar o valor de retorno de cada chamada de função para verificar se há erros, e tomar cuidado para produzir um valor de retorno que reflete o erro, como programadores C deve fazer. Em Haskell, graças a mônadas e aos tipos <code class="literal">Either</code> e <code class="literal">Maybe</code>, muitas vezes você pode atingir os mesmos efeitos em código puro, sem a necessidade usar tratamento de exceção.
+    </p><p id="x_V11">
+Alguns problemas -principalmente aqueles que envolvem I/ O –envolvem chamadas para trabalhar com exceções.Em Haskell, exceções podem ser lançadas a partir de qualquer local do programa. No entanto, devido à ordem de avaliação especificada, eles só podem ser capturados na mônada <span class="type">IO</span>.  A manipulação de exceção em Haskell não envolve sintaxe especial como faz em Python ou Java.Os mecanismos para capturar e manipular exceções são funções surpresas.
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="errors.exceptions.firststeps">Primeiros passos com exceções</h3></div></div></div><p id="x_W11">
+No módulo <code class="literal">Control.Exception</code>, várias funções e tipos relacionados com as exceções são definidas. Há uma <code class="literal">Exception</code> tipo definido lá, todas as exceções são do tipo <code class="literal">Exception</code>. Há também funções para captura e tratamento de exceções. Vamos começar por olhar para <code class="literal">try</code>, que tem tipo <code class="literal">IO a -> IO (Either Exception a)</code>. Isto envolve uma ação <span class="type">IO</span> com manipulação de exceção. Se uma exceção foi lançada, ele irá retornar um <code class="literal">Left</code> valor, como exceção, caso contrário, um <code class="literal">Right</code> de valor com o resultado original. Vamos tentar isso no <span class="command"><strong>ghci</strong></span>. Iremos acionar uma exceção não tratada:
+      </p><pre id="exc.ghci:try1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:m Control.Exception</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>let x = 5 `div` 0</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>let y = 5 `div` 1</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>print x</code></strong>
+*** Exception: divide by zero
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>print y</code></strong>
+5
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>try (print x)</code></strong>
+Left divide by zero
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>try (print y)</code></strong>
+5
+Right ()
+</pre><p id="x_X11">
+Observe que nenhuma exceção foi acionada pelo <code class="literal">let</code> declarações. Isso é de se esperar devido à avaliação preguiçosa, a divisão por zero não será tentado até que seja exigido pela tentativa de imprimir <code class="literal">x</code>. Além disso, observe que existem duas linhas de produção de <code class="literal">try (print y)</code>. A primeira linha foi produzida pela <code class="literal">print</code>, que exibiu os 5 dígitos no terminal. O segundo foi produzido por <span class="command"><strong>ghci</strong></span>, que está mostrando que <code class="literal">print y</code> retorna <code class="literal">()</code> e não lança uma exceção.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="errors.exceptions.lazy">Preguiça e Tratamento de Exceção</h3></div></div></div>
+      <p id="x_Y11">
+Agora que você sabe como <code class="literal">try</code> funciona, vamos tentar outra experiência. Digamos que queremos pegar o resultado do <code class="literal">try</code> para avaliação futura, para que possamos lidar com o resultado da divisão. Talvez faríamos assim:</p><pre id="exc.ghci:try2" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>result &lt;- try (return x)</code></strong>
+Right *** Exception: divide by zero
+</pre>
+<p id="x_Z11">
+O que aconteceu aqui? Vamos tentar remontá-lo juntos, e ilustrar com uma outra tentativa:
+      </p><pre id="exc.ghci:try3" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>let z = undefined</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>try (print z)</code></strong>
+Left Prelude.undefined
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>result &lt;- try (return z)</code></strong>
+Right *** Exception: Prelude.undefined
+</pre>
+      <p id="x_a11">Como antes, atribuindo <code class="code">undefined</code> a <code class="literal">z</code> não foi
+         um problema. A chave para este quebra-cabeça, é à divisão deste
+        quebra-cabeça, encontra-se com a avaliação preguiçosa. Especificamente, ele está com
+        <code class="literal">return</code>, que não força a avaliação do seu argumento;
+        só enrola-lo. Assim, o resultado de <code class="literal">try (return
+        undefined)</code> seria <code class="literal">Right
+        undefined</code>. Agora, o <span class="command"><strong>ghci</strong></span> exibi este resultado
+        no terminal. Ele vem pela impressão do
+       <code class="literal">"Right"</code>, mas você não pode imprimir
+        <code class="code">undefined</code> (ou o resultado da divisão por zero). Assim, quando você
+        ver a mensagem de exceção, que está vindo do <span class="command"><strong>ghci</strong></span>, não é o seu
+        programa.
+
+      </p><p id="x_b11">
+Este é um ponto chave. Vamos pensar sobre o porquê do nosso exemplo anterior trabalhou e este não. Anteriormente, nós tinhamos colocado <code class="literal">print x</code> dentro do <code class="literal">try</code>. Imprimir o valor de algo, é claro, necessita que ele seja avaliado, portanto a exceção foi detectada no lugar certo. Mas simplesmente usando <code class="literal">return</code> não força a avaliação. Para resolver este problema, o <code class="literal">Control.Exception</code> define a função do módulo <code class="function">evaluate</code>. Ele se comporta exatamente como o <code class="literal">return</code>, mas força o seu argumento a ser avaliado imediatamente. Vamos tentar:
+      </p><pre id="exc.ghci:try4" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>let z = undefined</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>result &lt;- try (evaluate z)</code></strong>
+Left Prelude.undefined
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>result &lt;- try (evaluate x)</code></strong>
+Left divide by zero
+</pre><p id="x_c11">
+Não é o que era esperado. Isso funcionou para ambos
+        <code class="code">undefined</code> e para o nosso exemplo de divisão por zero.
+      </p><div class="tip"><table border="0" summary="Tip"><tr>
+        <td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="imagens/tip.png"></td><th align="left">Dica</th></tr><tr><td align="left" valign="top"><p id="x_d11">
+Lembre-se: sempre que você está tentando pegar as exceções lançadas pelo codigo puro usando <code class="function">evaluate</code> ao invés de <code class="literal">return</code> dentro da sua função que pega a exceção.
+        </p></td></tr></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="errors.exceptions.handle">Usando handle</h3></div></div></div><p id="x_e11">Muitas vezes, você pode desejar executar uma ação se uma parte do código concluir sem uma exceção, e uma ação diferente da outra. Para situações
+como está, há uma função chamada handle. Está função tem o tipo <code class="literal">(Exception
+        -&gt; IO a) -&gt; IO a -&gt; IO a</code>.
+Ou seja, ele
+        tem dois parâmetros: o primeiro é uma função para chamar
+        caso exista uma exceção durante a execução do segundo.
+        Aqui está uma maneira que nós poderíamos usá-lo:
+      </p><pre id="exc.ghci:handle1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:m Control.Exception</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>let x = 5 `div` 0</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>let y = 5 `div` 1</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>handle (\_ -&gt; putStrLn "Error calculating result") (print x)</code></strong>
+Error calculating result
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>handle (\_ -&gt; putStrLn "Error calculating result") (print y)</code></strong>
+5
+</pre><p id="x_f11">
+Desta forma, podemos imprimir uma mensagem elegante se houver um erro nos cálculos. É mais elegante do que ter o um erro de programa com uma divisão por zero nulo, com certeza.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="errors.exceptions.selective">Manipulação de Exceções Seletiva</h3></div></div></div>
+      <p id="x_g11">
+        Um problema com o exemplo acima é que ele imprime
+        <code class="literal">"Erro ao calcular o resultado"</code> para <span class="emphasis"><em>qualquer</em></span> exceção. Pode ter havido uma exceção ou uma exceção de divisão por zero. Por exemplo, pode ter havido um erro exibido no terminal, ou alguma outra exceção que pode ter sido lançado pelo código puro.
+      </p><p id="x_h11">
+        Há uma função <code class="literal">handleJust</code> para essas situações. A função permite especificar um teste para ver se você está interessado em uma exceção dada. Vamas dar uma olhada: 
+      </p><pre id="hj1.hs:all" class="programlisting">-- file: ch19/hj1.hs
+import Control.Exception
+
+catchIt :: Exception -&gt; Maybe ()
+catchIt (ArithException DivideByZero) = Just ()
+catchIt _ = Nothing
+ 
+handler :: () -&gt; IO ()
+handler _ = putStrLn "Caught error: divide by zero"
+ 
+safePrint :: Integer -&gt; IO ()
+safePrint x = handleJust catchIt handler (print x)</pre><p id="x_i11">
+<code class="literal">catchIt</code> define uma função que decide se estamos ou não interessado em alguma exceção dada. Ele retorna <code class="literal">Just</code> em caso afirmativo, e <code class="literal">Nothing</code> caso contrário. Além disso, o valor atribuido para <code class="literal">Just</code> será passado para o nosso manipulador. Podemos usar agora o <code class="literal">safePrint</code> aprimorado:
+      </p><pre id="exc.ghci:handleJust1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:l hj1.hs</code></strong>
+[1 of 1] Compiling Main             ( hj1.hs, interpreted )
+Ok, modules loaded: Main.
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>let x = 5 `div` 0</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>let y = 5 `div` 1</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>safePrint x</code></strong>
+Caught error: divide by zero
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>safePrint y</code></strong>
+5
+</pre><p id="x_j11">
+O módulo <code class="literal">Control.Exception</code> também apresenta um número de funções podemos usar como parte de teste em <code class="literal">handleJust</code> para reduzir os tipos de exceção com as quais devemos nos preocupar. Por exemplo, há uma função <code class="literal">arithExceptions</code> do tipo <code class="literal">Exception -&gt; Maybe ArithException</code> que escolherá qualquer <code class="literal">ArithException</code>, mas ignora nenhum outro. Poderiamos usar da seguinte maneira:
+      </p><pre id="hj2.hs:all" class="programlisting">-- file: ch19/hj2.hs
+import Control.Exception
+ 
+handler :: ArithException -&gt; IO ()
+handler e = putStrLn $ "Caught arithmetic error: " ++ show e
+ 
+safePrint :: Integer -&gt; IO ()
+safePrint x = handleJust arithExceptions handler (print x)</pre><p id="x_k11">
+Deste modo, podemos pegar todos os tipos de <code class="literal">ArithException</code>, mas ainda deixar outras exceção passar, não modificada e capturada. Podemos vê-la funcionar dessa maneira:
+      </p><pre id="exc.ghci:handleJust2" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:l hj2.hs</code></strong>
+[1 of 1] Compiling Main             ( hj2.hs, interpreted )
+Ok, modules loaded: Main.
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>let x = 5 `div` 0</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>let y = 5 `div` 1</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>safePrint x</code></strong>
+Caught arithmetic error: divide by zero
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>safePrint y</code></strong>
+5
+</pre><p id="x_l11">
+De particular interesse, você pode observar o teste de <code class="literal">ioErrors</code>, que corresponde à grande classe de execeção I/O-related.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="errors.exceptions.io">Exceções I/O</h3></div></div></div>
+      <p id="x_m11">
+Talvez a maior fonte de exceção em qualquer programa é I/O. Todos os tipos de coisas podem dar errado quando tratando com o mundo exterior: os discos podem estar cheios, as redes podem cair, ou arquivos pode estar vazios quando você espera que eles tenham dados. Em Haskell, uma exceção I/O é como qualquer outra exceção no que pode ser representado pelo tipo de dados de exceção. Por outro lado, pode haver tantos tipos de exceção I/O, que um módulo especial <code class="literal">System.IO.Error</code> existe para lidar com eles.
+      </p>
+      <p id="x_n11">
+<code class="literal">System.IO.Error</code> define duas funções: <code class="literal">catch</code> e <code class="literal">try</code> que, como as suas contrapartes <code class="literal">Control.Exception</code>, estão sendo usados para lidar com exceções. Ao contrário das funções <code class="literal">Control.Exception</code>, contudo, estas funções pegam erros de I/O em armadilhas, e irão passar todas as outras exceções que não foram apanhadas. Em Haskell, erros de I/O têm o tipo <code class="literal">IOError</code>, que é definido como o mesmo <code class="literal">IOException</code>.</p>
+      <div class="warning"><table border="0" summary="Warning: Be careful which names you use"><tr>
+        <td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="imagens/warning.png"></td><th align="left">Tenha cuidado para os nomes que você usa</th></tr><tr><td align="left" valign="top"><p id="x_o11">
+Porque tanto o <code class="literal">System.IO.Error</code> e o <code class="literal">Control.Exception</code> definiem as funções com o mesmo nome, se importar ambos em seu programa, você receberá uma mensagem de erro sobre uma referência ambígua para uma função. Você pode importar um ou outro módulo<code> reservado</code>, ou esconder os símbolos de um módulo no outro.</p>
+<p id="x_D31">
+Note que o <code class="literal">Prelude</code> exporta o <code class="literal">System.IO.Error</code> na versão do <code class="literal">cath</code>, e não na versão fornecida pelo <code class="literal">Control.Exception</code>. Lembrando que o primeiro só pode pegar erros de I/O, enquanto o último pode capturar todas as exceções. Em outras palavras, o <code class="literal">catch</code> no <code class="literal">Control.Exception</code> é quase sempre o que você vai querer, mas <span class="emphasis"><em>não</em></span> é o que você vai ficar por padrão.
+        </p></td></tr></table></div><p id="x_p11">
+Vamos dar uma olhada em uma abordagem de exceções utilizando o sistema de I/O para o nosso benefício. Volte na seção chamada "Trabalhando com arquivos de Manipulação", onde foi apresentado um programa que utilizou um estilo imperativo para ler linhas por linha e um arquivo. Embora posteriormente demonstrou mais compacto, "Haskelly" maneiras de resolver esse problema, vamos rever esse exemplo aqui. Na função <code class="literal">mainLoop</code>, tivemos que testar explicitamente se estamos no final do arquivo de entrada antes de cada tentativa de ler uma linha a partir dele. Ao em vez disso, podemos verificar se a tentativa de ler uma linha que resultou em um erro de EOF, assim:
+      </p><pre id="toupper-impch20.hs:all" class="programlisting">-- file: ch19/toupper-impch20.hs
+import System.IO
+import System.IO.Error
+import Data.Char(toUpper)
+ 
+main :: IO ()
+main = do 
+       inh &lt;- openFile "input.txt" ReadMode
+       outh &lt;- openFile "output.txt" WriteMode
+       mainloop inh outh
+       hClose inh
+       hClose outh
+ 
+mainloop :: Handle -&gt; Handle -&gt; IO ()
+mainloop inh outh = 
+    do input &lt;- try (hGetLine inh)
+       case input of
+         Left e -&gt; 
+             if isEOFError e
+                then return ()
+                else ioError e
+         Right inpStr -&gt;
+             do hPutStrLn outh (map toUpper inpStr)
+                mainloop inh outh</pre>
+      <p id="x_q11">
+Aqui, nós usamos o <code class="literal">System.IO.Error</code> na versão <code class="literal">try</code> para verificar se <code class="literal">hGetLine</code> colocou um <code class="literal">IOError</code>. Se assim fosse, nós usariamos <code class="literal">isEOFError</code> (definido no <code class="literal">System.IO.Error</code>) para ver se a exceção acionada indica que chegamos ao final do arquivo. Se feito, saímos do loop. Se a exceção for outra coisa, nós chamamos <code class="literal">IOError</code> para re-colocá-lo.
+</p><p id="x_r11">
+Há muitos testes e maneiras de extrair informações de <code class="literal">IOError</code> definido no <code class="literal">System.IO.Error</code>. Nós recomendamos que você consulte a página na referência da biblioteca quando você precisar saber sobre elas.      
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="errors.exceptions.raising">Lançamento de Exceções</h3></div></div></div><p id="x_s11">
+Até agora, nós falamos em detalhes sobre o tratamento de exceção. Há um outro pedaço do quebra-cabeça: Lançamento de Exceções <sup>[<a name="id662948" href="#ftn.id662948" class="footnote">41</a>]</sup>. Nos exemplos vitos até agora neste capítulo, o sistema Haskell coloca execções para você. No entanto, é possível colocar qualquer exceção. Nós vamos mostrar como.
+      </p><p id="x_t11">
+Você perceberá que a maioria dessas funções são apresentadas para retornar um valor de um tipo <code class="literal">a</code> ou <code class="literal">IO a</code>. Isto significa que a função pode aparecer para retornar um valor de qualquer tipo. Na verdade, por causa dessas funções acionar exceções, nunca "retorna" nada no sentido normal. Estes valores de retorno que você usa essas funções em vários contextos em que vários tipos diferentes são esperados.
+      </p><p id="x_u11">
+Vamos começar nossa turnê de formas à colocar exceções com as funções <code class="literal">Control.Exception</code>. A função mais genérica é <code class="literal">throw</code>, o tipo <code class="literal">Exception -&gt; a</code>. Esta função pode lançar qualquer <code class="literal">Exception</code>, e pode fazê-lo em um contexto puro. Existe uma função <code class="literal">throwIO</code> junto com o tipo de <code class="literal">Exception -&gt; IO</code> que gera uma exceção na mônada <code class="literal">IO</code>. Ambas as funções exigem uma <code class="literal">Exception</code> para coloca-lá. Você pode criar uma <code class="literal">Exception</code> na mão, ou reutilizar uma <code class="literal">Exception</code> que já foi criada anteriormente.
+      </p><p id="x_v11">
+Há também uma função <code class="literal">IOError</code>, que é definida de forma idêntica em ambos os <code class="literal">Control.Exception</code> e <code class="literal">System.IO.Error</code> com o tipo <code class="literal">IOError -> IO a</code>. Isto é, usado quando você deseja gerar uma exceção I/O-related arbitrário.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="errors.exceptions.dynamic">Exceções Dinâmicas</h3></div></div></div>
+      <p id="x_z11">
+Aqui iremos fazer o uso de dois módulos pouco utilizado em Haskell: <code class="literal">Data.Dynamic</code> e <code class="literal">Data.Typeable</code>. Não vamos entrar em um grande nível de detalhes sobre os módulos aqui, mas vamos mostrar as ferramentas necessárias para elaborar e usar seu próprio tipo de exceção dinâmica.
+      </p>
+      <p id="x_A21">
+No capítulo 21, Usando Banco de Dados, você vai ver que a biblioteca HDBC utiliza exceções dinâmicas para indicar erros de SQL atrás das aplicações. Os erros de bancos de dados muitas vezes têm três componentes: um inteiro que representa um código incorreto, um estado, e uma mensagem incorreta. Vamos implementar a nossa própria  HDBC <code class="literal">SQLError</code> aqui neste capítulo. Vamos começar com a estrutura de dados que representa o  próprio erro:
+      </p><pre id="dynexc.hs:sqlerror" class="programlisting">-- file: ch19/dynexc.hs
+{-# LANGUAGE DeriveDataTypeable #-}
+ 
+import Data.Dynamic
+import Control.Exception
+ 
+data SqlError = SqlError {seState :: String,
+                          seNativeError :: Int,
+                          seErrorMsg :: String}
+                deriving (Eq, Show, Read, Typeable)</pre><p id="x_B21">
+
+Por derivação do <span class="type">Typeable</span> typeclass, fizemos este tipo de programação disponíveis para tipagem dinâmica. Para que o <span class="application">GHC</span> possa gerar automaticamente uma instância <span class="type">Tyeable</span>, que tivemos que habilitar a extensão da linguagem <code class="code">DeriveDataTypeable</code> <sup>[<a name="id663179" href="#ftn.id663179" class="footnote">42</a>]</sup>.</p>
+        <p id="x_C21">
+Agora, vamos definir um <code class="literal">catchSql</code> e um <code class="literal">handleSql</code> que pode ser usado para capturar uma exceção que é um <code class="literal">SQLError</code>. Note que o proveito regular <code class="literal">catch</code> e <code class="literal">handle</code> trata funções que não podem pegar o nosso <code class="literal">SQLError</code>, porque não é um tipo de <code class="literal">Exception</code>.
+      </p><pre id="dynexc.hs:catch" class="programlisting">-- file: ch19/dynexc.hs
+{- | Execute a ação de IO dada.
+
+Se ele levantar um 'SqlError', então execute o
+manipulador fornecido e retorne o seu valor de regresso.
+De outra maneira, prosseguir como normal -}
+
+catchSql :: IO a -&gt; (SqlError -&gt; IO a) -&gt; IO a
+catchSql = catchDyn
+ 
+{- | Com 'catchSql', com a ordem de argumentos invertido -}
+handleSql :: (SqlError -&gt; IO a) -&gt; IO a -&gt; IO a
+handleSql = flip catchSql</pre><p id="x_D21">
+Essas funções simples invólucro finos em volta do <code class="literal">catchDyn</code>, que tem o tipo <code class="literal">Typeable exception =&gt; IO a -> (exception -&gt; IO a) -&gt; IO a</code>. Aqui simplesmente restringimos o tipo de disto para que ele pegue apenas exceções SQL.
+      </p>
+<p id="x_E21">
+Normalmente, quando uma exceção é lançada, mas ela não pega em qualquer lugar, o programa irá travar e irá exibir a exceção ao erro padrão. Com uma exceção dinâmica, no entanto, o sistema não sabe como mostrar isso, portanto você vai ver apenas uma mensagem “exceção desconhecida inútil". Podemos fornecer um utilidade para que os programadores de aplicados possam  simplesmente dizer <code class="literal">main = handleSqlError $ = do ...</code>, e ter certeza de que qualquer exceção lançada (naquele fio) seja exibida. Veja como escrever o <code class="literal">handleSqlError</code>:
+      </p><pre id="dynexc.hs:handleSqlError" class="programlisting">-- file: ch19/dynexc.hs
+{- | Os proveitos 'SqlError, e reerguer como os erros de IO com falha.
+Útil se você não gosta de pegar erros SQL, mas quer ver uma mensagem
+incorreta acontecendo. Muitas vezes usaria isto em alto nível
+em volta de chamadas de SQL. -}
+
+handleSqlError :: IO a -&gt; IO a
+handleSqlError action =
+    catchSql action handler
+    where handler e = fail ("SQL error: " ++ show e)</pre><p id="x_F21">
+Finalmente, vamos dar um exemplo de como colocar um <code class="literal">SQLError</code> como uma exceção. Aqui está uma função que fará exatamente isso:
+      </p><pre id="dynexc.hs:throwSql" class="programlisting">-- file: ch19/dynexc.hs
+throwSqlError :: String -&gt; Int -&gt; String -&gt; a
+throwSqlError state nativeerror errormsg =
+    throwDyn (SqlError state nativeerror errormsg)
+ 
+throwSqlErrorIO :: String -&gt; Int -&gt; String -&gt; IO a
+throwSqlErrorIO state nativeerror errormsg =
+    evaluate (throwSqlError state nativeerror errormsg)</pre><div class="tip"><table border="0" summary="Tip"><tr>
+      <td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="imagens/tip.png"></td><th align="left">Dica</th></tr><tr><td align="left" valign="top"><p id="x_cJ1">Como um lembrete, <code class="literal">evaluate</code> é como <code class="literal">return</code> mas as forças de  valiação do seu argumento.
+      </p></td></tr></table></div>
+    <p id="x_G21">
+Isso conclui o nosso suporte de exceção dinâmica. Apresentamos uma porção de códigos, e você pode não ter utilizados, mas nós queriamos dar-lhe um exemplo da própria exceção dinâmica e as utilidades que muitas vezes está embutido nela. De fato, os exemplos refletem quase exatamento o que está presente na biblioteca HDBC. Vamos ver um pouco isso no <span class="command"><strong>ghci</strong></span>:
+      </p><pre id="dynexc.ghci:e1" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:l dynexc.hs</code></strong>
+[1 of 1] Compiling Main             ( dynexc.hs, interpreted )
+Ok, modules loaded: Main.
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>throwSqlErrorIO "state" 5 "error message"</code></strong>
+*** Exception: (unknown)
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>handleSqlError $ throwSqlErrorIO "state" 5 "error message"</code></strong>
+*** Exception: user error (SQL error: SqlError {seState = "state", seNativeError = 5, seErrorMsg = "error message"})
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>handleSqlError $ fail "other error"</code></strong>
+*** Exception: user error (other error)
+</pre>
+      <p id="x_H21">
+A partir daí, você pode ver que <span class="command"><strong>ghci</strong></span> não sabe como exibir um erro de SQL por si só. No entanto, você também pode ver que  nossa função <code class="literal">handleSqlError</code> ajudou com isso, mas também passou por outros erros não modificados. Vamos finalmente experimentar um manipulador personalizado:
+      </p><pre id="dynexc.ghci:e2" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>handleSql (fail . seErrorMsg) (throwSqlErrorIO "state" 5 "my error")</code></strong>
+*** Exception: user error (my error)
+</pre><p id="x_I21">
+Aqui, nós definimos um manipulador de erro personalizado com  uma nova restrição, que consiste na mensagem no campo <code class="literal">seErrorMsg</code> do <code class="literal">SQLError</code>. Percebemos que ela funcionou como o previsto.
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="errors.exercises">Exercícios</h2></div></div></div><div class="orderedlist"><ol type="1"><li>
+Leve o <code class="literal">Either</code> por exemplo e faça o trabalho de preguiça no estilo do <code class="literal">Maybe</code>.
+        </li></ol></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="id663540">Manutenção de erros em mônadas</h2></div></div></div>
+<p id="x_E31">Porque temos de capturar exceções na mônada <span class="type">IO</span>, se tentar usá-los dentro de uma mônada, ou em uma pilha de transformadores mônada, sairemos para fora  da <span class="type">IO</span> da mônada. Isso quase nunca é o que nós realmente queremos.
+</p><p id="x_F31">
+Nós definimos um transformador <span class="type">MaybeT</span> na seção chamada "Entendendo transformadores mônada através de sua contrução", mas é mais útil como um auxílio para a compreensão do que uma ferramenta de programação. Felizmente, um dedicado e muito mais útil do transformador-mônada já existe: <span class="type">ErrorT</span>, que é definido no módulo <code class="code">Control.Monad.Error</code>.
+<p id="x_G31">O transformador <span class="type">ErrorT</span> nos permite adicionar restrições a uma mônada, mas ele usa um mecanismo especial, separado no módulo <code class="code">Control.Exception</code>. Isso nos da algumas idéias interessantes.</p>
+<div class="itemizedlist"><ul type="disc"><li><p id="x_dJ1">Se continuarmos com as interfaces <span class="type">ErrorT</span>, podemos tanto rodar quanto capturar restrições dentro desta mônada.</p>
+</li><li><p id="x_H31">Seguindo o padrão de nomeação de outros transformadores mônada, a função de execução é chamado <code class="function">runErrorT</code>. Uma restrição não capturada <span class="type">ErrorT</span> vai parar de propagação quando atingir <code class="function">runErrorT</code>. Nós não vamos vamos sair em relação a <span class="type">IO</span> da mônada.</p></li>
+<li><p id="x_I31">Nós controlaremos os tipos de restrições que tivermos.</p></li></ul></div>
+<div class="note"><table border="0" summary="Note: Do not confuse ErrorT with regular exceptions"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="imagens/note.png"></td><th align="left">Não confunda ErrorT com restrições regulares</th></tr><tr><td align="left" valign="top"><p id="x_eJ1">Se formos usar a função <code class="function">throw</code> da <code class="code">Control.Exception</code> encontrada dentro da <span class="type">ErrorT</code> (<code class="function">error</code> ou <code class="code">undefined</code>), que ainda será devolvido até a <span class="type">IO</span> da mônada.
+</p></td></tr></table></div>
+<p id="x_J31">Tal como acontece com outras mônadas <code class="code">mtl</code>, a interface que fornece <span class="type">ErrorT</span> é definido por um typeclass.</p><pre id="MonadError.hs:MonadError" class="programlisting">-- file: ch19/MonadError.hs
+class (Monad m) =&gt; MonadError e m | m -&gt; e where
+    throwError :: e             -- error to throw
+               -&gt; m a
+ 
+    catchError :: m a           -- action to execute
+               -&gt; (e -&gt; m a)    -- error handler
+               -&gt; m a</pre>
+
+<p id="x_K31">A variável tipo <code class="varname">e</code> representa o tipo de erro que pretendemos utilizar. Independente do nosso tipo de erro, devemos instanciá-lo da typeclass <span class="type">Error</span>.</p><pre id="MonadError.hs:Error" class="programlisting">-- file: ch19/MonadError.hs
+class Error a where
+    -- create an exception with no message
+    noMsg  :: a
+ 
+    -- create an exception with a message
+    strMsg :: String -&gt; a</pre><p id="x_L31">A função <code class="function">strMsg</code> é usada pela aplicação <span class="type">ErrorT</span> de <code class="function">fail</code>. Ela lança <code class="function">strMsg</code> como uma exceção, passando o argumento de seqüência que recebeu. Quanto à <code class="function">noMsg</code>, ela é usada para fornecer uma implementação  mzero  para o typeclass <span class="type">MonadPlus</span>.
+</p>
+<p id="x_M31">Para apoiar as funções <code class="function">strMsg</code> e <code class="function">noMsg</code>, o nosso tipo <span class="type">parseError</span> terá um construtor <code class="code">Chatty</code>. Este será usado como o construtor se, por exemplo, alguma chamada <code class="function">fail</code> em nossa mônada.
+</p>
+<p id="x_N31">Uma ultima parte na qual temos que saber é o tipo da função de execução <span class="type">runErrorT</span>.</p>
+<pre id="parseInt.ghci:runErrorT" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:t runErrorT</code></strong>
+runErrorT :: ErrorT e m a -&gt; m (Either e a)
+</pre><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="id663875">Um pequeno quadro de análise</h3></div></div></div><p id="x_O31">Para ilustrar o uso de <span class="type">ErrorT</span>, vamos desenvolver o esqueleto de uma biblioteca de análise semelhante ao Parsec.
+</p><pre id="ParseInt.hs:ParseError" class="programlisting">-- file: ch19/ParseInt.hs
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+ 
+import Control.Monad.Error
+import Control.Monad.State
+import qualified Data.ByteString.Char8 as B
+ 
+data ParseError = NumericOverflow
+                | EndOfInput
+                | Chatty String
+                  deriving (Eq, Ord, Show)
+ 
+instance Error ParseError where
+    noMsg  = Chatty "oh noes!"
+    strMsg = Chatty</pre><p id="x_P31">Para o estado do nosso analisador gramatical, criaremos uma pilha de transformador de mônada muito pequena. Uma mônada <span class="type">estatal</span> realiza em todo o <span class="type">ByteString</span> a analise, e empilha no topo <span class="type">ErrorT</span> para fornecer tratamento de erros.</p>
+<pre id="ParseInt.hs:Parser" class="programlisting">-- file: ch19/ParseInt.hs
+newtype Parser a = P {
+      runP :: ErrorT ParseError (State B.ByteString) a
+    } deriving (Monad, MonadError ParseError)</pre><p id="x_Q31">Como de costume, nós envolvemos a nossa mônada pilha em um <code class="code">Newtype</code>. Isto não nos custa nada na realização, mas acrescenta a segurança do tipo. Evitamos deliberadamente conseguir um exemplo de <span class="type">MonadState B.ByteString</span>. Isto significa que os usuários da mônada <span class="type">Parser</span> não serão capaz de utilizar, <code class="function">get</code> ou <code class="function">put</code> para consulta ou modificar o estado do analisador gramatical. Por conseguinte, forçamo-nos a fazer um levantamento manual para alcançar a mônada estatal na nossa pilha. Isto é, contudo, muito fácil fazer.</p><pre id="ParseInt.hs:liftP" class="programlisting">-- file: ch19/ParseInt.hs
+liftP :: State B.ByteString a -&gt; Parser a
+liftP m = P (lift m)
+ 
+satisfy :: (Char -&gt; Bool) -&gt; Parser Char
+satisfy p = do
+  s &lt;- liftP get
+  case B.uncons s of
+    Nothing         -&gt; throwError EndOfInput
+    Just (c, s')
+        | p c       -&gt; liftP (put s') &gt;&gt; return c
+        | otherwise -&gt; throwError (Chatty "satisfy failed")</pre><p id="x_R31">A função <code class="function">catchError</code> é útil para tarefas além da simples manipulação de erro. Por exemplo, podemos facilmente “modificar” uma restrição, convertendo-a em uma forma mais amigável e simples.</p><pre id="ParseInt.hs:optional" class="programlisting">-- file: ch19/ParseInt.hs
+optional :: Parser a -&gt; Parser (Maybe a)
+optional p = (Just `liftM` p) `catchError` \_ -&gt; return Nothing</pre><p id="x_S31">A nossa função de execução simplesmente “esconde” em conjunto várias camadas, e reajusta o resultado em uma forma mais organizada.</p><pre id="ParseInt.hs:runParser" class="programlisting">-- file: ch19/ParseInt.hs
+runParser :: Parser a -&gt; B.ByteString
+          -&gt; Either ParseError (a, B.ByteString)
+runParser p bs = case runState (runErrorT (runP p)) bs of
+                   (Left err, _) -&gt; Left err
+                   (Right r, bs) -&gt; Right (r, bs)</pre><p id="x_T31">Se carregarmos isso em <span class="command"><strong>ghci</strong></span>, podemos ver seus passos.</p><pre id="parseInt.ghci:test" class="screen"><code class="prompt">ghci&gt; </code><strong class="userinput"><code>:m +Data.Char</code></strong>
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>let p = satisfy isDigit</code></strong>
+Loading package array-0.1.0.0 ... linking ... done.
+Loading package bytestring-0.9.0.1 ... linking ... done.
+Loading package mtl-1.1.0.0 ... linking ... done.
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>runParser p (B.pack "x")</code></strong>
+Left (Chatty "satisfy failed")
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>runParser p (B.pack "9abc")</code></strong>
+Right ('9',"abc")
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>runParser (optional p) (B.pack "x")</code></strong>
+Right (Nothing,"x")
+<code class="prompt">ghci&gt; </code><strong class="userinput"><code>runParser (optional p) (B.pack "9a")</code></strong>
+Right (Just '9',"a")
+</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title" id="id664122">Exercícios</h3></div></div></div><div class="qandaset"><table border="0" summary="Q and A Set"><col align="left" width="1%"><tbody><tr class="question"><td align="left" valign="top"><p><b>1.</b></p></td><td align="left" valign="top"><p id="x_U31">Escreva <code class="function">many</code> Parses, com o tipo <span class="type">Parser a -&gt; Parser [a]</span>. Deve aplicar-se um analisador até falhar.
+</p></td></tr><tr class="question"><td align="left" valign="top"><p><b>2.</b></p></td><td align="left" valign="top"><p id="x_V31">Use <code class="function">many</code> Parses para escrever um <code class="function">int</code> Parses, com o tipo <span class="type">Parses Int</span>.Tanto pode aceitar números negativos quanto positivos.</p></td></tr><tr class="question"><td align="left" valign="top"><p><b>3.</b></p></td><td align="left" valign="top"><p id="x_W31">Modifique seu <code class="function">int</code> parser para lançar uma exceção <code class="code">NumericOverflow</code>, veja se ele descobrirá um excesso numérico na analise. 
+</p></td></tr></tbody></table></div></div></div><div class="footnotes"><br><hr width="100" align="left"><div class="footnote"></div></div></div><div class="rwhfooter"><p>Traduzido por André, Mikaele, Rosiane e Tiago</p></div>
+
+</body></html>
