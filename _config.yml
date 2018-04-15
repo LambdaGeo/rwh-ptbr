@@ -23,6 +23,9 @@ plugins:             [jekyll-paginate, jekyll-sitemap, jekyll-feed, jekyll-seo-t
 title:		           'Real World Haskell (PTBR)'
 description:	       'Uma tradução não oficial'
 author:              'Sérgio Souza Costa'
+baseurl: "/rwh-ptbr" # the subpath of your site, e.g. /blog
+url: "https://profsergiocosta.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+
 
 # RSS 2.0 can be used instead of Atom by uncommenting following two lines
 #feed:
