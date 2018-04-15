@@ -1,0 +1,1011 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Why functional programming? Why Haskell?</title>
+  
+
+
+  <link rel="stylesheet" href="support/styles.css" type="text/css">
+
+  <meta name="generator" content="DocBook XSL Stylesheets V1.73.2">
+
+  <link rel="start" href="index.html" title="Real World Haskell">
+
+  <link rel="up" href="index.html" title="Real World Haskell">
+
+  <link rel="prev" href="index.html" title="Real World Haskell">
+
+  <link rel="next" href="getting-started.html" title="Chapter 1. Getting Started">
+
+  <link rel="alternate" type="application/atom+xml" title="Comments" href="/feeds/comments/">
+
+  <link rel="shortcut icon" type="image/png" href="/support/figs/favicon.png"></head><body>
+<br>
+
+<script type="text/javascript" src="/support/jquery-min.js"></script>
+<script type="text/javascript" src="/support/form.js"></script>
+<script type="text/javascript" src="/support/hsbook.js"></script>
+<div class="navheader">
+<h2 class="booktitle"><a href="/">Real World Haskell</a><span class="authors">by Bryan O'Sullivan, Don Stewart, and John Goerzen</span></h2>
+</div>
+
+<div class="navheader">
+<table summary="Navigation header" width="100%">
+<tbody>
+    <tr>
+      <th colspan="3">
+      <p align="center">Por que programação funcional? Por que Haskell?</p>
+      <br>
+</th>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p align="left"><a href="index.html">Anterior</a>&nbsp;</p>
+      </td>
+      <th width="60%">
+      <p align="center">&nbsp;</p>
+      <br>
+</th>
+      <td width="20%">
+      <p align="right">&nbsp;<a href="getting-started.html">Próximo</a></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div id="whyfp" dir="ltr" style="background: rgb(255, 255, 255) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+<h2>Por que programação funcional? Por que Haskell?</h2>
+<p><b>Índice analítico</b></p>
+<p>Load all comments (<b>slow</b>)</p>
+<dl>
+  <dt><a href="#id528893">Temos um acordo para você!</a></dt>
+  <dl>
+    <dt> <a href="#id528233">Novidade</a> </dt>
+    <dt> <a href="#id563635">Poder</a></dt>
+    <dt> <a href="#id529125">Prazer</a></dt>
+  </dl>
+  <dt> <a href="#id529185">O que esperar deste livro</a></dt>
+  <dl>
+    <dt> <a href="#id528412">Um pouco sobre você</a></dt>
+  </dl>
+  <dt> <a href="#id528460">O que esperar de Haskell</a></dt>
+  <dl>
+    <dt> <a href="#id528487">Comparado com as linguagens estáticas
+tradicionais</a> </dt>
+    <dt> <a href="#id572991">Comparado com as linguagens dinâmicas
+modernas</a> </dt>
+    <dt> <a href="#id573062">Haskell na indústria e de código aberto</a>
+    </dt>
+    <dt> <a href="#id573188">Compilação, depuração e análise de
+desempenho</a> </dt>
+    <dt> <a href="#id573275">Bibliotecas bundled e a terceira parte</a></dt>
+  </dl>
+  <dt> <a href="#id573401">Um breve resumo de sua história Haskell</a></dt>
+  <dl>
+    <dt> <a href="#id573413">Pré-História</a> </dt>
+    <dt> <a href="#id573451">História moderna</a> </dt>
+    <dt> <a href="#id573493">A era moderna</a></dt>
+  </dl>
+  <dt> <a href="#whyfp.resources">Recursos úteis</a></dt>
+  <dl>
+    <dt> <a href="#whyfp.resources.reference">Material de referência</a>
+    </dt>
+    <dt> <a href="#whyfp.resources.apps">Aplicativos e bibliotecas</a>
+    </dt>
+    <dt> <a href="#whyfp.resources.community">A comunidade Haskell</a></dt>
+  </dl>
+  <dt> <a href="#id573806">Agradecimentos</a></dt>
+  <dl>
+    <dt> <a href="#id573825">Bryan</a> </dt>
+    <dt> <a href="#id573859">John</a> </dt>
+    <dt> <a href="#id573887">Don</a> </dt>
+    <dt style="margin-bottom: 0.5cm;"> <a href="#id573920">Obrigado
+aos nossos comentadores</a></dt>
+  </dl>
+</dl>
+<h2> <a name="id528893"></a>Temos um acordo para você! </h2>
+<p><a name="x_Jx"></a><a name="comments_x_Jx"></a><a name="toggle_x_Jx"></a>
+Haskell é uma linguagem com muitos recursos, e seu aprendizado é uma
+experiência extremamente gratificante. Vamos nos concentrar em três
+elementos: A primeira é a <em>novidade</em>: nós convidamos você a
+pensar sobre a programação de uma perspectiva diferente e valiosa. O
+segundo é o <em>poder</em>: nós vamos mostrar-lhe como criar um
+software que é curto, rápido e seguro. Por fim, oferecemos-lhe um muita <em>diversão</em>: o prazer de aplicação de soluções de programação
+elegantes para resolver problemas reais. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Jx")'>25 comments</a></p>
+<h3 align="left">A Novidade</h3>
+<p><a name="x_Kx"></a><a name="comments_x_Kx"></a><a name="toggle_x_Kx"></a>
+Haskell é provavelmente muito diferente de qualquer linguagem que você
+já usou antes. Programação funcional nos oferece uma maneira diferente
+de pensar profundamente sobre softwares. 
+
+<a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Kx")'>16 comments</a></p>
+<p><a name="x_Lx"></a><a name="comments_x_Lx"></a><a name="toggle_x_Lx"></a>
+Em Haskell, nós deixamos de enfatizar códigos que modifica dados. Em
+vez disso, vamos nos concentrar nas funções que têm valores imutáveis
+como entrada e produzem novos valores como saída. Dadas as mesmas
+entradas, estas funções sempre retornam os mesmos resultados. Essa é
+uma idéia central por trás da programação funcional. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Lx")'>11 comments</a></p>
+<p><a name="x_Mx"></a><a name="comments_x_Mx"></a><a name="toggle_x_Mx"></a>
+Junto com a não modificação de dados, nossas funções Haskell
+normalmente, não “dialoga” com o mundo externo, chamamos-as de funções <em>puras</em>.
+Nós fazemos uma distinção forte entre o código puro e as partes dos
+nossos programas que lêem ou escrevem arquivos, comunicam-se por meio
+de conexões de rede, ou fazem mover os braços de um robô. Isso torna
+mais fácil organizar, estudar e testar os nossos programas. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Mx")'>13 comments</a></p>
+<p><a name="x_Nx"></a><a name="comments_x_Nx"></a><a name="toggle_x_Nx"></a>
+Abandonamos algumas idéias que podem parecer fundamentais, tais como
+ter um <code>for</code> loop incorporadas a linguagem. Temos outras
+formas mais flexíveis de executar tarefas repetitivas. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Nx")'>7 comments</a></p>
+<p><a name="x_Ox"></a><a name="comments_x_Ox"></a><a name="toggle_x_Ox"></a>
+Mesmo a maneira pela qual avaliamos as expressões é diferente em
+Haskell. Nós adiamos todos os cálculos até que seu resultado seja
+realmente necessário: Haskell é uma linguagem que tem avalição <em>preguiçosa</em>.
+Esse recurso não é apenas um modo de adiar a avaliação: ela afeta
+profundamente a forma como escrevemos os programas. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Ox")'>11 comments</a></p>
+<h3>Poder</h3>
+<p><a name="x_Px"></a><a name="comments_x_Px"></a><a name="toggle_x_Px"></a>
+Ao longo deste livro, vamos mostrar a vocês que as alternativas do
+Haskell para os recursos de linguagens tradicionais são poderosas,
+flexíveis, e levam a códigos mais confiáveis.&nbsp; <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Px")'>10 comments</a></p>
+<p><a name="x_Rx"></a><a name="comments_x_Rx"></a><a name="toggle_x_Rx"></a>
+Como o código puro não pode ter relações com o mundo exterior, e os
+dados
+que ele trabalha nunca são modificados, é muito raro você ter o tipo de
+surpresa desagradável onde uma parte de um código invisível corrompe os
+dados utilizados por outro. Qualquer contexto, usamos uma função pura,
+ele irá se comportar de forma consistente. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Rx")'>5 comments</a></p>
+<p><a name="x_Sx"></a><a name="comments_x_Sx"></a><a name="toggle_x_Sx"></a>
+Código puro é mais fácil de testar que o código que lida com o mundo
+exterior. Quando uma função só responde a suas entradas visíveis,
+podemos afirmar com facilidade as propriedades do seu comportamento que
+deve ser sempre verdadeiro. Podemos testar automaticamente se essas
+propriedades se mantem dado um conjunto enorme de entradas aleatórias,
+e quando passar em nossos testes, podemos seguir em frente acoplando
+essa função ao sistema como todo. Temos ainda a utilização de técnicas
+tradicionais para testar o código que deve interagir com arquivos,
+redes, hardware ou exóticos. Desde há muito menos deste código impura
+do que se poderia encontrar em uma linguagem tradicional, nós temos
+muito mais segurança que o nosso software é consistente. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Sx")'>6 comments</a></p>
+<p><a name="comments_x_Tx"></a><a name="toggle_x_Tx"></a>
+Avaliação
+preguiçosa tem alguns efeitos assustadores. Vamos dizer que queremos
+encontrar as <em>k</em> menores elementos em uma lista não
+ordenada. Em uma linguagem tradicional, a abordagem óbvia seria a de
+ordenar a lista em primeiro lugar e tirar os <em>k</em>&nbsp; elementos , mas
+isso é caro. Para maior eficiência, teríamos, ao invés disso escrever uma função especial que encontra esses valores em uma
+única passagem, e para isso teria que realizar algumas complexas alterações. Em Haskell, a abordagem sort-then-take
+realmente funciona bem: a avaliação preguiçosa garante que a lista só
+será classificada o suficiente para encontrar os <em>k</em> elementos
+mínimos. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Tx")'>26 comments</a></p>
+<p><a name="x_Ux"></a><a name="comments_x_Ux"></a><a name="toggle_x_Ux"></a>
+Melhor ainda, o nosso código Haskell, que opera de forma tão eficiente
+é minúsculo e usa funções da biblioteca padrão. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Ux")'>2 comments</a></p>
+<pre class="programlisting"><a name="KMinima.hs:minima"></a><a name="KMinima.hs:minima1"></a>-- arquivo: ch00/<font color="#000000"><font face="monospace"><font size="4"><span style="font-style: normal;"><span style="font-weight: normal;">KMinima</span></span></font></font></font>.hs<br>-- Linhas começando com "--" são comentários.<br><br>ninimos k xs = take k (sort xs)</pre>
+<p> <a name="comments_KMinima.hs:minima"></a><a name="toggle_KMinima.hs:minima"></a> <a href="comments:%20show%20/%20hide" onclick='return loadComments("KMinima.hs:minima")'>16 comments</a></p>
+<p><a name="x_Vx"></a><a name="comments_x_Vx"></a><a name="toggle_x_Vx"></a>
+Pode demorar um pouco para desenvolver uma percepção intuitiva para
+quando a avaliação preguiçosa é importante, mas quando nós
+exploramos-na, o código resultante é limpo, pequeno e eficiente. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Vx")'>3 comments</a></p>
+<p><a name="x_Wx"></a><a name="comments_x_Wx"></a><a name="toggle_x_Wx"></a>
+Como mostra o exemplo acima, um aspecto importante do poder Haskell
+reside na compactação do código que escrevemos. Comparado a trabalhar
+em linguagens populares tradicionais, quando se desenvolver em Haskell,
+muitas vezes, escrevemos muito menos código, em menos tempo, e
+substancialmente com menos erros. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Wx")'>11 comments</a></p>
+<h3>Prazerosa</h3>
+<p><a name="x_Xx"></a><a name="comments_x_Xx"></a><a name="toggle_x_Xx"></a>
+Acreditamos que é fácil aprender o básico de programação Haskell, e que
+você será capaz de escrever com êxito pequenos programas em questão de
+horas ou dias. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Xx")'>6 comments</a></p>
+<p><a name="x_Yx"></a><a name="comments_x_Yx"></a><a name="toggle_x_Yx"></a>
+Como a programação effetiva em Haskell é muito diferente de outras
+linguagens, você deve esperar que dominar tanto a linguagem quanto as
+técnicas de programação funcional exigirá muita dedicação e prática. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Yx")'>4 comments</a></p>
+<p><a name="x_Zx"></a><a name="comments_x_Zx"></a><a name="toggle_x_Zx"></a>
+Remontando aos nossos dias de começando com Haskell, a boa notícia é
+que a diversão começa cedo: é simplesmente um desafio agradável a
+desbravar essa nova linguagem, em que tantas idéias comuns são
+diferentes ou ausentes, e para descobrir como escrever programas
+simples. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Zx")'>1 comment</a></p>
+<p><a name="x_ax"></a><a name="comments_x_ax"></a><a name="toggle_x_ax"></a>
+Para nós, o prazer inicial durou a nossa experiência cresceu e
+aprofundou nossa compreensão. Em outras linguagens, é difícil ver
+qualquer conexão entre a ciência e as porcas e parafusos, da
+programação. Em Haskell, temos algumas idéias importadas da matemática
+abstrata e colocá-los para funcionar. Mesmo que nós achamos que estas
+idéias não fáceis de aprender, elas têm um retorno prático para nos
+ajudar a escrever códigos mais compacto e reutilizável. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_ax")'>8 comments</a></p>
+<p><a name="x_bx"></a><a name="comments_x_bx"></a><a name="toggle_x_bx"></a>
+Além disso, não vamos estar colocando qualquer pedra em seu caminho:
+não há particularmente nenhuma técnica difícil neste livro que você
+deverá dominar a fim de poder programar de forma eficaz. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_bx")'>4 comments</a></p>
+<p align="left"><a name="x_cx"></a><a name="comments_x_cx"></a><a name="toggle_x_cx"></a> Dito isto, Haskell é uma linguagem rigorosa:
+ela vai exigir mais do seu raciocínio daqui para frente. Pode demorar
+um pouco para conseguir executar o seu primeiro código, com o
+compilador dizendo que o seu programa não faz sentido. Mesmo com anos
+de experiência, ficamos surpresos e satisfeitos pela forma como muitas
+vezes os nossos programas Haskell simplesmente funcionam na primeira
+tentativa, uma vez que corrigimos esses erros de compilação. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_cx")'>6 comments</a></p>
+<h2><a name="id529185"></a>O que esperar deste livro</h2>
+<p><a name="x_Tl"></a><a name="comments_x_Tl"></a><a name="toggle_x_Tl"></a>
+Começamos este projeto porque um número crescente de pessoas estão
+usando Haskell para resolver problemas cotidianos. Porque Haskell tem
+suas raízes na academia, pouco dos livros que existem atualmente sobre
+Haskell focam sobre problemas e técnicas de programação do dia a dia
+que estamos interessado. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Tl")'>6 comments</a></p>
+<p><a name="x_Rl"></a><a name="comments_x_Rl"></a><a name="toggle_x_Rl"></a>
+Com este livro queremos
+mostrar como usar a programação funcional e Haskell para resolver
+problemas reais. Este é um livro de referência: cada capítulo contém
+dezenas de exemplos de código, e muitos contêm aplicações completas.
+Aqui estão alguns exemplos das bibliotecas, técnicas e ferramentas que
+nós vamos mostrar-lhe como desenvolver. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Rl")'>2 comments</a></p>
+<ul type="disc">
+  <li>
+    <p><a name="x_dx"></a><a name="comments_x_dx"></a><a style="color: black;" name="toggle_x_dx"></a><span style="color: black;"> </span><font style="color: black;" color="#ff0000">Criar um aplicativo que
+baixa os episódios de podcast da internet e armazene-o em um
+banco de dados SQL. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_dx")'>4 comments</a></font></p>
+  </li>
+  <li style="color: black;">
+    <p><a name="x_ex"></a><a name="comments_x_ex"></a><a name="toggle_x_ex"></a> Testar o seu código de um modo poderosa e
+intuitiva. Descrever as propriedades que devem ser
+verdade, então deixe a biblioteca QuickCheck gerar casos de teste
+automaticamente. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_ex")'>3 comments</a></p>
+  </li>
+  <li style="color: black;">
+    <p><a name="x_fx"></a><a name="comments_x_fx"></a><a name="toggle_x_fx"></a> Pegar um telefone com câmera que captura um
+código de barras, e transforme-o
+em um identificador que você pode usar para consulta uma biblioteca ou
+web site de uma libraria. <a href="comment:%20add" onclick='return loadComments("x_fx")'>No comments</a></p>
+  </li>
+  <li style="color: black;">
+    <p><a name="x_gx"></a><a name="comments_x_gx"></a><a name="toggle_x_gx"></a> Escrever o código que
+percorra a web. Troque dados com os servidores e clientes escritos
+em
+outras linguagens usando a notação JSON. Desenvolver um verificador da
+ligação concorrente. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_gx")'>2 comments</a></p>
+  </li>
+</ul>
+<h3><a name="id528412"></a>Um pouco sobre você</h3>
+<p><a name="x_hx"></a><a name="comments_x_hx"></a><a name="toggle_x_hx"></a>
+O que você precisa saber antes de ler este livro? Esperamos que você já
+saiba programar, mas se você nunca usou uma linguagem funcional, tudo
+bem. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_hx")'>11 comments</a></p>
+<p><a name="x_ix"></a><a name="comments_x_ix"></a><a name="toggle_x_ix"></a>
+Não importa o seu nível de experiência, temos tentado antecipar suas
+necessidades: para explicar novas idéias em profundidade, geralmente
+usamos exemplos e imagens para conduzir nossas questões. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_ix")'>1 comment</a></p>
+<p><a name="x_P"></a><a name="comments_x_P"></a><a name="toggle_x_P"></a>
+Como um novo programador Haskell, você vai inevitavelmente começar a
+escrever alguns códigos a mão onde você poderia ter utilizado uma
+função de alguma biblioteca ou alguma técnica de programação. Nos
+empacotamos este livro com informações para ajudá-lo a aprender o mais
+rapido possível. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_P")'>3 comments</a></p>
+<p><a name="x_jx"></a><a name="comments_x_jx"></a><a name="toggle_x_jx"></a>
+Claro, sempre haverá alguns solavancos ao longo da estrada. Se você
+começar a antecipar uma surpresa ocasional ou dificuldade, juntamente
+com a diversão, você terá a melhor experiência. Qualquer remendos
+ásperos você pode bater, não vai durar muito. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_jx")'>1 comment</a></p>
+<p><a name="x_kx"></a><a name="comments_x_kx"></a><a name="toggle_x_kx"></a>
+Como se tornar um programador mais experiente Haskell, a maneira que
+você escrever código irá mudar. Com efeito, ao longo deste livro, a
+forma que apresentamos código irá evoluir, como nos movemos desde o
+básico da língua até técnicas e recursos poderosos e produtivos. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_kx")'>1 comment</a></p>
+<h2><a name="id528460"></a>O que esperar de Haskell</h2>
+<p><a name="x_lx"></a><a name="comments_x_lx"></a><a name="toggle_x_lx"></a>
+Haskell é uma linguagem de programação de propósito geral. Foi
+concebido sem qualquer nicho de aplicação em mente. Embora ela tenha
+uma posição firme sobre como os programas devem ser escritos, não
+favoreça um domínio do problema em detrimento de outros. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_lx")'>1 comment</a></p>
+<p><a name="x_mx"></a><a name="comments_x_mx"></a><a name="toggle_x_mx"></a>
+Embora em sua essência, a linguagem encoraja um estilo
+de programação funcional pura e não estrita, esse é o <em>padrão</em>,
+e não a única opção.
+Haskell também suporta as mais tradicionais modelos de códigos
+processuais e avaliação rigorosa. Além disso, embora o foco da
+linguagem está centrado na escrita de programas estaticamente tipados,
+é possível (embora raramente) escrever código Haskell usando tipos
+dinâmicos. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_mx")'>5 comments</a></p>
+<h3><a name="id528487"></a>Comparado com as linguagens estáticas
+tradicionais</h3>
+<p><a name="x_nx"></a><a name="comments_x_nx"></a><a name="toggle_x_nx"></a>
+Linguagens que somente usam sistemas do tipo estático foram o
+esteio do mundo da programação durante décadas. Haskell é estaticamente
+tipados, mas a sua noção do que tipos são, e o que podemos fazer
+com eles, é muito mais flexível e poderoso do que nas linguagens
+tradicionais. Tipos dão uma contribuição importante para a concisão,
+clareza e eficiência dos programas Haskell. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_nx")'>8 comments</a></p>
+<p><a name="x_ox"></a><a name="comments_x_ox"></a><a name="toggle_x_ox"></a>
+Apesar de Poderosa, o sistema de tipos do haskell é muitas vezes também
+discreto. Se omitir informações de tipos explícito, um compilador
+Haskell automaticamente inferirá o tipo de uma expressão ou função.
+Comparado com as linguagens tradicionais estáticas, a que devemos
+prover grandes quantidades de informações sobre o tipo, a
+combinação do poder e a inferência do sistema de tipos em Haskell reduz
+significativamente a desorganização e a redundância do nosso código. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_ox")'>4 comments</a></p>
+<p><a name="x_px"></a><a name="comments_x_px"></a><a name="toggle_x_px"></a>
+Vários outros recursos de Haskell se combinam para aumentar a
+quantidade de trabalho que pode caber em uma tela de texto. Isto traz
+melhorias no desenvolvimento do tempo e agilidade: podemos criar um
+código de confiança rapidamente e facilmente refatorar em resposta a
+novas exigências. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_px")'>5 comments</a></p>
+<p><a name="x_qx"></a><a name="comments_x_qx"></a><a name="toggle_x_qx"></a>
+Às vezes, os programas Haskell pode funcionar mais lentamente do que os
+programas similares escrito em C ou C + +. Para a maioria do código que
+escrevemos, as grandes vantagens do Haskell de produtividade e
+confiabilidade superam qualquer desvantagem no desempenho de pequeno
+porte. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_qx")'>14 comments</a></p>
+<p><a name="x_mA1"></a><a name="comments_x_mA1"></a><a name="toggle_x_mA1"></a> Os processadores multicore estão
+onipresentes, mas eles permanecem extremamente difícil para o programa
+com técnicas tradicionais. Haskell oferece tecnologias exclusivas para
+tornar a programação multicore mais tratáveis. Ele oferece suporte a
+programação paralela, o software de memória transacional para a
+simultaneidade de confiança, e escalas de centenas de milhares de
+threads em simultâneo. <a href="comment:%20add" onclick='return loadComments("x_mA1")'>No comments</a></p>
+<h3><a name="id572991"></a>Comparado com as linguagens dinâmicas
+modernas</h3>
+<p><a name="x_sx"></a><a name="comments_x_sx"></a><a name="toggle_x_sx"></a>
+Durante a última década, linguagens interpretada e dinamicamente tipada
+se
+tornaram cada vez mais popular. Elas oferecem benefícios substanciais
+na produtividade do desenvolvedor. Embora estas muitas vezes vem à
+custa
+de um enorme impacto na performance, para muitas a produtividade nas
+tarefas de programação prevalece sobre o desempenho, ou o desempenho
+não é o fator&nbsp;
+mais importante de qualquer modo. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_sx")'>3 comments</a></p>
+<p><a name="x_tx"></a><a name="comments_x_tx"></a><a name="toggle_x_tx"></a>
+Concisão é uma área em que Haskell e linguagens com tipagem dinâmica
+executam de forma semelhante: em cada caso, escrevemos muito menos
+código para resolver um problema do que em uma linguagem tradicional.
+Programas ficam muitas vezes em torno do mesmo tamanho em linguagens
+dinâmicamente tipadas e Haskell. <a href="comment:%20add" onclick='return loadComments("x_tx")'>No comments</a></p>
+<p><a name="x_ux"></a><a name="comments_x_ux"></a><a name="toggle_x_ux"></a>
+Quando se considera o desempenho de execução, Haskell quase sempre tem
+uma enorme vantagem. Código compilado pelo Glasgow Haskell Compiler
+(GHC) ficam normalmente entre 20 e 60 vezes mais rápido do que o
+executado em um interpretador de uma linguagem dinâmicamente tipada.
+GHC também fornece
+um intérprete, assim você pode executar scripts sem compilá-los. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_ux")'>6 comments</a></p>
+<p><a name="x_vx"></a><a name="comments_x_vx"></a><a name="toggle_x_vx"></a>
+Outra grande diferença entre as linguagens dinâmicamente tipadas e
+Haskell
+reside na sua filosofia em torno de tipos. Um dos principais motivos
+para a popularidade de linguagens dinâmicamente tipadas é que raramente
+precisamos mencionar explicitamente os tipos. Através da inferência de
+tipo automático, Haskell oferece a mesma vantagem. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_vx")'>7 comments</a></p>
+<p><a name="x_wx"></a><a name="comments_x_wx"></a><a name="toggle_x_wx"></a>
+Para além desta semelhança superficial, as diferenças são profundas. Em
+uma linguagem dinamicamente tipada, podemos criar construções que são
+difíceis de expressar em uma linguagem estaticamente tipada. No
+entanto, o mesmo acontece em sentido inverso: com um tipo de sistema
+tão poderosa como o do Haskell, podemos estruturar um programa de uma
+forma
+que seria impossível ou inviável em linguagens de tipagem dinâmica. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_wx")'>9 comments</a></p>
+<p><a name="x_xx"></a><a name="comments_x_xx"></a><a name="toggle_x_xx"></a>
+É importante reconhecer que cada uma dessas abordagens envolve
+<span style="font-style: italic;">tradeoffs</span>. Muito brevemente, é
+a escolha entre a perspectiva de segurança que Haskell
+enfatiza, e a perspectiva de flexibilidade que a tipagem dinâmica&nbsp;
+favorece. Se alguém já havia descoberto uma maneira de pensar
+sobre os tipos de que foi sempre melhor, imaginamos que todos soubessem
+sobre ela até agora. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_xx")'>4 comments</a></p>
+<p><a name="x_yx"></a><a name="comments_x_yx"></a><a name="toggle_x_yx"></a>
+Claro, temos nossas próprias opiniões sobre quais vantagens e
+desvantagens, são mais benéficas. Dois de nós têm anos de experiência
+em programação em linguagens dinâmicamente tipadas. Nós adoramos
+trabalhar
+com elas, nós ainda usamos todos os dias, mas geralmente, nós
+preferimos Haskell. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_yx")'>6 comments</a></p>
+<h3><a name="id573062"></a>Haskell na indústria e de código aberto</h3>
+<p><a name="x_zx"></a><a name="comments_x_zx"></a><a name="toggle_x_zx"></a>
+Aqui estão apenas alguns exemplos de grandes sistemas de software que
+tenham sido criados em Haskell. Algums deles são de código aberto,
+enquanto outros são produtos patenteados. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_zx")'>9 comments</a></p>
+<ul type="disc">
+  <li>
+    <p><a name="x_By"></a><a name="comments_x_By"></a><a name="toggle_x_By"></a> ASIC e FPGA design software (Lava, produtos da
+Bluespec Inc.) <a href="comment:%20add" onclick='return loadComments("x_By")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Cy"></a><a name="comments_x_Cy"></a><a name="toggle_x_Cy"></a> Software de composição musical (Haskore) <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Cy")'>1 comment</a></p>
+  </li>
+  <li>
+    <p><a name="x_Ay"></a><a name="comments_x_Ay"></a><a name="toggle_x_Ay"></a> Compiladores e ferramentas relacionadas com
+compilador (principalmente GHC) <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Ay")'>9 comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Dy"></a><a name="comments_x_Dy"></a><a name="toggle_x_Dy"></a> Controle de distribuição e revisão (Darcs) <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Dy")'>2 comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Ey"></a><a name="comments_x_Ey"></a><a name="toggle_x_Ey"></a> Web middleware (Happstack, produtos de Galois
+Inc.) <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Ey")'>3 comments</a></p>
+  </li>
+</ul>
+<p><a name="x_nA1"></a><a name="comments_x_nA1"></a><a name="toggle_x_nA1"></a> É uma amostra de algumas das empresas que
+utilizam Haskell no final de 2008, a partir da <a href="http://www.haskell.org/haskellwiki/Haskell_in_industry" target="_top">wiki Haskell</a>. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_nA1")'>4 comments</a></p>
+<ul type="disc">
+  <li>
+    <p><a name="x_oA1"></a><a name="comments_x_oA1"></a><a name="toggle_x_oA1"></a> ABN AMRO é um banco internacional. Ele usa
+Haskell em investimentos, para medir o risco de contraparte de
+carteiras de derivativos financeiros. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_oA1")'>8 comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_pA1"></a><a name="comments_x_pA1"></a><a name="toggle_x_pA1"></a> Anygma é uma empresa de inicialização.
+Desenvolve ferramentas de criação multimídia conteúdo usando Haskell. <a href="comment:%20add" onclick='return loadComments("x_pA1")'>No
+comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_qA1"></a><a name="comments_x_qA1"></a><a name="toggle_x_qA1"></a> Amgen é uma empresa de biotecnologia. Ele
+cria modelos matemáticos e outras aplicações complexas em Haskell. <a href="comment:%20add" onclick='return loadComments("x_qA1")'>No
+comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_rA1"></a><a name="comments_x_rA1"></a><a name="toggle_x_rA1"></a>Bluespec é um ASIC e FPGA fornecedor de
+software de design. Seus produtos são desenvolvidos em Haskell, e as
+Linguagens de design de chips que fornecem seus produtos são
+influenciados pelo Haskell.<a href="comments:%20show%20/%20hide" onclick='return loadComments("x_rA1")'>1 comment</a></p>
+  </li>
+  <li>
+    <p><a name="x_sA1"></a><a name="comments_x_sA1"></a><a name="toggle_x_sA1"></a> Eaton utiliza Haskell para a concepção e
+verificação de sistemas hidráulicos de veículos híbridos. <a href="comment:%20add" onclick='return loadComments("x_sA1")'>No
+comments</a></p>
+  </li>
+</ul>
+<h3><a name="id573188"></a>Compilação, depuração e análise de desempenho</h3>
+<p><a name="x_Fy"></a><a name="comments_x_Fy"></a><a name="toggle_x_Fy"></a>
+Para o trabalho prático, quase tão importante como a própria linguagem
+é o "ecossistema" de bibliotecas e ferramentas à sua volta. Haskell tem
+uma forte presença nesta área. <a href="comment:%20add" onclick='return loadComments("x_Fy")'>No comments</a></p>
+<p><a name="x_Gy"></a><a name="comments_x_Gy"></a><a name="toggle_x_Gy"></a>
+O compilador mais utilizado, GHC, foi ativamente desenvolvida por mais
+de 15 anos, e fornece um conjunto maduro e estável de recursos. <a href="comment:%20add" onclick='return loadComments("x_Gy")'>No comments</a></p>
+<ul type="disc">
+  <li>
+    <p><a name="x_Hy"></a><a name="comments_x_Hy"></a><a name="toggle_x_Hy"></a> Compila para código nativo eficiente em todos
+os principais sistemas operacionais modernos e arquiteturas de CPU <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Hy")'>1 comment</a></p>
+  </li>
+  <li>
+    <p><a name="x_Iy"></a><a name="comments_x_Iy"></a><a name="toggle_x_Iy"></a> Fácil implantação dos binários compilados,
+livre de restrições de licenciamento <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Iy")'>4 comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Ky"></a><a name="comments_x_Ky"></a><a name="toggle_x_Ky"></a> Análise da cobertura de código<a href="comment:%20add" onclick='return loadComments("x_Ky")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Ly"></a><a name="comments_x_Ly"></a><a name="toggle_x_Ly"></a> Detalhado perfis de desempenho e uso de
+memória <a href="comment:%20add" onclick='return loadComments("x_Ly")'>No
+comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_My"></a><a name="comments_x_My"></a><a name="toggle_x_My"></a> Documentação completa <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_My")'>3 comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Ny"></a><a name="comments_x_Ny"></a><a name="toggle_x_Ny"></a> Apoio escalável e massivo para multicore e
+programação concorrente <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Ny")'>4 comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Jy"></a><a name="comments_x_Jy"></a><a name="toggle_x_Jy"></a> Interpretador e depurador interativo <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Jy")'>2 comments</a></p>
+  </li>
+</ul>
+<h3><a name="id573275"></a>Bibliotecas bundled e a terceira parte</h3>
+<p><a name="x_Oy"></a><a name="comments_x_Oy"></a><a name="toggle_x_Oy"></a>
+O compilador GHC vem com uma coleção de bibliotecas úteis. Aqui
+estão algumas das necessidades comuns de programação que as bibliotecas
+face a estes. <a href="comment:%20add" onclick='return loadComments("x_Oy")'>No comments</a></p>
+<ul type="disc">
+  <li>
+    <p><a name="x_Py"></a><a name="comments_x_Py"></a><a name="toggle_x_Py"></a> I/O arquivo, e de passagem e manipulação de
+sistema de arquivos <a href="comment:%20add" onclick='return loadComments("x_Py")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Qy"></a><a name="comments_x_Qy"></a><a name="toggle_x_Qy"></a> Programação de cliente e servidor de rede <a href="comment:%20add" onclick='return loadComments("x_Qy")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Ry"></a><a name="comments_x_Ry"></a><a name="toggle_x_Ry"></a>Expressões regulares e análise sintática <a href="comment:%20add" onclick='return loadComments("x_Ry")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Sy"></a><a name="comments_x_Sy"></a><a name="toggle_x_Sy"></a> Programação concorrente <a href="comment:%20add" onclick='return loadComments("x_Sy")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Ty"></a><a name="comments_x_Ty"></a><a name="toggle_x_Ty"></a> Testes automatizados <a href="comment:%20add" onclick='return loadComments("x_Ty")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Uy"></a><a name="comments_x_Uy"></a><a name="toggle_x_Uy"></a> Som e gráficos <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Uy")'>1 comment</a></p>
+  </li>
+</ul>
+<p><a name="x_Vy"></a><a name="comments_x_Vy"></a><a name="toggle_x_Vy"></a>
+O banco de dados do pacote Hackage é uma coleção de
+bibliotecas de código aberto e aplicações da comunidade Haskell. A
+maioria das bibliotecas
+publicado em Hackage são licenciados sob os termos que permitem tanto o
+uso como código aberto e comercial. Algumas das áreas
+abrangidas pelas bibliotecas de código aberto incluem o seguinte. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Vy")'>4 comments</a></p>
+<ul type="disc">
+  <li>
+    <p><a name="x_Wy"></a><a name="comments_x_Wy"></a><a name="toggle_x_Wy"></a> Interfaces de todas as principais open source
+e comercial, bancos de dados <a href="comment:%20add" onclick='return loadComments("x_Wy")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Xy"></a><a name="comments_x_Xy"></a><a name="toggle_x_Xy"></a> Processamento de XML, HTML e XQuery <a href="comment:%20add" onclick='return loadComments("x_Xy")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Yy"></a><a name="comments_x_Yy"></a><a name="toggle_x_Yy"></a> Desenvolvimento de cliente e servidor de redes
+e web<a href="comment:%20add" onclick='return loadComments("x_Yy")'>No
+comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Zy"></a><a name="comments_x_Zy"></a><a name="toggle_x_Zy"></a> GUIs Desktop, incluindo toolkits
+e cross-platform <a href="comment:%20add" onclick='return loadComments("x_Zy")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_ay"></a><a name="comments_x_ay"></a><a name="toggle_x_ay"></a> Suporte para Unicode e outras codificações de
+texto <a href="comment:%20add" onclick='return loadComments("x_ay")'>No
+comments</a></p>
+  </li>
+</ul>
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both;" id="id573401">Um breve resumo da
+história do Haskell</h2>
+</div>
+</div>
+</div>
+<p id="x_by"><a name="x_by"></a> O desenvolvimento de Haskell está
+enraizada na matemática e na pesquisa de ciência da computação. <span id="comments_x_by" class="comment"><a class="commenttoggle" id="toggle_x_by" pid="x_by" onclick='return loadComments("x_by")' href="comments:%20show%20/%20hide">1 comment</a></span></p>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id573413">Pré-História</h3>
+</div>
+</div>
+</div>
+<p id="x_cy"><a name="x_cy"></a>Algumas décadas antes dos computadores
+modernos serem inventados, o
+matemático Alonzo Church desenvolveu uma linguagem chamada de cálculo
+lambda. Ela destina-se como uma ferramenta para investigar os
+fundamentos da matemática. A primeira pessoa a perceber a conexão entre
+práticas de programação e cálculo lambda foi John McCarthy, que criou
+Lisp em 1958. <span id="comments_x_cy" class="comment"><a class="commenttoggle" id="toggle_x_cy" pid="x_cy" onclick='return loadComments("x_cy")' href="comments:%20show%20/%20hide">6 comments</a></span></p>
+<p id="x_dy"><a name="x_dy"></a>Durante os anos 1960, cientistas da
+computação começaram a reconhecer e
+estudar a importância do cálculo lambda. Peter Landin e Christopher
+Strachey desenvolveu idéias sobre os fundamentos das linguagens de
+programação: sobre como entender o que eles fazem (semântica
+operacional) e como entender o que eles significam (semântica
+denotational). <span id="comments_x_dy" class="comment"><a class="commenttoggle" id="toggle_x_dy" pid="x_dy" onclick='return loadComments("x_dy")' href="comments:%20show%20/%20hide">1 comment</a></span></p>
+<p id="x_ey"><a name="x_ey"></a>No início dos anos 1970, Robin Milner
+criou um linguagem de programação
+funcional mais rigorosa, chamado ML. Embora ML foi desenvolvida para
+ajudar com provas automatizada de teoremas matemáticos, acabou ganhando
+uma sequência de outras tarefas de computação em geral. <span id="comments_x_ey" class="comment"><a class="commenttoggle" id="toggle_x_ey" pid="x_ey" onclick='return loadComments("x_ey")' href="comments:%20show%20/%20hide">1 comment</a></span></p>
+<p id="x_fy"><a name="x_fy"></a>A década de 1970 viu o surgimento da
+avaliação preguiçosa (ou função não-estrita) como uma nova
+estratégia. David Turner desenvolveu SASL e KRC, enquanto Rod Burstall
+e John Darlington desenvolvido NPL e Hope. NPL, KRC e ML influenciaram
+o desenvolvimento de várias outras linguagens na década de 1980,
+incluindo Lazy ML, Clean e Miranda. <span id="comments_x_fy" class="comment"><a class="commenttoggle" id="toggle_x_fy" pid="x_fy" onclick='return loadComments("x_fy")' href="comments:%20show%20/%20hide">4 comments</a></span></p>
+</div>
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id573451">História recente</h3>
+</div>
+</div>
+</div>
+<p id="x_gy"><a name="x_gy"></a>Até o final dos anos 1980, os esforços
+dos investigadores que trabalham
+sobre avaliação preguiçosa em linguagens funcionais estavam espalhados
+por mais de uma dezena de Linguagens. Preocupados com essa difusão de
+esforço, um número de investigadores decidiram formar uma comissão para
+criar uma linguagem comum. Após três anos de trabalho, a comissão
+publicou a especificação 1.0 do Haskell em 1990. É o nomearam a
+linguagem depois em homenagem a Haskell Curry, um influente lógico. <span id="comments_x_gy" class="comment"><a class="commenttoggle" id="toggle_x_gy" pid="x_gy" onclick='return loadComments("x_gy")' href="comments:%20show%20/%20hide">1 comment</a></span></p>
+<p id="x_hy"><a name="x_hy"></a> Muitas pessoas são realmente suspeitas
+de falar sobre “<span class="quote">design by committee</span>”,
+mas o trabalho da comissão do Haskell é um belo exemplo dos melhores
+trabalhos que uma comissão pode fazer. Eles produziram um elegante
+projeto de linguagem, e conseguiu unificar os esforços divididos da sua
+comunidade de pesquisa. Do emaranhado de linguagens funcionais com
+avaliação preguiçosa que existia em 1990, apenas Haskell ainda é
+ativamente usada. <span id="comments_x_hy" class="comment"><a class="commenttoggle" id="toggle_x_hy" pid="x_hy" onclick='return loadComments("x_hy")' href="comments:%20show%20/%20hide">11 comments</a></span></p>
+<p id="x_iy"><a name="x_iy"></a>Desde a sua publicação em 1990, o
+padrão de linguagem Haskell passou por cinco
+revisões, a mais recente em 1998. Um número de implementações de
+Haskell foram escritas e várias ainda estão ativamente em
+desenvolvimento. <span id="comments_x_iy" class="comment"><a class="commenttoggle" id="toggle_x_iy" pid="x_iy" onclick='return loadComments("x_iy")' href="comments:%20show%20/%20hide">6 comments</a></span></p>
+<p><a name="x_jy"></a><a name="comments_x_jy"></a><a name="toggle_x_jy"></a>
+Durante a década de 1990, Haskell teve dois objetivos principais. De um
+lado, ele dava pesquisadores de linguagem uma linguagem estável em que
+podia experimentar como a avalição preguiçosa podia fazer programas
+funcionais executar eficientemente. Outros pesquisadores exploraram
+como construir programas usando técnicas baseados em avaliação
+preguiçosa funcional. Outros ainda usaram como linguagem de ensino. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_jy")'>4 comments</a></p>
+<h3><a name="id573493"></a>A era moderna</h3>
+<p><a name="x_ky"></a><a name="comments_x_ky"></a><a name="toggle_x_ky"></a>
+Embora estas explorações básica da década de 1990 prosseguiram, Haskell
+permaneceu firme como um assunto acadêmico. O slogan informal de quem
+estava dentro da comunidade era “evitar o sucesso a todo custo”. Poucos
+fora dessa comunidade tinham ouvido falar da linguagem. Desse
+modo,&nbsp; a programação funcional, ficou como um campo bastante
+obscuro. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_ky")'>3 comments</a></p>
+<p><a name="x_ly"></a><a name="comments_x_ly"></a><a name="toggle_x_ly"></a>
+Durante este tempo o mainstream mundo da programação experimentava com
+pequenos ajustes relativamente: a partir de programação em C, até C +
++, até Java. Enquanto isso, na periferia, os programadores estavam
+começando a mexer com o novo, linguagens mais dinâmicas. Guido van
+Rossum projetou Python, Larry Wall criou Perl e Yukihiro Matsumoto
+desenvolveu Ruby. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_ly")'>10 comments</a></p>
+<p><a name="x_my"></a><a name="comments_x_my"></a><a name="toggle_x_my"></a>
+Como essas novas linguagens começaram a infiltrar-se em uma utilização
+mais ampla, elas espalharam algumas idéias fundamentais. O primeiro foi
+que os programadores não estavam plenamente trabalhando em linguagens
+expressivas. A segunda foi, em parte, um subproduto do rápido
+crescimento no poder computacional da época: muitas vezes é inteligente
+sacrificar algum desempenho de execução, em troca de um grande aumento
+na produtividade do programador. Finalmente, várias dessas linguagens
+emprestaram algo da programação funcional. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_my")'>4 comments</a></p>
+<p><a name="x_ny"></a><a name="comments_x_ny"></a><a name="toggle_x_ny"></a>
+Durante a última metade da década passada, Haskell conseguiu escapar da
+academia, impulsionado em parte pela visibilidade do Python, Ruby e até
+Javascript. A linguagem agora tem um&nbsp; rápido e vibrante
+crescimento na cultura dos usuários open source e comercial, e os
+pesquisadores continuam a usá-lo para aumentar os limites de desempenho
+e expressividade. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_ny")'>10 comments</a></p>
+<h2><a name="whyfp.resources"></a>Recursos úteis</h2>
+<p><a name="x_Ul"></a><a name="comments_x_Ul"></a><a name="toggle_x_Ul"></a>
+A medida que você trabalhar com Haskell, com certeza terá dúvidas e irá
+querer mais informações sobre as coisas. Aqui estão alguns recursos da
+Internet onde você pode buscar informações e interagir com outros
+programadores Haskell. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Ul")'>1 comment</a></p>
+<h3><a name="whyfp.resources.reference"></a>Material de referência</h3>
+<ul type="disc">
+  <li>
+    <p><a name="x_Vl"></a><a name="comments_x_Vl"></a><a name="toggle_x_Vl"></a>&nbsp;<a class="ulink" href="http://www.haskell.org/ghc/docs/latest/html/libraries/index.html" target="_top">The Haskell Hierarchical Libraries reference</a> fornece
+a documentação para a biblioteca padrão que vem com o compilador. Este
+é um dos mais valiosos activos online para programadores Haskell. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Vl")'>3 comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Wl"></a><a name="comments_x_Wl"></a><a name="toggle_x_Wl"></a> Para perguntas sobre a sintaxe e recursos da
+linguage o <a href="http://haskell.org/onlinereport/" target="_top">Haskell
+98 Report</a> descreve ao padrão da linguagem Haskell 98. <a href="comment:%20add" onclick='return loadComments("x_Wl")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_Xl"></a><a name="comments_x_Xl"></a><a name="toggle_x_Xl"></a> Diversas extensões à linguagem tornaram-se
+comuns desde o Haskell 98 Report foi liberado. O <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html" target="_top">Guia do usuário do GHC</a> contém documentação detalhada
+sobre as extensões suportadas pelo GHC, bem como algumas
+características específicas do GHC. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Xl")'>1 comment</a></p>
+  </li>
+  <li>
+    <p><a name="x_Yl"></a><a name="comments_x_Yl"></a><a name="toggle_x_Yl"></a> <a href="http://haskell.org/hoogle/" target="_top">Hoogle</a> e <a href="http://holumbus.fh-wedel.de/hayoo/hayoo.html" target="_top">Hayoo</a>
+são os motores de busca da API Haskell. Eles podem procurar as funções
+pelo nome ou por tipo. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Yl")'>1 comment</a></p>
+  </li>
+</ul>
+<h3><a name="whyfp.resources.apps"></a>Aplicativos e bibliotecas</h3>
+<p><a name="x_Zl"></a><a name="comments_x_Zl"></a><a name="toggle_x_Zl"></a>
+Se você está procurando uma biblioteca Haskell a ser usado para uma
+tarefa específica, ou de um pedido escrito em Haskell, confira os
+seguintes recursos. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_Zl")'>1 comment</a></p>
+<ul type="disc">
+  <li>
+    <p><a name="x_al"></a><a name="comments_x_al"></a><a name="toggle_x_al"></a> A comunidade Haskell mantém um repositório
+central de bibliotecas de código aberto e aplicações Haskell. É chamado
+    <a href="http://hackage.haskell.org/" target="_top">Hackage</a>, e
+permite que você procure software para download, ou procurar a sua
+coleção por categoria. <a href="comment:%20add" onclick='return loadComments("x_al")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_bl"></a><a name="comments_x_bl"></a><a name="toggle_x_bl"></a> O <a href="http://haskell.org/haskellwiki/Applications_and_libraries" target="_top">Haskell Wiki</a> contém uma seção dedicada à informação
+sobre algumas bibliotecas Haskell. <a href="comment:%20add" onclick='return loadComments("x_bl")'>No comments</a></p>
+  </li>
+</ul>
+<h3><a name="whyfp.resources.community"></a>A comunidade Haskell</h3>
+<p><a name="x_cl"></a><a name="comments_x_cl"></a><a name="toggle_x_cl"></a>
+Há uma série de maneiras que você pode entrar em contato com outros
+programadores Haskell, fazer perguntas, saber o que outras pessoas
+estão falando, e simplesmente fazer alguma rede social com seus pares. <a href="comment:%20add" onclick='return loadComments("x_cl")'>No comments</a></p>
+<ul type="disc">
+  <li>
+    <p><a name="x_dl"></a><a name="comments_x_dl"></a><a name="toggle_x_dl"></a> A primeira parada em sua busca por recursos da
+comunidade deve ser o <a href="http://www.haskell.org/" target="_top">site
+Haskell</a>. Esta página contém os links mais atuais para várias
+comunidades e informação, bem como um wiki e mantida ativamente. <a href="comment:%20add" onclick='return loadComments("x_dl")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_el"></a><a name="comments_x_el"></a><a name="toggle_x_el"></a> Haskellers utilizar uma série de <a href="http://haskell.org/haskellwiki/Mailing_lists" target="_top">listas</a>
+para os debates de atualidade. Destes, o geralmente mais interessante é
+chamado <code>haskell-cafe</code>. Tem uma atmosfera tranquila e
+amigável, onde profissionais e acadêmicos trocam informações com
+hackers casuais e novatos. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_el")'>1 comment</a></p>
+  </li>
+  <li>
+    <p><a name="x_fl"></a><a name="comments_x_fl"></a><a name="toggle_x_fl"></a> Para bate-papo em tempo real, o <a href="http://haskell.org/haskellwiki/IRC_channel" target="_top">canal
+de IRC Haskell</a>, chamado <code>#haskell</code>, é grande e animado.
+Parecido como o <code>haskell-cafe</code>, a atmosfera e amigável e
+prestativos, apesar do grande número de usuários simultâneos. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_fl")'>3 comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_gl"></a><a name="comments_x_gl"></a><a name="toggle_x_gl"></a> Há muitos grupos de usuários locais, meetups,
+workshops acadêmicos, e assim por diante, aqui está <a href="http://haskell.org/haskellwiki/User_groups" target="_top">uma
+lista dos grupos de usuários conhecidos e workshops</a>. <a href="comment:%20add" onclick='return loadComments("x_gl")'>No comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_hl"></a><a name="comments_x_hl"></a><a name="toggle_x_hl"></a> O <a href="http://sequence.complete.org/" target="_top">Haskell Weekly News</a> é um-quase-resumo semanal de
+muitas atividades na comunidade Haskell. Você pode encontrar links para
+listas de discussões interessantes, novas versões de softwares, e assim
+por diante. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_hl")'>3 comments</a></p>
+  </li>
+  <li>
+    <p><a name="x_il"></a><a name="comments_x_il"></a><a name="toggle_x_il"></a> As&nbsp;<a class="ulink" href="http://haskell.org/communities/" target="_top">Haskell
+Communities and Activities Report</a> recolhe informações sobre as
+pessoas que usam Haskell, e o que eles estão fazendo com ele. Ela tem
+funcionada durante anos, por isso oferece uma boa maneira de descobrir
+o passado do Haskell. <a href="comments:%20show%20/%20hide" onclick='return loadComments("x_il")'>1 comment</a></p>
+  </li>
+</ul>
+<h2><a name="id573806"></a>Agradecimentos</h2>
+<p><a name="x_wN1"></a><a name="comments_x_wN1"></a><a name="toggle_x_wN1"></a> This book would not exist without the Haskell
+community: an anarchic, hopeful cabal of artists, theoreticians and
+engineers, who for twenty years have worked to create a better,
+bug-free programming world. The people of the Haskell community are
+unique in their combination of friendliness and intellectual depth.</p>
+<p id="x_xN1"><a name="x_xN1"></a>We wish to thank our editor, Mike
+Loukides, and the production team at O'Reilly for all of their advice
+and assistance.</p>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id573825">Bryan</h3>
+</div>
+</div>
+</div>
+<p id="x_yN1"><a name="x_yN1"></a>I had a great deal of fun working
+with John and Don. Their independence, good nature, and formidable
+talent made the writing process remarkably smooth.</p>
+<p id="x_zN1"><a name="x_zN1"></a>Simon Peyton Jones took a chance on a
+college student who emailed him out of the blue in early 1994.
+Interning for him over that summer remains a highlight of my
+professional life. With his generosity, boundless energy, and drive to
+collaborate, he inspires the whole Haskell community.</p>
+<p id="x_AO1"><a name="x_AO1"></a>My children, Cian and Ruairi, always
+stood ready to help me to unwind with wonderful, madcap little-boy
+games.</p>
+<p id="x_BO1"><a name="x_BO1"></a>Finally, of course, I owe a great
+debt to my wife, Shannon, for her love, wisdom, and support during the
+long gestation of this book.</p>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id573859">John</h3>
+</div>
+</div>
+</div>
+<p id="x_CO1"><a name="x_CO1"></a> I am so glad to be able to work with
+Bryan and Don on this project. The depth of their Haskell knowledge and
+experience is amazing. I enjoyed finally being able to have the three
+of us sit down in the same room -- over a year after we started
+writing. </p>
+<p id="x_ZO1"><a name="x_ZO1"></a> My 2-year-old Jacob, who decided
+that it would be fun to use a keyboard too, and is always eager to have
+me take a break from the computer and help him make some fun typing
+noises on a 50-year-old Underwood typewriter. </p>
+<p id="x_aO1"><a name="x_aO1"></a> Most importantly, I wouldn't have
+ever been involved in this project without the love, support, and
+encouragement from my wife, Terah. </p>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id573887">Don</h3>
+</div>
+</div>
+</div>
+<p id="x_DO1"><a name="x_DO1"></a>Before all else, I'd like to thank my
+amazing co-conspirators, John and Bryan, for encouragment, advice and
+motivation.</p>
+<p id="x_EO1"><a name="x_EO1"></a>My colleagues at Galois, Inc., who
+daily wield Haskell in the real world, provided regular feedback and
+war stories, and helped ensured a steady supply of espresso.</p>
+<p id="x_FO1"><a name="x_FO1"></a>My PhD supervisor, Manuel
+Chakravarty, and the PLS research group, who provided encouragement,
+vision and energy, and showed me that a rigorous, foundational approach
+to programming can make the impossible happen.</p>
+<p id="x_GO1"><a name="x_GO1"></a>And, finally, thanks to Suzie, for
+her insight, patience and love.</p>
+</div>
+<div class="sect2" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h3 class="title" id="id573920">Thank you to our reviewers</h3>
+</div>
+</div>
+</div>
+<p id="x_HO1"><a name="x_HO1"></a>We developed this book in the open,
+posting drafts of chapters to our web site as we completed them.
+Readers then submitted feedback using a web application that we
+developed. By the time we finished writing the book, about 800 people
+had submitted over 7,500 comments, an astounding figure.</p>
+<p id="x_IO1"><a name="x_IO1"></a>We deeply appreciate the time that so
+many people volunteered to help us to improve our book. Their
+encouragement and enthusiasm over the 15 months we spent writing made
+the process a pleasure.</p>
+<p id="x_JO1"><a name="x_JO1"></a>The breadth and depth of the comments
+we received have profoundly improved the quality of this book.
+Nevertheless, all errors and omissions are, of course, ours.</p>
+<p id="x_KO1"><a name="x_KO1"></a>The following people each contributed
+over 1% of the total number of review comments that we received. We
+would like to thank them for their care in providing us with so much
+detailed feedback.</p>
+<p id="x_LO1"><a name="x_LO1"></a> Alex Stangl, Andrew Bromage, Brent
+Yorgey, Bruce Turner, Calvin Smith, David Teller, Henry Lenzi, Jay
+Scott, John Dorsey, Justin Dressel, Lauri Pesonen, Lennart Augustsson,
+Luc Duponcheel, Matt Hellige, Michael T. Richter, Peter McLain, Rob
+deFriesse, Rüdiger Hanke, Tim Chevalier, Tim Stewart, William N.
+Halchin. </p>
+<p id="x_MO1"><a name="x_MO1"></a>We are also grateful to the people
+below, each of whom contributed at least 0.2% of all comments.</p>
+<p id="x_NO1"><a name="x_NO1"></a> Achim Schneider, Adam Jones,
+Alexander Semenov, Andrew Wagner, Arnar Birgisson, Arthur van Leeuwen,
+Bartek Ćwikłowski, Bas Kok, Ben Franksen, Björn Buckwalter, Brian
+Brunswick, Bryn Keller, Chris Holliday, Chris Smith, Dan Scott, Dan
+Weston, Daniel Larsson, Davide Marchignoli, Derek Elkins, Dirk Ullrich,
+Doug Kirk, Douglas Silas, Emmanuel Delaborde, Eric Lavigne, Erik
+Haugen, Erik Jones, Fred Ross, Geoff King, George Moschovitis, Hans van
+Thiel, Ionuț Arțăriși, Isaac Dupree, Isaac Freeman, Jared Updike, Joe
+Thornber, Joeri van Eekelen, Joey Hess, Johan Tibell, John Lenz, Josef
+Svenningsson, Joseph Garvin, Josh Szepietowski, Justin Bailey, Kai
+Gellien, Kevin Watters, Konrad Hinsen, Lally Singh, Lee Duhem, Luke
+Palmer, Magnus Therning, Marc DeRosa, Marcus Eskilsson, Mark Lee Smith,
+Matthew Danish, Matthew Manela, Michael Vanier, Mike Brauwerman, Neil
+Mitchell, Nick Seow, Pat Rondon, Raynor Vliegendhart, Richard Smith,
+Runar Bjarnason, Ryan W. Porter, Salvatore Insalaco, Sean Brewer,
+Sebastian Sylvan, Sebastien Bocq, Sengan Baring-Gould, Serge Le
+Huitouze, Shahbaz Chaudhary, Shawn M Moore, Tom Tschetter, Valery V.
+Vorotyntsev, Will Newton, Wolfgang Meyer, Wouter Swierstra. </p>
+<p id="x_OO1"><a name="x_OO1"></a>We would like to acknowledge the
+following people, many of whom submitted a number of comments.</p>
+<p id="x_PO1"><a name="x_PO1"></a> Aaron Hall, Abhishek Dasgupta, Adam
+Copp, Adam Langley, Adam Warrington, Adam Winiecki, Aditya Mahajan,
+Adolfo Builes, Al Hoang, Alan Hawkins, Albert Brown, Alec Berryman,
+Alejandro Dubrovsky, Alex Hirzel, Alex Rudnick, Alex Young, Alexander
+Battisti, Alexander Macdonald, Alexander Strange, Alf Richter, Alistair
+Bayley, Allan Clark, Allan Erskine, Allen Gooch, Andre Nathan, Andreas
+Bernstein, Andreas Schropp, Andrei Formiga, Andrew Butterfield, Andrew
+Calleja, Andrew Rimes, Andrew The, Andy Carson, Andy Payne, Angelos
+Sphyris, Ankur Sethi, António Pedro Cunha, Anthony Moralez, Antoine
+Hersen, Antoine Latter, Antoine S., Antonio Cangiano, Antonio
+Piccolboni, Antonios Antoniadis, Antonis Antoniadis, Aristotle
+Pagaltzis, Arjen van Schie, Artyom Shalkhakov, Ash Logan, Austin Seipp,
+Avik Das, Avinash Meetoo, BVK Chaitanya, Babu Srinivasan, Barry Gaunt,
+Bas van Dijk, Ben Burdette, Ben Ellis, Ben Moseley, Ben Sinclair,
+Benedikt Huber, Benjamin Terry, Benoit Jauvin-Girard, Bernie Pope,
+Björn Edström, Bob Holness, Bobby Moretti, Boyd Adamson, Brad Ediger,
+Bradley Unterrheiner, Brendan J. Overdiep, Brendan Macmillan, Brett
+Morgan, Brian Bloniarz, Brian Lewis, Brian Palmer, Brice Lin, C
+Russell, Cale Gibbard, Carlos Aya, Chad Scherrer, Chaddaï Fouché,
+Chance Coble, Charles Krohn, Charlie Paucard, Chen Yufei, Cheng Wei,
+Chip Grandits, Chris Ball, Chris Brew, Chris Czub, Chris Gallagher,
+Chris Jenkins, Chris Kuklewicz, Chris Wright, Christian Lasarczyk,
+Christian Vest Hansen, Christophe Poucet, Chung-chieh Shan, Conal
+Elliott, Conor McBride, Conrad Parker, Cosmo Kastemaa, Creighton Hogg,
+Crutcher Dunnavant, Curtis Warren, D Hardman, Dafydd Harries, Dale
+Jordan, Dan Doel, Dan Dyer, Dan Grover, Dan Orias, Dan Schmidt, Dan
+Zwell, Daniel Chicayban Bastos, Daniel Karch, Daniel Lyons, Daniel
+Patterson, Daniel Wagner, Daniil Elovkov, Danny Yoo, Darren Mutz,
+Darrin Thompson, Dave Bayer, Dave Hinton, Dave Leimbach, Dave Peterson,
+Dave Ward, David Altenburg, David B. Wildgoose, David Carter, David
+Einstein, David Ellis, David Fox, David Frey, David Goodlad, David
+Mathers, David McBride, David Sabel, Dean Pucsek, Denis Bueno, Denis
+Volk, Devin Mullins, Diego Moya, Dino Morelli, Dirk Markert, Dmitry
+Astapov, Dougal Stanton, Dr Bean, Drew Smathers, Duane Johnson, Durward
+McDonell, E. Jones, Edwin DeNicholas, Emre Sevinc, Eric Aguiar, Eric
+Frey, Eric Kidd, Eric Kow, Eric Schwartz, Erik Hesselink, Erling Alf,
+Eruc Frey, Eugene Grigoriev, Eugene Kirpichov, Evan Farrer, Evan
+Klitzke, Evan Martin, Fawzi Mohamed, Filippo Tampieri, Florent Becker,
+Frank Berthold, Fred Rotbart, Frederick Ross, Friedrich Dominicus, Gal
+Amram, Ganesh Sittampalam, Gen Zhang, Geoffrey King, George Bunyan,
+George Rogers, German Vidal, Gilson Silveira, Gleb Alexeyev, Glenn
+Ehrlich, Graham Fawcett, Graham Lowe, Greg Bacon, Greg Chrystall, Greg
+Steuck, Grzegorz Chrupała, Guillaume Marceau, Haggai Eran, Harald Armin
+Massa, Henning Hasemann, Henry Laxen, Hitesh Jasani, Howard B. Golden,
+Ilmari Vacklin, Imam Tashdid ul Alam, Ivan Lazar Miljenovic, Ivan
+Miljenovic, J. Pablo Fernández, J.A. Zaratiegui, Jaap Weel, Jacques
+Richer, Jake McArthur, Jake Poznanski, Jakub Kotowski, Jakub Labath,
+James Cunningham, James Smith, Jamie Brandon, Jan Sabbe, Jared Roberts,
+Jason Dusek, Jason F, Jason Kikel, Jason Mobarak, Jason Morton, Jason
+Rogers, Jeff Balogh, Jeff Caldwell, Jeff Petkau, Jeffrey Bolden, Jeremy
+Crosbie, Jeremy Fitzhardinge, Jeremy O'Donoghue, Jeroen Pulles, Jim
+Apple, Jim Crayne, Jim Snow, Joan Jiménez, Joe Fredette, Joe Healy,
+Joel Lathrop, Joeri Samson, Johannes Laire, John Cowan, John Doe, John
+Hamilton, John Hornbeck, John Lien, John Stracke, Jonathan Guitton,
+Joseph Bruce, Joseph H. Buehler, Josh Goldfoot, Josh Lee, Josh Stone,
+Judah Jacobson, Justin George, Justin Goguen, Kamal Al-Marhubi, Kamil
+Dworakowski, Keegan Carruthers-Smith, Keith Fahlgren, Keith Willoughby,
+Ken Allen, Ken Shirriff, Kent Hunter, Kevin Hely, Kevin Scaldeferri,
+Kingdon Barrett, Kristjan Kannike, Kurt Jung, Lanny Ripple, Laurențiu
+Nicola, Laurie Cheers, Lennart Kolmodin, Liam Groener, Lin Sun, Lionel
+Barret de Nazaris, Loup Vaillant, Luke Plant, Lutz Donnerhacke, Maarten
+Hazewinkel, Malcolm Reynolds, Marco Piccioni, Mark Hahnenberg, Mark
+Woodward, Marko Tosic, Markus Schnell, Martijn van Egdom, Martin Bayer,
+Martin DeMello, Martin Dybdal, Martin Geisler, Martin Grabmueller,
+Matúš Tejiščák, Mathew Manela, Matt Brandt, Matt Russell, Matt
+Trinneer, Matti Niemenmaa, Matti Nykänen, Max Cantor, Maxime Henrion,
+Michael Albert, Michael Brauwerman, Michael Campbell, Michael
+Chermside, Michael Cook, Michael Dougherty, Michael Feathers, Michael
+Grinder, Michael Kagalenko, Michael Kaplan, Michael Orlitzky, Michael
+Smith, Michael Stone, Michael Walter, Michel Salim, Mikael Vejdemo
+Johansson, Mike Coleman, Mike Depot, Mike Tremoulet, Mike Vanier, Mirko
+Rahn, Miron Brezuleanu, Morten Andersen, Nathan Bronson, Nathan Stien,
+Naveen Nathan, Neil Bartlett, Neil Whitaker, Nick Gibson, Nick
+Messenger, Nick Okasinski, Nicola Paolucci, Nicolas Frisby, Niels Aan
+de Brugh, Niels Holmgaard Andersen, Nima Negahban, Olaf Leidinger, Oleg
+Anashkin, Oleg Dopertchouk, Oleg Taykalo, Oliver Charles, Olivier
+Boudry, Omar Antolín Camarena, Parnell Flynn, Patrick Carlisle, Paul
+Brown, Paul Delhanty, Paul Johnson, Paul Lotti, Paul Moore, Paul
+Stanley, Paulo Tanimoto, Per Vognsen, Pete Kazmier, Peter Aarestad,
+Peter Ipacs, Peter Kovaliov, Peter Merel, Peter Seibel, Peter Sumskas,
+Phil Armstrong, Philip Armstrong, Philip Craig, Philip Neustrom, Philip
+Turnbull, Piers Harding, Piet Delport, Pragya Agarwal, Raúl Gutiérrez,
+Rafael Alemida, Rajesh Krishnan, Ralph Glass, Rauli Ruohonen, Ravi
+Nanavati, Raymond Pasco, Reid Barton, Reto Kramer, Reza Ziaei, Rhys
+Ulerich, Ricardo Herrmann, Richard Harris, Richard Warburton, Rick van
+Hattem, Rob Grainger, Robbie Kop, Rogan Creswick, Roman Gonzalez, Rory
+Winston, Ruediger Hanke, Rusty Mellinger, Ryan Grant, Ryan Ingram, Ryan
+Janzen, Ryan Kaulakis, Ryan Stutsman, Ryan T. Mulligan, S Pai, Sam Lee,
+Sandy Nicholson, Scott Brickner, Scott Rankin, Scott Ribe, Sean Cross,
+Sean Leather, Sergei Trofimovich, Sergio Urinovsky, Seth Gordon, Seth
+Tisue, Shawn Boyette, Simon Brenner, Simon Farnsworth, Simon Marlow,
+Simon Meier, Simon Morgan, Sriram Srinivasan, Sriram Srinivasan, Stefan
+Aeschbacher, Stefan Muenzel, Stephan Friedrichs, Stephan Nies,
+Stephan-A. Posselt, Stephyn Butcher, Steven Ashley, Stuart Dootson,
+Terry Michaels, Thomas Cellerier, Thomas Fuhrmann, Thomas Hunger,
+Thomas M. DuBuisson, Thomas Moertel, Thomas Schilling, Thorsten Seitz,
+Tibor Simic, Tilo Wiklund, Tim Clark, Tim Eves, Tim Massingham, Tim
+Rakowski, Tim Wiess, Timo B. Hübel, Timothy Fitz, Tom Moertel, Tomáš
+Janoušek, Tony Colston, Travis B. Hartwell, Tristan Allwood, Tristan
+Seligmann, Tristram Brelstaff, Vesa Kaihlavirta, Victor Nazarov, Ville
+Aine, Vincent Foley, Vipul Ved Prakash, Vlad Skvortsov, Vojtěch Fried,
+Wei Cheng, Wei Hu, Will Barrett, Will Farr, Will Leinweber, Will
+Robertson, Will Thompson, Wirt Wolff, Wolfgang Jeltsch, Yuval Kogman,
+Zach Kozatek, Zachary Smestad, Zohar Kelrich. </p>
+<p id="x_QO1"><a name="x_QO1"></a>Finally, we wish to thank those
+readers who submitted over 800 comments anonymously.</p>
+</div>
+</div>
+<div class="rwhfooter">
+<p><img src="/support/figs/rss.png"> Want to stay up to date? Subscribe
+to the comment feed for <a id="chapterfeed" class="feed" href="/feeds/comments/">this chapter</a>, or the <a class="feed" href="/feeds/comments/">entire book</a>.</p>
+<p>Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart, and John
+Goerzen. This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">Creative Commons
+Attribution-Noncommercial 3.0 License</a>. Icons by <a href="mailto:mattahan@gmail.com">Paul Davey</a> aka <a href="http://mattahan.deviantart.com/">Mattahan</a>.</p>
+</div>
+<div class="navfooter">
+<table summary="Navigation footer" width="100%">
+  <tbody>
+    <tr>
+      <td align="left" width="40%"><a accesskey="p" href="index.html">Prev</a>
+      </td>
+      <td align="center" width="20%"> <br>
+      </td>
+      <td align="right" width="40%"> <a accesskey="n" href="getting-started.html">Next</a></td>
+    </tr>
+    <tr>
+      <td align="left" valign="top" width="40%">Real World Haskell </td>
+      <td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td>
+      <td align="right" valign="top" width="40%"> Chapter 1. Getting
+Started</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+<script type="text/javascript">_uacct = "UA-1805907-3"; urchinTracker();</script>
+</div>
+</body></html>

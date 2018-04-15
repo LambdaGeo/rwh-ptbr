@@ -1,0 +1,131 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+	<title>Título do capítulo</title>
+	<link rel="stylesheet" href="support/styles.css" type="text/css">
+	
+	</head>
+
+	<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+		
+<div  class=preface id=whyfp>
+	<div class="sect1" >
+<h2 class="title" id="id1">Já temos uma solução para você!</h2>
+	
+	<p>
+		Haskell é uma linguagem com muitos recursos, e seu aprendizado é uma experiência extremamente gratificante. Vamos nos concentrar em três elementos: A primeira é a <em>novidade</em>: nós convidamos você a pensar sobre a programação de uma perspectiva diferente e valiosa. O segundo é o <em>poder</em>: nós vamos mostrar-lhe como criar um software que é curto, rápido e seguro. Por fim, oferecemos-lhe um muita <em>diversão</em>: o prazer de aplicação de soluções de programação elegantes para resolver problemas reais.
+	
+	</p>
+
+	
+		<div class="sect2" >
+			
+	<h3 class="title"  id="id2">Inovadora</h3>
+	
+	<p>
+		Haskell é provavelmente muito diferente do que qualquer linguagem que você já usou antes. Programação funcional nos oferece uma maneira profundamente diferente de pensar sobre softwares.
+		</p>
+
+	<p> 
+Em Haskell, nós deixamos de enfatizar códigos que modifica dados. Em
+vez disso, vamos nos concentrar nas funções que têm valores imutáveis
+como entrada e produzem novos valores como saída. Dadas as mesmas
+entradas, estas funções sempre retornam os mesmos resultados. Essa é
+uma idéia central por trás da programação funcional.
+</p>
+
+<p>
+Junto com a não modificação de dados, nossas funções Haskell
+normalmente, não “dialoga” com o mundo externo, chamamos-as de funções <em>puras</em>.
+Nós fazemos uma distinção forte entre o código puro e as partes dos
+nossos programas que lêem ou escrevem arquivos, comunicam-se por meio
+de conexões de rede, ou fazem mover os braços de um robô. Isso torna
+mais fácil organizar, estudar e testar os nossos programas.
+</p>
+
+<p>
+Abandonamos algumas idéias que podem parecer fundamentais, tais como
+ter um <code>for</code> loop incorporadas a linguagem. Temos outras
+formas mais flexíveis de executar tarefas repetitivas.
+</p>
+
+<p>
+Mesmo a maneira pela qual avaliamos as expressões é diferente em
+Haskell. Nós adiamos todos os cálculos até que seu resultado seja
+realmente necessário: Haskell é uma linguagem que tem avalição <em>preguiçosa</em>.
+Esse recurso não é apenas um modo de adiar a avaliação: ela afeta
+profundamente a forma como escrevemos os programas. 
+</p>
+
+	<h3 class="title"  id="id2">Poderosa</h3>
+   <p>
+Ao longo deste livro, vamos mostrar a vocês que as alternativas do
+Haskell para os recursos de linguagens tradicionais são poderosas,
+flexíveis, e levam a códigos mais confiáveis
+   </p>
+
+<p>
+Como o código puro não pode ter relações com o mundo exterior, e os
+dados
+que ele trabalha nunca são modificados, é muito raro você ter o tipo de
+surpresa desagradável onde uma parte de um código invisível corrompe os
+dados utilizados por outro. Qualquer contexto, usamos uma função pura,
+ele irá se comportar de forma consistente. 
+   </p>
+
+<p>
+Código puro é mais fácil de testar que o código que lida com o mundo
+exterior. Quando uma função só responde a suas entradas visíveis,
+podemos afirmar com facilidade as propriedades do seu comportamento que
+deve ser sempre verdadeiro. Podemos testar automaticamente se essas
+propriedades se mantem dado um conjunto enorme de entradas aleatórias,
+e quando passar em nossos testes, podemos seguir em frente acoplando
+essa função ao sistema como todo. Temos ainda a utilização de técnicas
+tradicionais para testar o código que deve interagir com arquivos,
+redes, hardware ou exóticos. Desde há muito menos deste código impura
+do que se poderia encontrar em uma linguagem tradicional, nós temos
+muito mais segurança que o nosso software é consistente.
+   </p>
+
+<p>
+Avaliação
+preguiçosa tem alguns efeitos assustadores. Vamos dizer que queremos
+encontrar as <em>k</em> menores elementos em uma lista não
+ordenada. Em uma linguagem tradicional, a abordagem óbvia seria a de
+ordenar a lista em primeiro lugar e tirar os <em>k</em>&nbsp; elementos , mas
+isso é caro. Para maior eficiência, teríamos, ao invés disso escrever uma função especial que encontra esses valores em uma
+única passagem, e para isso teria que realizar algumas complexas alterações. Em Haskell, a abordagem sort-then-take
+realmente funciona bem: a avaliação preguiçosa garante que a lista só
+será classificada o suficiente para encontrar os <em>k</em> elementos
+mínimos. 
+   </p>
+<p>
+Melhor ainda, o nosso código Haskell, que opera de forma tão eficiente
+é minúsculo e usa funções da biblioteca padrão
+</p>
+
+<pre id="KMinima.hs:minima" class="programlisting">-- file: ch00/KMinima.hs
+-- lines beginning with "--" are comments.
+
+minima k xs = take k (sort xs)</pre>
+
+<p>
+Pode demorar um pouco para desenvolver uma percepção intuitiva para
+quando a avaliação preguiçosa é importante, mas quando nós
+exploramos-na, o código resultante é limpo, pequeno e eficiente. 
+</p>
+
+<p>
+
+Como mostra o exemplo acima, um aspecto importante do poder Haskell
+reside na compactação do código que escrevemos. Comparado a trabalhar
+em linguagens populares tradicionais, quando se desenvolver em Haskell,
+muitas vezes, escrevemos muito menos código, em menos tempo, e
+substancialmente com menos erros. 
+
+</p>
+
+	</div>
+	</div>
+				
+</div>
+</body>	
+</html>
