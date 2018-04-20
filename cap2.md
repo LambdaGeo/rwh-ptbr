@@ -39,8 +39,7 @@ Tipagem forte pode tornar mais difícil escrevermos certos tipos de código. Por
 A grande vantagem da tipagem forte é que ela captura bugs real em nosso código antes que possam causar problemas. Por exemplo, em uma linguagem fortemente tipada, não podemos acidentalmente utilizar uma cadeia onde um inteiro é esperado.
 
 
-
->![[Note]]()**Os tipos mais fracos e os tipos mais fortes**
+>![[Note]]({{site.url}}/assets/note.png)**Os tipos mais fracos e os tipos mais fortes**
 
 >É útil ter consciência de que muitas comunidades linguísticas têm suas próprias definições de um “tipo forte”. No entanto, vamos falar brevemente e em termos gerais sobre a noção de força nos sistemas do tipo.
 
@@ -54,13 +53,13 @@ A grande vantagem da tipagem forte é que ela captura bugs real em nosso código
 
 Ter um sistema do tipo _estático_ significa que o compilador sabe o tipo de cada valor e de expressão em tempo de compilação, antes que qualquer código seja executado. Um compilador ou intérpretador Haskell irá detectar quando tentarmos usar expressões cujos tipos não coincidem, e rejeitar o nosso código com uma mensagem de erro antes de executá-lo.
 
-ghci> True && "false"
+    ghci> True && "false"
 
-<interactive>:1:8:
-    Couldn't match expected type `Bool' against inferred type `[Char]'
-    In the second argument of `(&&)', namely `"false"'
-    In the expression: True && "false"
-    In the definition of `it': it = True && "false"
+    <interactive>:1:8:
+        Couldn't match expected type `Bool' against inferred type `[Char]'
+        In the second argument of `(&&)', namely `"false"'
+        In the expression: True && "false"
+        In the definition of `it': it = True && "false"
 
 Esta mensagem de erro é do tipo que já vimos antes. O compilador tem inferido que o tipo da expressão `"false"` é \[Char\]. O `(&&)` exige que cada operador de seus operandos como sendo do tipo Bool, e seu operando à esquerda de fato tem este tipo. Desde que o real tipo de `"false"` não corresponde ao tipo necessário, o compilador rejeita esta expressão como mal escrita.
 
