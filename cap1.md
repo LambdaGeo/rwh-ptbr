@@ -23,14 +23,14 @@ GHC tem três componentes principais.
 *   **ghci** é um intérpretador interativo e depurador.
 *   **runghc** é um programa para a execução de programas Haskell como scripts, sem a necessidade de compilá-los em primeiro lugar.
 
----
+
 **NOTA**
 
 >Como nos referimos aos componentes do GHC
 >
 >Quando discutimos o sistema GHC como um todo, vamos nos referir a ele como GHC. Quando precisarmos falar de um comando específico, vamos falar ghc, ghci ou runghc pelo nome.
 
----
+
 
 Neste livro, vamos supor que você está usando pelo menos a versão 6.12.2 do GHC, que foi lançado em 2010. Muitos dos nossos exemplos irá funcionar sem modificações em versões mais antigas. No entanto, _recomendamos_ usar a versão mais recente disponível para sua plataforma. Se você estiver usando Windows ou Mac OS X, você pode começar rápidamente e facilmente usando um instalador pré-construído. Para obter uma cópia do GHC para essas plataformas, visite [a página de download do GHC](http://www.haskell.org/ghc/download.html), e olhe na lista de pacotes binários e instaladores.
 
@@ -61,16 +61,16 @@ Prelude>
 ```
 A palavra `Prelude` no prompt indica que `Prelude`, uma biblioteca padrão de funções úteis, está carregada e pronto para uso. Quando carregar outros módulos ou arquivos de origem, eles vão aparecer no prompt, também.
 
----
+
 **Obtendo ajuda**
 >
 >Se você digitar `:?` no prompt **ghci** ele irá imprimir uma detalhada mensagem de ajuda.
 
----
+
 
 O módulo `Prelude` é muitas vezes referida como “the standard prelude”, porque seu conteúdo é definido pelo padrão Haskell 98. Normalmente, ele é simplesmente reduzido à “o prelude”.
 
----
+
 
 **Sobre o prompt ghci**
 
@@ -83,7 +83,7 @@ O módulo `Prelude` é muitas vezes referida como “the standard prelude”, po
 Prelude :set prompt "ghci"
 ghci>
 ```
--	--
+
 
 O prelude está sempre implicitamente disponível, nós não precisamos de tomar quaisquer medidas para utilizar os tipos, valores ou funções que ele define. Para utilizar as definições de outros módulos, devemos carregá-los em ghci, utilizando o :module ou :m.
 ```
