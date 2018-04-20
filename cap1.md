@@ -452,7 +452,13 @@ Haskell exige que nomes de tipo inicie com uma letra maiúscula e nomes de vari�
 
 A primeira coisa que podemos fazer para começar a explorar o mundo de tipos é pedir ao **ghci** para nos dizer mais sobre o que ele é usandondo um comando **ghci**, `:set` ou `:s,` que nos permite alterar alguns dos seus comportamentos padrão. Podemos pedir que imprima mais informações sobre tipo, como a seguir.
 
-    ghci> 
+ghci> :set +t
+ghci> 'c'
+'c'
+it :: Char
+ghci> "foo"
+"foo"
+it :: [Char]
 
 O que `+t` faz é dizer ghci para imprimir o tipo de expressão após a expressão. O enigmático `it` na saída pode ser muito útil: ele é realmente o nome de uma variável especial, que armazena no **ghci** o resultado da última expressão avaliada. (Esta não é uma característica da linguagem Haskell, é específico para **ghci**.) Vamos quebrar o significado da última linha de saída **ghci**.
 
@@ -465,14 +471,4 @@ O que `+t` faz é dizer ghci para imprimir o tipo de expressão após a express�
 
 Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart, and John Goerzen. This work is licensed under a [Creative Commons Attribution-Noncommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/). Icons by [Paul Davey](mailto:mattahan@gmail.com) aka [Mattahan](http://mattahan.deviantart.com/).
 
-[Anterior](index.html) 
 
- 
-
- [Próximo](getting-started.html)
-
-Real World Haskell 
-
-[Inicio](index.html)
-
- Chapter 1. Getting Started
