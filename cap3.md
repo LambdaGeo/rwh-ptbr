@@ -1,5 +1,6 @@
  
-#Capítulo 3. Definindo os tipos e entendendo as funções
+Capítulo 3. Definindo os tipos e entendendo as funções
+------------------------------------------------------
 
 
 
