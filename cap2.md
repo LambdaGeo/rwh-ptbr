@@ -22,12 +22,11 @@ O que faz do sistemas de tipo interessante é que eles não são todos iguais. N
 
 O sistema de tipos do Haskell nos permite pensar em um nível muito abstrato: ela nos permite escrever  progrmas concisos e poderosos.
 
-O sistema de tipo do Haskell
-----------------------------
+### O sistema de tipo do Haskell
 
 Há três aspectos interessantes sobre tipos em Haskell: eles são _fortes_, eles são _estáticos_, e podem ser automaticamente _inferidos_. Vamos falar mais detalhadamente sobre cada uma dessas idéias. Quando possível, nós vamos apresentar semelhanças entre os conceitos do tipo de sistema de Haskell e idéias relacionadas em outras linguagens. Iremos também abordar os pontos fortes e fracos de cada uma dessas propriedades.
 
-### Tipos fortes
+#### Tipos fortes
 
 Quando dizemos que Haskell tem um sistema do tipo _forte_, queremos dizer que o sistema garante que um tipo de programa não pode incluir certos tipos de erros. Esses erros vêm surgem da tentativa de escrever expressões que não fazem sentido, como a utilização de um número inteiro como uma função. Por exemplo, se uma função espera para trabalhar com números inteiros, e passar-lhe uma string, o compilador Haskell irá rejeitá-lo.
 
@@ -39,23 +38,29 @@ Tipagem forte pode tornar mais difícil escrevermos certos tipos de código. Por
 
 A grande vantagem da tipagem forte é que ela captura bugs real em nosso código antes que possam causar problemas. Por exemplo, em uma linguagem fortemente tipada, não podemos acidentalmente utilizar uma cadeia onde um inteiro é esperado.
 
-![[Note]](support/figs/note.png)
 
-Os tipos mais fracos e os tipos mais fortes
 
-É útil ter consciência de que muitas comunidades linguísticas têm suas próprias definições de um “tipo forte”. No entanto, vamos falar brevemente e em termos gerais sobre a noção de força nos sistemas do tipo.
+>![[Note]]({{site.url}/assets/note.png)**Os tipos mais fracos e os tipos mais fortes**
 
-Em ciência da computação acadêmica, os significados de “forte” e “fraco” têm um sentido técnico estrito: refere-se à força de _como permissivo_ um sistema de tipo é. Um sistema de tipo mais fraco trata mais expressões como válida do que um sistema de tipo mais forte.
+>É útil ter consciência de que muitas comunidades linguísticas têm suas próprias definições de um “tipo forte”. No entanto, vamos falar brevemente e em termos gerais sobre a noção de força nos sistemas do tipo.
 
-Por exemplo, em Perl, a expressão `"foo" + 2` avalia o número 2, mas a expressão `"13foo" + 2` avalia o número 15. Haskell rejeita ambas as expressões como inválido, porque o `(+)` operador exige tanto de seus operandos ser numéricos. Por causa do tipo de sistema de Perl ser mais permissivo do que Haskell, dizemos que ela é mais fraca nos termos do presente técnica de interpretação restrita.
+>Em ciência da computação acadêmica, os significados de “forte” e “fraco” têm um sentido técnico estrito: refere-se à força de _como permissivo_ um sistema de tipo é. Um sistema de tipo mais fraco trata mais expressões como válida do que um sistema de tipo mais forte.
 
-Todo "barulho" em torno de sistemas do tipo têm suas raízes no  Inglês coloquial, onde as pessoas atribuem noções de _valor_ para as expressões “fraco” e “forte”: geralmente pensamos que força é melhor do que fraqueza. De um lado, programadores que falam mais o Inglês coloquial e do outro os  acadêmicos que usam mais os jargões acadêmicos _jogam pedras_ em qualquer sistema de tipo que não satisfiça as suas expectativas. O resultado é sempre um passatempo popular na Internet, uma verdeira guerra.
+>Por exemplo, em Perl, a expressão `"foo" + 2` avalia o número 2, mas a expressão `"13foo" + 2` avalia o número 15. Haskell rejeita ambas as expressões como inválido, porque o `(+)` operador exige tanto de seus operandos ser numéricos. Por causa do tipo de sistema de Perl ser mais permissivo do que Haskell, dizemos que ela é mais fraca nos termos do presente técnica de interpretação restrita.
 
-### Tipos estáticos
+>Todo "barulho" em torno de sistemas do tipo têm suas raízes no  Inglês coloquial, onde as pessoas atribuem noções de _valor_ para as expressões “fraco” e “forte”: geralmente pensamos que força é melhor do que fraqueza. De um lado, programadores que falam mais o Inglês coloquial e do outro os  acadêmicos que usam mais os jargões acadêmicos _jogam pedras_ em qualquer sistema de tipo que não satisfiça as suas expectativas. O resultado é sempre um passatempo popular na Internet, uma verdeira guerra.
+
+#### Tipos estáticos
 
 Ter um sistema do tipo _estático_ significa que o compilador sabe o tipo de cada valor e de expressão em tempo de compilação, antes que qualquer código seja executado. Um compilador ou intérpretador Haskell irá detectar quando tentarmos usar expressões cujos tipos não coincidem, e rejeitar o nosso código com uma mensagem de erro antes de executá-lo.
 
-    ghci> 
+ghci> True && "false"
+
+<interactive>:1:8:
+    Couldn't match expected type `Bool' against inferred type `[Char]'
+    In the second argument of `(&&)', namely `"false"'
+    In the expression: True && "false"
+    In the definition of `it': it = True && "false"
 
 Esta mensagem de erro é do tipo que já vimos antes. O compilador tem inferido que o tipo da expressão `"false"` é \[Char\]. O `(&&)` exige que cada operador de seus operandos como sendo do tipo Bool, e seu operando à esquerda de fato tem este tipo. Desde que o real tipo de `"false"` não corresponde ao tipo necessário, o compilador rejeita esta expressão como mal escrita.
 
@@ -69,12 +74,12 @@ Em Haskell, o compilador comprova a ausência de erros de tipo para nós: um pro
 
 Uma analogia útil para entender o valor de tipagem estática é olhar para ela como a colocação de peças em um quebra-cabeças. Em Haskell, se uma parte tem a forma errada, ela simplesmente não vai caber. Numa linguagem com tipagem dinâmica, todas as peças são quadrados 1x1 e sempre em forma, então você tem que analisar constantemente a imagem resultante e verificar (através de testes) se é correta.
 
-### Inferência de tipo
+#### Inferência de tipo
 
 Finalmente, um compilador Haskell pode automaticamente deduzir os tipos de quase\[[3](#ftn.id578076)\] todas as expressões de um programa. Esse processo é conhecido como _inferência de tipo_. Haskell permite declarar explicitamente o tipo de qualquer valor, mas a presença de inferência de tipo significa que este é quase sempre opcional, não algo que somos obrigados a fazer.
 
-O que esperar do sistema tipo
------------------------------
+### O que esperar do sistema tipo
+
 
 Nossa exploração dos recursos e benefícios importantes do sistema de tipo no Haskell terá a duração de uma série de capítulos. No início, você pode achar uma tarefa lidar com tipos em Haskell.
 
@@ -88,10 +93,10 @@ Além disso, dado que Haskell pode inferir os tipos de suas expressões e funç�
 
 Vamos introduzir novos usos de tipos Haskell ao longo deste livro, para nos ajudar a escrever e testar códigos práticos. Como resultado, o entendimento completo do "por que o sistema de tipo" vale a pena surgirão gradualmente.  
 
-Alguns tipos básicos comuns
----------------------------
+### Alguns tipos básicos comuns
 
-Na [seção intitulada “Primeiros passos com os tipos”](getting-started.html#starting.types "Primeiros passos com os tipos"), apresentamos alguns tipos. Aqui estão mais alguns de tipos básicos mais comuns.
+
+Na [seção intitulada “Primeiros passos com os tipos”](), apresentamos alguns tipos. Aqui estão mais alguns de tipos básicos mais comuns.
 
 *   Um valor Char representa um caractere Unicode.
     
@@ -106,37 +111,58 @@ Na [seção intitulada “Primeiros passos com os tipos”](getting-started.html
 
 Já fizemos uma breve visita da notação para os tipos em Haskell [na seção chamada “Primeiros passos com os tipos”](getting-started.html#starting.types "Primeiros passos com os tipos"). Quando escrevemos um tipo explicitamente, usamos a notação de `expression :: MyType` para dizer que a `expression` tem o tipo MyType. Se omitirmos o `::` e o tipo que se segue, o compilador Haskell irá inferir o tipo da expressão.
 
-    ghci> 
+    ghci> :type 'a'
+    'a' :: Char
+    ghci> 'a' :: Char
+    'a'
+    ghci> [1,2,3] :: Int
+
+    <interactive>:1:0:
+        Couldn't match expected type `Int' against inferred type `[a]'
+        In the expression: [1, 2, 3] :: Int
+        In the definition of `it': it = [1, 2, 3] :: Int
 
 A combinação de `::` e depois o tipo é chamado um _assinatura de tipo_.
 
-Aplicação de função
--------------------
+### Aplicação de função
+
 
 Agora que já completamos, por enquanto, algumas informações sobre os tipos de dados. Podemos voltar a nossa atenção de como _trabalhar_ com alguns dos tipos que já estavamos aplicando. Para isso iremos usar algumas funções.
 
 Para aplicar uma função em Haskell, podemos escrever o nome da função seguido por seus argumentos.
 
-    ghci> 
+    ghci> odd 3
+    True
+    ghci> odd 6
+    False
 
 Nós não usamos parênteses ou vírgulas para separar o grupo ou argumentos para uma função, apenas escrevemos o nome da função, seguido por cada argumento em ordem, é o suficiente. Como exemplo, vamos aplicar a função `compare`, que leva dois argumentos.
 
-    ghci> 
+    ghci> compare 2 3
+    LT
+    ghci> compare 3 3
+    EQ
+    ghci> compare 3 2
+    GT
 
 Se você está acostumado com a sintaxe de chamada de função em outros linguagens, pode demorar um pouco para se acostumar com esta notação , mas ela é simples e uniforme.
 
 Aplicação de função tem precedência maior do que usando os operadores. Por exemplo, as seguintes expressões têm o mesmo significado.
 
-    ghci> 
+    ghci> (compare 2 3) == LT
+    True
+    ghci> compare 2 3 == LT
+    True
 
 Os parênteses acima não fazem mal nenhum, mas adiciona um pouco de ruído visual. Às vezes, porém, _devemos_ usar parênteses para indicar a forma como queremos que uma expressão complicada seja analisada.
 
-    ghci> 
+    ghci> compare (sqrt 3) (sqrt 6)
+    LT
 
 Isto é, aplica-se o `compare` com os resultados da aplicação `sqrt 3` e `sqrt 6`, respectivamente. Se omitir os parênteses, parece que estamos tentando passar quatro argumentos para `compare`, em vez dos dois que ele aceita.
 
-Tipos de dados compostos uteis: listas e tuplas
------------------------------------------------
+### Tipos de dados compostos uteis: listas e tuplas
+
 
 Um tipo de dados composto é construído a partir de outros tipos. Os tipos mais comuns de dados compostos em Haskell são listas e tuplas.
 
@@ -144,11 +170,23 @@ Nós já vimos o tipo de lista na [seção chamada “Strings e caracteres”](g
 
 A função `head` (“cabeça”) retorna o primeiro elemento de uma lista.
 
-    ghci> 
+    ghci> head [1,2,3,4]
+    1
+    ghci> head ['a','b','c']
+    'a'
 
 Por outro lado a função, `tail` (“cauda”), retorna todos elementos, _menos_ a cabeça de uma lista.
 
-    ghci> 
+    ghci> tail [1,2,3,4]
+    [2,3,4]
+    ghci> tail [2,3,4]
+    [3,4]
+    ghci> tail [True,False]
+    [False]
+    ghci> tail "list"
+    "ist"
+    ghci> tail []
+    *** Exception: Prelude.tail: empty list
 
 Como você pode ver, podemos aplicar `head` e `tail` na lista de tipos diferentes. Aplicando `head` para um valor \[Char\] retorna um valor Char, ao aplicar a um valor \[Bool\] retorna um valor Bool. Para a função `head` não importa o tipo dos elementos da lista.
 
@@ -156,33 +194,38 @@ Como os valores de uma lista podem possuir qualquer tipo, chamamos a lista de ti
 
 Podemos escrever o tipo de “lista de `a`” colocando a variável tipo entre colchetes: \[a\]. Isso equivale a dizer: “Eu não me importo com o tipo que eu tenho, posso fazer uma lista com ele”.
 
-![[Note]](support/figs/note.png)
 
-Distinguir nomes de tipo e as variáveis tipo
 
-Agora podemos ver porque um nome do tipo deve começar com uma letra maiúscula: o que torna diferente uma variável do tipo, é que ela deve começar com uma letra minúscula.
+>![[Note]]({{site.url}}/assets/note.png)**Distinguir nomes de tipo e as variáveis tipo**
+
+>Agora podemos ver porque um nome do tipo deve começar com uma letra maiúscula: o que torna diferente uma variável do tipo, é que ela deve começar com uma letra minúscula.
 
 Quando falamos que uma lista tem valores de um tipo específico, nós estamos substituindo o tipo pelo nosso tipo. Assim, por exemplo, o tipo \[Int\] é uma lista de valores do tipo Int, pois substituimos `a` por Int. Da mesma forma,  `[MyPersonalType]` é uma lista de valores do tipo `MyPersonalType`. Podemos realizar esta substituição recursivamente, também: `[[Int]]` é uma lista de valores do tipo `[Int]`, ou seja, uma lista de listas de `Int.`
 
-    ghci> 
+    ghci> :type [[True],[False,False]]
+    [[True],[False,False]] :: [[Bool]]
 
 O tipo da expressão acima é uma lista de listas de Bool.
 
-![[Note]](support/figs/note.png)
 
-As listas são especiais
 
-As listas são o “pão e a manteiga” de coleções Haskell. Em uma linguagem imperativa, poderíamos realizar uma tarefa com muitos itens iteragindo através de um loop. Isso é algo que nós frequentemente , fazemos em Haskell através do percorrimento em uma lista, seja por recursão ou usando uma função que faça a recursão para nós. Listas são a forma mais fácil  que temos para usar dados que estruturem o nosso programa e o seu fluxo de controle. Nós vamos gastar muito mais tempo para discutir as listas no [Capítulo 4, _A programação funcional_](functional-programming.html "Chapter 4. Functional programming").
+>![[Note]]({{site.url}/assets/note.png)**As listas são especiais**
+
+>As listas são o “pão e a manteiga” de coleções Haskell. Em uma linguagem imperativa, poderíamos realizar uma tarefa com muitos itens iteragindo através de um loop. Isso é algo que nós frequentemente , fazemos em Haskell através do percorrimento em uma lista, seja por recursão ou usando uma função que faça a recursão para nós. Listas são a forma mais fácil  que temos para usar dados que estruturem o nosso programa e o seu fluxo de controle. Nós vamos gastar muito mais tempo para discutir as listas no [Capítulo 4, _A programação funcional_]().
 
 Uma tupla é uma coleção de tamanho fixo de valores, onde cada valor pode ter um tipo diferente. Isto distingue-os de uma lista, que pode ter qualquer tamanho, mas cujos elementos devem ter todos o mesmo tipo.
 
 Para ajudar a entender a diferença, vamos dizer que queremos controlar dois pedaços de informação sobre um livro. Tem um ano de publicação, que é um número e um título, que é uma seqüência de caracteres. Nós não podemos manter estes dois pedaços de informação em uma lista, porque eles têm tipos diferentes. Em vez disso, usamos uma tupla.
 
-    ghci> 
+    ghci> (1964, "Labyrinths")
+    (1964,"Labyrinths")
 
 Nós escrevemos uma tupla colocando seus elementos entre parênteses e separando-os com vírgulas. Nós usamos a mesma notação para escrever seu tipo.
 
-    ghci> 
+    ghci> :type (True, "hello")
+    (True, "hello") :: (Bool, [Char])
+    ghci> (4, ['a', 'm'], (16, True))
+    (4,"am",(16,True))
 
 Há um tipo especial, (), que atua como uma tupla de zero elementos. Esse tipo tem apenas um valor, também por escrito `()`. Tanto o tipo e o valor são normalmente pronunciado “unit”. Se você estiver familiarizado com C, () é similar ao void.
 
@@ -190,11 +233,15 @@ Haskell não tem uma noção de tupla de um elemento. Tuplas são frequentemente
 
 Um tipo de uma tupla representa o número, posições e tipos de seus elementos. Isto significa que tuplas contendo diferentes números e tipos de elementos têm tipos distintos, como fazem as tuplas cujos tipos aparecem em ordens diferentes.
 
-    ghci> 
+    ghci> :type (False, 'a')
+    (False, 'a') :: (Bool, Char)
+    ghci> :type ('a', False)
+    ('a', False) :: (Char, Bool)
 
 Neste exemplo, a expressão `(False, 'a')` tem o tipo (Bool, Char), que é diferente do tipo de `('a', False)`. Mesmo que o número de elementos e seus tipos são os mesmos, estes dois tipos são distintos, porque as posições dos tipos de elemento são diferentes.
 
-    ghci> 
+    ghci> :type (False, 'a', 'b')
+    (False, 'a', 'b') :: (Bool, Char, Char)
 
 Este tipo, (Bool, Char, Char), é diferente de (Bool, Char) pois contém três elementos, e não dois.
 
@@ -213,47 +260,56 @@ Quais são os tipos das seguintes expressões?
 *   `[(True, []), (False, [['a']])]`
     
 
-Funções sobre listas e tuplas
------------------------------
+### Funções sobre listas e tuplas
+
 
 Nossa discussão de listas e tuplas mencionou como podemos construí-los, mas pouco sobre como podemos trabalhar com eles depois. Nós só introduzimos duas funções de lista até agora, `head` e `tail`.
 
 Um par de funções relacionadas com lista, `take` e `drop`, toma dois argumentos. Dado um número `n` e uma lista, `take` o primeiro retorna `n` elementos da lista, enquanto a `drop` retorna todos, _menos_ os primeiros `n` elementos da lista. (Como estas funções possuem dois argumentos, note que nós separar cada função e seus argumentos utilizando o espaço em branco).
 
-    ghci> 
+    ghci> take 2 [1,2,3,4,5]
+    [1,2]
+    ghci> drop 3 [1,2,3,4,5]
+    [4,5]
 
 Para tuplas, as funções `fst` e `snd` retornam o primeiro e segundo elemento do par, respectivamente.
 
-    ghci> 
+    ghci> fst (1,'a')
+    1
+    ghci> snd (1,'a')
+    'a'
 
 Se o seu background  for em uma outra linguagem de programação, estes exemploes  podem ser parecidos com uma chamada de uma função de dois argumentos. Nos termos da convenção Haskell para a aplicação da função, cada uma é uma aplicação de uma função a um único parametro, que um par de elementos.
 
-![[Note]](support/figs/note.png)
 
-Tuplas Haskell não são listas imutáveis
 
-Se você está vindo do mundo do Python, você provavelmente tem usado listas e tuplas como conceitos quase intercambiáveis. Embora os elementos de uma tupla Python são imutáveis, que podem ser indexados e iterada usando os mesmos métodos como uma lista. Este não é o caso em Haskell, portanto, não tente levar essa idéia com você em território linguístico desconhecido.
+>![[Note]]({{site.url}}/assets/note.png)**Tuplas Haskell não são listas imutáveis**
 
-Como exemplo, dê uma olhada no tipo de assinaturas `fst` e `snd`: eles são definidos apenas para os pares, e não pode ser usado com tuplas de outros tamanhos. O sistema de tipos do haskell torna complicado  escrever uma função generalizada que pegue o segundo elemento de qualquer tupla, não importa quão grande seja”.
+>Se você está vindo do mundo do Python, você provavelmente tem usado listas e tuplas como conceitos quase intercambiáveis. Embora os elementos de uma tupla Python são imutáveis, que podem ser indexados e iterada usando os mesmos métodos como uma lista. Este não é o caso em Haskell, portanto, não tente levar essa idéia com você em território linguístico desconhecido.
 
-### Passando uma expressão para uma função
+>Como exemplo, dê uma olhada no tipo de assinaturas `fst` e `snd`: eles são definidos apenas para os pares, e não pode ser usado com tuplas de outros tamanhos. O sistema de tipos do haskell torna complicado  escrever uma função generalizada que pegue o segundo elemento de qualquer tupla, não importa quão grande seja”.
+
+#### Passando uma expressão para uma função
 
 Em Haskell, a aplicação de função é associativa a esquerda. Isto é melhor ilustrado por exemplo: a expressão `a b c d` é equivalente a `(((a b) c) d)`. Se quisermos usar uma expressão com um argumento de uma outra, temos de usar parênteses para dizer explicitamente ao analisador o que realmente significa. Aqui está um exemplo.
 
-    ghci> 
+    ghci> head (drop 4 "azerty")
+    't
 
 Podemos ler isto como “passe a expressão `drop 4 "azerty"` como argumento de `head`”. Se tivéssemos deixado de fora os parênteses, a expressão seria semelhante a passar três argumentos para `head`. Compilação falhará com um erro do tipo, `head` requer um único argumento, uma lista.
 
-Tipos de função e pureza
-------------------------
+### Tipos de função e pureza
+
 
 Vamos dar uma olhada no tipo de uma função.
 
-    ghci> 
+    ghci> :type lines
+    lines :: String -> [String]
 
 Podemos ler o `->` acima como “para”, que se traduz vagamente como “retorna”. A assinatura como um todo,  lê como “`lines` tem o tipo String para lista-de-String”. Vamos tentar aplicar a função.
 
-    ghci> 
+    ghci> lines "the quick\nbrown fox\njumps"
+    ["the quick","brown fox","jumps"]
 
 A função `lines`divide uma string em limites de linha. Observe que a sua assinatura nos deu uma dica sobre o que a função pode realmente fazer: ela pega uma String, e retorna muitas. Esta é uma valiosa propriedade incrível de tipos em uma linguagem funcional.
 
@@ -263,31 +319,37 @@ Os efeitos colaterais são essencialmente entradas ou saídas invisíveis as fun
 
 Se uma função tem efeitos colaterais, podemos dizer a partir da leitura de sua assinatura: o tipo do resultado da função começará com IO.
 
-    ghci> 
+    ghci> :type readFile
+    readFile :: FilePath -> IO String 
 
 O sistema de tipo de Haskell nos impede acidentalmente misturar códigos impuro e puro.
 
-Arquivos fonte Haskell, e escrevendo funções simples
-----------------------------------------------------
+### Arquivos fonte Haskell, e escrevendo funções simples
+
 
 Agora que sabemos como aplicar as funções, é hora de voltamos nossa atenção para como escrevê-las. Podemos escrever funções em **ghci**, entretanto ele não é um bom ambiente para isso. Ele só aceita um subconjunto muito limitado do Haskell: e o mais importante, a sintaxe que é utilizada para a definição de funções não é o mesma quando usamos um arquivo fonte Haskell\[[5](#ftn.id579534)\]. Em vez disso, vamos finalmente mudar a forma que usamos até então e criar um arquivo de fonte.
 
 Arquivos fonte em Haskell geralmente são identificadas com um sufixo `.hs`. Aqui está a definição de uma função simples: crie um arquivo chamado `soma.hs`, e adicionar este conteúdo a ele.
 
+```haskell
 \-\- arquivo: ca03/soma.hs  
 soma a b = a + b
+```
 
 No lado esquerdo do `=` temos o nome da função, seguido pelos argumentos da função. Do lado direito temos o corpo da função. Com o nosso arquivo fonte salvo, podemos carregá-lo em **ghci** com **:load** ou **:l**, e usar nosso nova função `soma` imediatamente. (O prompt que é exibido pelo **ghci** vai mudar depois que você carregar o arquivo.)
 
-    ghci> 
+    ghci> :load add.hs
+    [1 of 1] Compiling Main             ( add.hs, interpreted )
+    Ok, modules loaded: Main.
+    ghci> add 1 2
+    3
 
-![[Note]](support/figs/note.png)
 
-E se ghci não conseguir encontrar o arquivo fonte?
+>![[Note]]({{site.url}}/assets/note.png)**E se ghci não conseguir encontrar o arquivo fonte?**
 
-Quando você executar **ghci** pode não ser capaz de encontrar o seu arquivo fonte. Ele irá procurar por arquivos fonte em qualquer diretório que ele foi executado. Se este não é o diretório que seu arquivo fonte esta, na verdade, você pode usar o comando **:cd** do **ghci** para alterar o seu diretório de trabalho.
+>Quando você executar **ghci** pode não ser capaz de encontrar o seu arquivo fonte. Ele irá procurar por arquivos fonte em qualquer diretório que ele foi executado. Se este não é o diretório que seu arquivo fonte esta, na verdade, você pode usar o comando **:cd** do **ghci** para alterar o seu diretório de trabalho.
 
-    ghci> 
+    ghci> :cd /tmp
 
 Alternativamente, você pode fornecer o caminho para o arquivo fonte Haskell como argumento de **:l**. Esse caminho pode ser absoluto ou relativo à o diretório atual do **ghci**.
 
@@ -297,7 +359,7 @@ Haskell não possui uma palavra-chave de **return**, como uma função é uma ex
 
 Quando você vê um simbolo `=` no Haskell ele tem o seguinte “sentido”: o nome do lado esquerdo é definido como sendo a expressão do lado direito.
 
-### Apenas o que é uma variável, afinal?
+#### Apenas o que é uma variável, afinal?
 
 Em Haskell, uma variável fornece uma maneira de dar um nome a uma expressão. Uma vez que uma variável é _vinculada_ (ou seja, associada a) uma expressão particular, o seu valor não muda: sempre podemos usar o nome da variável em vez de escrever a expressão e obter o mesmo resultado de qualquer maneira.
 
@@ -307,22 +369,36 @@ A diferença fundamental entre essas duas noções de uma variável é que, em H
 
 Por exemplo, se executar o seguinte script Python minúsculo, ele irá imprimir o número 11.
 
+```haskell
 x = 10  
 x = 11  
 \# value of x is now 11  
 print x
-
+```
 Em contraste, tentando o equivalente em Haskell resultará em um erro.
 
+```haskell
 \-\- arquivo: ca02/Atribuição.hs  
 x = 10  
 x = 11
+```
 
 Nós não podemos atribuir um valor para `x` duas vezes.
 
-    ghci> 
+    ghci> drop 2 "foobar"
+    "obar"
+    ghci> drop 4 "foobar"
+    "ar"
+    ghci> drop 4 [1,2]
+    []
+    ghci> drop 0 [1,2]
+    [1,2]
+    ghci> drop 7 []
+    []
+    ghci> drop (-2) "foo"
+    "foo"
 
-### Avaliação condicional
+#### Avaliação condicional
 
 Como muitas outras linguagens, em Haskell temos uma expressão `if` . Vamos vê-la em ação, então iremos explicar o que está acontecendo. Por exemplo, vamos escrever nossa própria versão da função `drop`. Antes de começar, vamos aprofundar um pouco sobre como `drop` de funções. Antes de começar, vamos aprofundar um pouco sobre como o `drop` se comporta, para que possamos reproduzir seu comportamento.
 
@@ -330,10 +406,12 @@ Como muitas outras linguagens, em Haskell temos uma expressão `if` . Vamos vê-
 
 Do exposto, parece que a `drop` retorna a lista original, se o número a remover é inferior ou igual a zero. Caso contrário, ele remove os elementos até que se esgote ou atingir o número indicado. Aqui está uma função `meuDrop` que tem o mesmo comportamento, e usa a expressão Haskell `if` para decidir o que fazer. A função `null` abaixo verifica se a lista está vazia.
 
+```haskell
 \-\- arquivo: ca02/meuDrop.hs  
 meuDrop n xs = if n <= 0 || null xs  
                then xs  
                else meuDrop (n - 1) (tail xs)
+```
 
 Em Haskell, a indentação é importante: ele _continua_ uma definição existente, em vez de começar um novo. Não omita a identação!
 
