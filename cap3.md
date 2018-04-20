@@ -62,13 +62,13 @@ Podemos criar um novo valor do tipo InfoLivro tratando `Livro` como uma função
 
 Uma vez que tenhamos definido um modelo, podemos experimentar-lo com o **ghci**. Nós começamos usando o comando **:load** ou **:l** para carregar nosso arquivo de origem.
 
-	:load Livraria
+	ghci>:load Livraria
 	[1 of 1] Compiling Main             ( Livraria.hs, interpreted )
 	Ok, modules loaded: Main.
 
 Lembre-se que a variável `meuInfo`  é definida no nosso arquivo fonte. Aqui está ela.
 
-    	ghci> myInfo
+	ghci> myInfo
 	Book 9780135072455 "Algebra of Programming" ["Richard Bird","Oege de Moor"]
 	ghci> :type myInfo
 	myInfo :: BookInfo
@@ -80,12 +80,12 @@ Podemos construir novos valores interativamente no **ghci** também.
 
 O comando **ghci** **:type** ou **:t** nos permite ver o tipo de expressão é.
 
-    	ghci> :type Book 1 "Cosmicomics" ["Italo Calvino"]
+	ghci> :type Book 1 "Cosmicomics" ["Italo Calvino"]
 	Book 1 "Cosmicomics" ["Italo Calvino"] :: BookInfo
 
 Lembre-se que, se quisermos definir uma nova variável dentro do **ghci**, a sintaxe é ligeiramente diferente daquela de um arquivo fonte Haskell: é preciso colocar um `let` na frente da variável.
 
-    	ghci> let cities = Book 173 "Use of Weapons" ["Iain M. Banks"]
+	ghci> let cities = Book 173 "Use of Weapons" ["Iain M. Banks"]
 
 Para saber mais sobre um tipo, podemos usar alguns **ghci** capabilidades de browsing. O comando **:info** ou **:i** recebe informações do **ghci** para nos dizer tudo o que se sabe sobre um determinado nome.
 
@@ -96,7 +96,7 @@ Para saber mais sobre um tipo, podemos usar alguns **ghci** capabilidades de bro
 
 Podemos também descobrir como usamos `Book` para construir um novo valor do tipo InfoLivro.
 
-    	ghci> :type Book
+	ghci> :type Book
 	Book :: Int -> String -> [String] -> BookInfo
 
 Podemos tratar um construtor de valor como uma outra função qualquer, o que ele faz é criar e retornar um novo valor do tipo que desejamos.
@@ -200,8 +200,8 @@ A mensagem de erro `No instance` surgiu porque nós não fornecemos um argumento
 
 Há alguma sobreposição entre tuplas e definidas pelo usuário tipos de dado algébricos. Se quiséssemos, poderíamos representar o nosso tipo de InfoLivro anteriormente como um tupla (Int, String, \[String\]).
 
-    	ghci> Book 2 "The Wealth of Networks" ["Yochai Benkler"]
-    	Book 2 "The Wealth of Networks" ["Yochai Benkler"]
+	ghci> Book 2 "The Wealth of Networks" ["Yochai Benkler"]
+	Book 2 "The Wealth of Networks" ["Yochai Benkler"]
 	ghci> (2, "The Wealth of Networks", ["Yochai Benkler"])
 	(2,"The Wealth of Networks",["Yochai Benkler"])
 
@@ -276,7 +276,7 @@ Tipos de dado algébricos fornecer uma poderosa forma única para descrever tipo
 
 Com apenas um construtor, um tipo de dados algébrico é semelhante a uma tupla: ele agrupa os valores relacionados juntos em um valor composto. Corresponde a uma `struct` em C ou C++, e seus componentes correspondem aos campos de uma `struct`. e seus componentes correspondem aos campos do tipo InfoLivro que definimos anteriormente.
 
-```C
+```c
 struct info_livro {  
     int id;  
     char *nome;  
@@ -300,7 +300,7 @@ Na [seção chamada “casamento de padrões”](defining-types-streamlining-fun
 
 Tipos de dado algébricos também servem onde usaria um `enum` em C ou C + +, para representar um conjunto de valores simbólicos. Esses tipos de dados algébricos são muitas vezes referidos como tipos de enumeração. Aqui está um exemplo de C.
 
-```C
+```c
 enum vlavaiv {  
     vermelho,  
     laranja,  
@@ -353,7 +353,7 @@ Em C, os elementos de um `enum` são inteiros. Podemos usar um número inteiro e
 
 Se um tipo de dados algébrico tem várias alternativas, podemos pensar nele como semelhante a uma `union` em C ou C + +. A grande diferença entre os dois é que um union não nos diz qual a alternativa que está realmente presente, temos de forma explícita controlar manualmente qual a alternativa que estamos usando, normalmente em outro campo de uma estrutura envolvente. Isto significa que os sindicatos podem ser fontes de bugs, onde a nossa noção de qual a alternativa que nós devemos usar está incorrecto.
 
-```
+```c
 enum tipo_forma {  
     forma_circulo,  
     forma_poligono,  
