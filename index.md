@@ -1,3 +1,11 @@
+
+layout: page
+---
+Uma tradução não oficial do livro Real World Haskell 
+de Bryan O'Sullivan, Don Stewart, and John Goerzen
+
+-------------------------------------------------------
+
 Real World Haskell by Bryan O'Sullivan, Don Stewart, and John Goerzen
 [Por quê programação funcional? Por quê Haskell?](porque_haskell)
 1. [Começando](cap1)
