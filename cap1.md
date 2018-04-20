@@ -451,7 +451,7 @@ Enquanto nós ja falamos um pouco sobre os tipos, nossas interações com ghci t
 Haskell exige que nomes de tipo inicie com uma letra maiúscula e nomes de variáveis devem começar com uma letra minúscula. Tenha isso em mente sobre como você lê, que torna muito mais fácil seguir os nomes.
 
 A primeira coisa que podemos fazer para começar a explorar o mundo de tipos é pedir ao **ghci** para nos dizer mais sobre o que ele é usandondo um comando **ghci**, `:set` ou `:s,` que nos permite alterar alguns dos seus comportamentos padrão. Podemos pedir que imprima mais informações sobre tipo, como a seguir.
-
+```
 ghci> :set +t
 ghci> 'c'
 'c'
@@ -459,7 +459,7 @@ it :: Char
 ghci> "foo"
 "foo"
 it :: [Char]
-
+```
 O que `+t` faz é dizer ghci para imprimir o tipo de expressão após a expressão. O enigmático `it` na saída pode ser muito útil: ele é realmente o nome de uma variável especial, que armazena no **ghci** o resultado da última expressão avaliada. (Esta não é uma característica da linguagem Haskell, é específico para **ghci**.) Vamos quebrar o significado da última linha de saída **ghci**.
 
 *   Ele está nos dizendo sobre a variável especial `it`.
@@ -467,6 +467,132 @@ O que `+t` faz é dizer ghci para imprimir o tipo de expressão após a express�
 *   Podemos ler o texto da forma `x :: y` no sentido de “a expressão `x` com o tipo `y`”.
     
 *   Aqui, a expressão “it” tem o tipo \[Char\]. (O nome String é frequentemente utilizado em vez de \[Char\]. É simplesmente um sinônimo para \[Char\].)
+
+
+![[Tip]](/support/figs/tip.png)
+
+The joy of “it”
+
+That `it` variable is a handy **ghci** shortcut. It lets us use the result of the expression we just evaluated in a new expression.
+
+    ghci> 
+
+When evaluating an expression, **ghci** won't change the value of `it` if the evaluation fails. This lets you write potentially bogus expressions with something of a safety net.
+
+    ghci> 
+
+When we couple `it` with liberal use of the arrow keys to recall and edit the last expression we typed, we gain a decent way to experiment interactively: the cost of mistakes is very low. Take advantage of the opportunity to make cheap, plentiful mistakes when you're exploring the language!
+
+Here are a few more of Haskell's names for types, from expressions of the sort we've already seen.
+
+    ghci> 
+
+Haskell's integer type is named Integer. The size of an Integer value is bounded only by your system's memory capacity.
+
+Rational numbers don't look quite the same as integers. To construct a rational number, we use the `(%)` operator. The numerator is on the left, the denominator on the right.
+
+    ghci> 
+
+For convenience, **ghci** lets us abbreviate many commands, so we can write **:m** instead of **:module** to load a module.
+
+Notice _two_ words on the right hand side of the `::` above. We can read this as a “Ratio of Integer”. We might guess that a Ratio must have values of type Integer as both numerator and denominator. Sure enough, if we try to construct a Ratio where the numerator and denominator are of different types, or of the same non-integral type, **ghci** complains.
+
+    ghci> 
+
+Although it is initially useful to have **`:set +t`** giving us type information for every expression we enter, this is a facility we will quickly outgrow. After a while, we will often know what type we expect an expression to have. We can turn off the extra type information at any time, using the **:unset** command.
+
+    ghci> 
+
+Even with this facility turned off, we can still get that type information easily when we need it, using another **ghci** command.
+
+    ghci> 
+
+The **:type** command will print type information for any expression we give it (including `it`, as we see above). It won't actually evaluate the expression; it only checks its type and prints that.
+
+Why are the types reported for these two expressions different?
+
+    ghci> 
+
+Haskell has several numeric types. For example, a literal number such as `1` could, depending on the context in which it appears, be an integer or a floating point value. When we force **ghci** to evaluate the expression `3 + 2`, it has to choose a type so that it can print the value, and it defaults to Integer. In the second case, we ask **ghci** to print the type of the expression without actually evaluating it, so it does not have to be so specific. It answers, in effect, “its type is numeric”. We will see more of this style of type annotation in [Chapter 6, _Using Typeclasses_](using-typeclasses.html "Chapter 6. Using Typeclasses").
+
+A simple program
+----------------
+
+Let's take a small leap ahead, and write a small program that counts the number of lines in its input. Don't expect to understand this yet; it's just fun to get our hands dirty. In a text editor, enter the following code into a file, and save it as `WC.hs`.
+
+\-\- file: ch01/WC.hs
+\-\- lines beginning with "--" are comments.
+
+main = interact wordCount
+    where wordCount input = show (length (lines input)) ++ "\\n"
+
+Find or create a text file; let's call it `quux.txt`\[[1](#ftn.id577349)\].
+
+    $
+
+From a shell or command prompt, run the following command.
+
+    $
+
+We have successfully written a simple program that interacts with the real world! In the chapters that follow, we will successively fill the gaps in our understanding until we can write programs of our own.
+
+Exercises
+---------
+
+**1.**
+
+Enter the following expressions into **ghci**. What are their types?
+
+*   `5 + 8`
+    
+*   `3 * 5 + 8`
+    
+*   `2 + 4`
+    
+*   `(+) 2 4`
+    
+*   `sqrt 16`
+    
+*   `succ 6`
+    
+*   `succ 7`
+    
+*   `pred 9`
+    
+*   `pred 8`
+    
+*   `sin (pi / 2)`
+    
+*   `truncate pi`
+    
+*   `round 3.5`
+    
+*   `round 3.4`
+    
+*   `floor 3.7`
+    
+*   `ceiling 3.3`
+    
+
+**2.**
+
+From **ghci**, type **:?** to print some help. Define a variable, such as `let x = 1`, then type `:show bindings`. What do you see?
+
+**3.**
+
+The `words` function counts the number of words in a string. Modify the `WC.hs` example to count the number of words in a file.
+
+**4.**
+
+Modify the `WC.hs` example again, to print the number of characters in a file.
+
+  
+
+* * *
+
+\[[1](#id577349)\] Incidentally, what do these cities have in common?
+
+![](/support/figs/rss.png) Want to stay up to date? Subscribe to the comment feed for [this chapter](/feeds/comments/), or the [entire book](/feeds/comments/).
     
 
 Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart, and John Goerzen. This work is licensed under a [Creative Commons Attribution-Noncommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/). Icons by [Paul Davey](mailto:mattahan@gmail.com) aka [Mattahan](http://mattahan.deviantart.com/).
