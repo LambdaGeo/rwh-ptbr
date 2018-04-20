@@ -471,7 +471,7 @@ O que `+t` faz é dizer ghci para imprimir o tipo de expressão após a express�
 
 
 
->![[Tip]](/figs/tip.png) **The joy of “it”**
+>![[Tip]](figs/tip.png) **The joy of “it”**
 
 >That `it` variable is a handy **ghci** shortcut. It lets us use the result of the expression we just evaluated in a new expression.
 
