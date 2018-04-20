@@ -39,7 +39,7 @@ Tipagem forte pode tornar mais difícil escrevermos certos tipos de código. Por
 A grande vantagem da tipagem forte é que ela captura bugs real em nosso código antes que possam causar problemas. Por exemplo, em uma linguagem fortemente tipada, não podemos acidentalmente utilizar uma cadeia onde um inteiro é esperado.
 
 
->![[Note]]({{site.url}}/assets/note.png)**Os tipos mais fracos e os tipos mais fortes**
+>![[Note]]({{site.url}}/wh-ptbr/assets/note.png)**Os tipos mais fracos e os tipos mais fortes**
 
 >É útil ter consciência de que muitas comunidades linguísticas têm suas próprias definições de um “tipo forte”. No entanto, vamos falar brevemente e em termos gerais sobre a noção de força nos sistemas do tipo.
 
@@ -208,7 +208,7 @@ O tipo da expressão acima é uma lista de listas de Bool.
 
 
 
->![[Note]]({{site.url}}/assets/note.png)**As listas são especiais**
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**As listas são especiais**
 
 >As listas são o “pão e a manteiga” de coleções Haskell. Em uma linguagem imperativa, poderíamos realizar uma tarefa com muitos itens iteragindo através de um loop. Isso é algo que nós frequentemente , fazemos em Haskell através do percorrimento em uma lista, seja por recursão ou usando uma função que faça a recursão para nós. Listas são a forma mais fácil  que temos para usar dados que estruturem o nosso programa e o seu fluxo de controle. Nós vamos gastar muito mais tempo para discutir as listas no [Capítulo 4, _A programação funcional_]().
 
@@ -282,7 +282,7 @@ Se o seu background  for em uma outra linguagem de programação, estes exemplo
 
 
 
->![[Note]]({{site.url}}/assets/note.png)**Tuplas Haskell não são listas imutáveis**
+>![[Note]]({{site.url}}/wh-ptbr/assets/note.png)**Tuplas Haskell não são listas imutáveis**
 
 >Se você está vindo do mundo do Python, você provavelmente tem usado listas e tuplas como conceitos quase intercambiáveis. Embora os elementos de uma tupla Python são imutáveis, que podem ser indexados e iterada usando os mesmos métodos como uma lista. Este não é o caso em Haskell, portanto, não tente levar essa idéia com você em território linguístico desconhecido.
 
@@ -344,7 +344,7 @@ No lado esquerdo do `=` temos o nome da função, seguido pelos argumentos da fu
     3
 
 
->![[Note]]({{site.url}}/assets/note.png)**E se ghci não conseguir encontrar o arquivo fonte?**
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**E se ghci não conseguir encontrar o arquivo fonte?**
 
 >Quando você executar **ghci** pode não ser capaz de encontrar o seu arquivo fonte. Ele irá procurar por arquivos fonte em qualquer diretório que ele foi executado. Se este não é o diretório que seu arquivo fonte esta, na verdade, você pode usar o comando **:cd** do **ghci** para alterar o seu diretório de trabalho.
 
@@ -458,7 +458,7 @@ Nosso predicado contém algumas novidades a mais. A função `null` indica se a 
     ghci> :type (||)
     (||) :: Bool -> Bool -> Bool
 
->![[Tip]]({{site.url}}/assets/tip.png)**Os operadores não são especiais**
+>![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)**Os operadores não são especiais**
 
 >Observe que fomos capazes de encontrar o tipo de `(||)` por envolvimento em parênteses. O operador `(||)` não é “incorporado” a linguagem: é uma função comum.
 
@@ -545,7 +545,7 @@ Nos agora substituimos este valor de retorno para a expressão `(||)`. Uma vez q
 
 Isso faz com que ramo `else` da expressão `if` será avaliada. Este ramo contém uma aplicação recursiva da função `meuDrop`.
 
->![[Note]]({{site.url}}/assets/note.png)**Curtos-circuitos de graça**
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**Curtos-circuitos de graça**
 
 >Muitas linguagens necessitam tratar o operador lógico "ou" especialmente para que os curto-circuitos aconteça, se seu operando à esquerda é avaliada como `True`. Em Haskell, `(||)` é uma função comum: a avaliação não-estrita constrói essa capacidade para a linguagem.
 
@@ -671,7 +671,7 @@ Para captar esta idéia, a sua assinatura tipo contém uma "type variable".
 
 Aqui, `a` é a "type variable". Podemos ler a assinatura como “tem uma lista, da qual todos os elementos têm algum tipo `a`, e retorna um valor do mesmo tipo `a`”.
 
->![[Tip]]({{site.url}}/assets/tip.png)**Identificação de uma variável de tipo**
+>![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)**Identificação de uma variável de tipo**
 
 >Type variables sempre começam com uma letra minúscula. Você sempre pode dizer uma type variable de uma variável normal pelo contexto, porque as linguagens de tipos e funções são separadas: variáveis tipo existem nas assinaturas, tipo e variáveis normais existem em expressões regulares.
 
@@ -683,7 +683,7 @@ Quando queremos aplicar `last` digamos, uma lista de Char, o compilador substitu
 
 Este tipo de polimorfismo é chamado polimorfismo _paramétrico_ . A escolha do nome é fácil de entender, por analogia: assim como uma função pode ter parâmetros que podemos ligar mais tarde a valores reais, um tipo Haskell podem ter parâmetros que podemos ligar mais tarde para outros tipos.
 
->![[Tip]]({{site.url}}/assets/tip.png)**Um pouco nomenclatura**
+>![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)**Um pouco nomenclatura**
 
 >Se um tipo contém parametros para tipos, nós dizemos que é um tipo parametrizado, ou um tipo polimórfico. Se uma função ou do tipo de valor contém parâmetros de tipo, nós chamamos de polimorfismo.
 
@@ -804,4 +804,3 @@ Isso tudo equivale a uma grande quantidade de informação para absorver. No [Ca
 ![](support/figs/rss.png) Quer ficar atualizado? Assine o feed comentário para [este capítulo](/feeds/comments/), ou o [livro inteiro](/feeds/comments/).
 
 Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart e John Goerzen. Esta obra está licenciada sob uma [Creative Commons Attribution-Noncommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/). Ícones por [Paul Davey](mailto:mattahan@gmail.com) aka [Mattahan](http://mattahan.deviantart.com/).
-{{site.url}}
