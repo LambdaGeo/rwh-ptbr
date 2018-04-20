@@ -209,7 +209,7 @@ O tipo da expressão acima é uma lista de listas de Bool.
 
 
 
->![[Note]]({{site.url}/assets/note.png)**As listas são especiais**
+>![[Note]]({{site.url}}/assets/note.png)**As listas são especiais**
 
 >As listas são o “pão e a manteiga” de coleções Haskell. Em uma linguagem imperativa, poderíamos realizar uma tarefa com muitos itens iteragindo através de um loop. Isso é algo que nós frequentemente , fazemos em Haskell através do percorrimento em uma lista, seja por recursão ou usando uma função que faça a recursão para nós. Listas são a forma mais fácil  que temos para usar dados que estruturem o nosso programa e o seu fluxo de controle. Nós vamos gastar muito mais tempo para discutir as listas no [Capítulo 4, _A programação funcional_]().
 
