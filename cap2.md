@@ -195,7 +195,7 @@ Podemos escrever o tipo de “lista de `a`” colocando a variável tipo entre c
 
 
 
->![[Note]]({{site.url}}/assets/note.png)**Distinguir nomes de tipo e as variáveis tipo**
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**Distinguir nomes de tipo e as variáveis tipo**
 
 >Agora podemos ver porque um nome do tipo deve começar com uma letra maiúscula: o que torna diferente uma variável do tipo, é que ela deve começar com uma letra minúscula.
 
@@ -804,3 +804,4 @@ Isso tudo equivale a uma grande quantidade de informação para absorver. No [Ca
 ![](support/figs/rss.png) Quer ficar atualizado? Assine o feed comentário para [este capítulo](/feeds/comments/), ou o [livro inteiro](/feeds/comments/).
 
 Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart e John Goerzen. Esta obra está licenciada sob uma [Creative Commons Attribution-Noncommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/). Ícones por [Paul Davey](mailto:mattahan@gmail.com) aka [Mattahan](http://mattahan.deviantart.com/).
+{{site.url}}
