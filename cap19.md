@@ -1,9 +1,13 @@
-Capítulo 19. Manipulação de Erro
+---
+# You don't need to edit this file, it's empty on purpose.
+# Edit theme's home layout instead if you wanna make some changes
+# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
+layout: page
+---
+Uma tradução não oficial do livro Real World Haskell 
+de Bryan O'Sullivan, Don Stewart, and John Goerzen
 
-[O mundo real do Haskell](/)by Bryan O'Sullivan, Don Stewart, and John Goerzen
-------------------------------------------------------------------------------
-
-Capítulo 19. Manipulação de Erro
+-------------------------------------------------------
 
 Capítulo 19. Manipulação de Erro
 --------------------------------
