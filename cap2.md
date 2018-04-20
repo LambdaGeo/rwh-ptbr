@@ -459,30 +459,32 @@ Nosso predicado contém algumas novidades a mais. A função `null` indica se a 
     ghci> :type (||)
     (||) :: Bool -> Bool -> Bool
 
-![[Tip]](support/figs/tip.png)
+>![[Tip]]({{site.url}}/assets/tip.png)**Os operadores não são especiais**
 
-Os operadores não são especiais
+>Observe que fomos capazes de encontrar o tipo de `(||)` por envolvimento em parênteses. O operador `(||)` não é “incorporado” a linguagem: é uma função comum.
 
-Observe que fomos capazes de encontrar o tipo de `(||)` por envolvimento em parênteses. O operador `(||)` não é “incorporado” a linguagem: é uma função comum.
-
-O operador `(||)` é “curto-circuito”: se o operando da esquerda é avaliado como `True`, ela não avalia o operando direito. Na maioria das linguagens, a avaliação de curto-circuito requer um apoio especial, mas não em Haskell. Vamos ver porque em breve.
+>O operador `(||)` é “curto-circuito”: se o operando da esquerda é avaliado como `True`, ela não avalia o operando direito. Na maioria das linguagens, a avaliação de curto-circuito requer um apoio especial, mas não em Haskell. Vamos ver porque em breve.
 
 Em seguida, aplica-se a nossa função de forma recursiva. Este é o nosso primeiro exemplo de recursão, que falaremos em detalhes em breve.
 
 Finalmente, o nosso `if` abrange várias linhas de expressão. Nós alinhamos os ramos `then` e `else`  no âmbito do `if` para clareza. Enquanto nós usamos algum recuo, o valor exato não é importante. Se quisermos, podemos escrever a expressão inteira em uma única linha.
 
+```haskell
 \-\- arquivo: ca02/meuDrop.hs  
 meuDropX n xs = if n <= 0 || null xs then xs else meuDropX (n - 1) (tail xs)
+```
 
 O tamanho desta versão o torna mais difícil de ler. Nós geralmente fazemos uma quabra na expressão `if`  através de várias linhas para manter o predicado e cada um dos ramos mais fácil de identificar.
 
 Para comparação, aqui é um equivalente Python da função Haskell `meuDrop`. Os dois são estruturados de forma semelhante: decremento um contador a cada remoção de um elemento da cabeça da lista.
 
+```haskell
 def meuDrop(n, elts):  
     while n > 0 and elts:  
         n = n - 1  
         elts = elts\[1:\]  
     return elts
+```
 
 ### Compreender a avaliação através de exemplos
 
@@ -495,8 +497,10 @@ Já falamos várias vezes sobre a substituição de uma expressão para uma vari
 
 Vamos começar olhando para a definição de uma função simples não-recursiva.
 
+```haskell
 \-\- arquivo: ch02/RoundToEven.hs  
 isOdd n = mod n 2 == 1
+```
 
 Aqui, `mod` é um função padrão que retorna o resto de uma divisão inteira. O grande primeiro passo para entender como a avaliação funciona em Haskell é descobrir qual será o resultado da avaliação da expressão `isOdd (1 + 2)`.
 
@@ -542,20 +546,20 @@ Nos agora substituimos este valor de retorno para a expressão `(||)`. Uma vez q
 
 Isso faz com que ramo `else` da expressão `if` será avaliada. Este ramo contém uma aplicação recursiva da função `meuDrop`.
 
-![[Note]](support/figs/note.png)
+>![[Note]]({{site.url}}/assets/note.png)**Curtos-circuitos de graça**
 
-Curtos-circuitos de graça
+>Muitas linguagens necessitam tratar o operador lógico "ou" especialmente para que os curto-circuitos aconteça, se seu operando à esquerda é avaliada como `True`. Em Haskell, `(||)` é uma função comum: a avaliação não-estrita constrói essa capacidade para a linguagem.
 
-Muitas linguagens necessitam tratar o operador lógico "ou" especialmente para que os curto-circuitos aconteça, se seu operando à esquerda é avaliada como `True`. Em Haskell, `(||)` é uma função comum: a avaliação não-estrita constrói essa capacidade para a linguagem.
+>Em Haskell, podemos facilmente definir uma nova função que sejá curto-circuito.
 
-Em Haskell, podemos facilmente definir uma nova função que sejá curto-circuito.
-
+```haskell
 \-\- arquivo: ca02/curtoCircuito.hs  
 `newOr` a b = if a then a else b
+```
 
-Se escrevermos uma expressão como `newOr` `True (length [1..] > 0)`, não irá avaliar o seu segundo argumento. (Isto é: essa expressão tenta calcular o comprimento de uma lista infinita. Se fosse avaliada, iria travar o **ghci**, executando um loop infinitamente, até que mate o processo.)
+>Se escrevermos uma expressão como `newOr` `True (length [1..] > 0)`, não irá avaliar o seu segundo argumento. (Isto é: essa expressão tenta calcular o comprimento de uma lista infinita. Se fosse avaliada, iria travar o **ghci**, executando um loop infinitamente, até que mate o processo.)
 
-Se fôssemos escrever uma função comparável, digamos, Python, avaliação rigorosa complicaria nós: ambos os argumentos serão avaliados antes de serem passados para `newOr`, e nós não seriamos capaz de evitar o loop infinito no segundo argumento.
+>Se fôssemos escrever uma função comparável, digamos, Python, avaliação rigorosa complicaria nós: ambos os argumentos serão avaliados antes de serem passados para `newOr`, e nós não seriamos capaz de evitar o loop infinito no segundo argumento.
 
 #### Recursão
 
@@ -668,13 +672,11 @@ Para captar esta idéia, a sua assinatura tipo contém uma "type variable".
 
 Aqui, `a` é a "type variable". Podemos ler a assinatura como “tem uma lista, da qual todos os elementos têm algum tipo `a`, e retorna um valor do mesmo tipo `a`”.
 
-![[Tip]](support/figs/tip.png)
+>![[Tip]]({{site.url}}/assets/tip.png)**Identificação de uma variável de tipo**
 
-Identificação de uma variável de tipo
+>Type variables sempre começam com uma letra minúscula. Você sempre pode dizer uma type variable de uma variável normal pelo contexto, porque as linguagens de tipos e funções são separadas: variáveis tipo existem nas assinaturas, tipo e variáveis normais existem em expressões regulares.
 
-Type variables sempre começam com uma letra minúscula. Você sempre pode dizer uma type variable de uma variável normal pelo contexto, porque as linguagens de tipos e funções são separadas: variáveis tipo existem nas assinaturas, tipo e variáveis normais existem em expressões regulares.
-
-É prática comum em Haskell manter os nomes de variáveis tipo muito curto. Uma carta é esmagadoramente comum; nomes já aparecem com pouca freqüência. Tipo de assinaturas são geralmente breves, ganhamos mais legibilidade, mantendo nomes curtos, tornando-descritivo.
+>É prática comum em Haskell manter os nomes de variáveis tipo muito curto. Uma carta é esmagadoramente comum; nomes já aparecem com pouca freqüência. Tipo de assinaturas são geralmente breves, ganhamos mais legibilidade, mantendo nomes curtos, tornando-descritivo.
 
 Quando uma função tem "type variable" na sua assinatura, o que indica que alguns dos seus argumentos podem ser de qualquer tipo, chamamos a função polimórfica.
 
@@ -682,11 +684,9 @@ Quando queremos aplicar `last` digamos, uma lista de Char, o compilador substitu
 
 Este tipo de polimorfismo é chamado polimorfismo _paramétrico_ . A escolha do nome é fácil de entender, por analogia: assim como uma função pode ter parâmetros que podemos ligar mais tarde a valores reais, um tipo Haskell podem ter parâmetros que podemos ligar mais tarde para outros tipos.
 
-![[Tip]](support/figs/tip.png)
+>![[Tip]]({{site.url}}/assets/tip.png)**Um pouco nomenclatura**
 
-Um pouco nomenclatura
-
-Se um tipo contém parametros para tipos, nós dizemos que é um tipo parametrizado, ou um tipo polimórfico. Se uma função ou do tipo de valor contém parâmetros de tipo, nós chamamos de polimorfismo.
+>Se um tipo contém parametros para tipos, nós dizemos que é um tipo parametrizado, ou um tipo polimórfico. Se uma função ou do tipo de valor contém parâmetros de tipo, nós chamamos de polimorfismo.
 
 Quando vemos um tipo parametrizado, nós já observamos que o código não importa qual é o tipo realmente. Contudo, podemos fazer uma declaração mais forte: _não tem jeito de descobrir qual é o tipo real,_ ou para manipular um valor desse tipo. Não se pode criar um valor, nem pode inspeccionar um. Tudo o que podemos fazer é tratá-lo como uma “caixa preta” totalmente abstrata. Nós vamos tratar a razão por que isso é importante em breve.
 
@@ -715,7 +715,7 @@ O tipo do resultado de `fst` é `a`. Já mencionamos que o polimorfismo paramét
 
 Há um profundo sentido matemático em que qualquer função não-patológicos do tipo (a,b) -> a deve fazer exatamente o que `fst` faz. Além disso, essa linha de raciocínio se estende a mais complicada de funções polimórficas. O documento \[[Wadler89](bibliography.html#bib.wadler89 "[Wadler89]")\] abrange este procedimento em profundidade.
 
-_Tem sido sugerido que nós devemos criar “uma caixa de teoria” para as discussões das coisas profundas, e referências a trabalhos acadêmicos._
+>Tem sido sugerido que nós devemos criar “uma caixa de teoria” para as discussões das coisas profundas, e referências a trabalhos acadêmicos.
 
 ### O tipo de uma função de mais de um argumento
 
@@ -805,17 +805,3 @@ Isso tudo equivale a uma grande quantidade de informação para absorver. No [Ca
 ![](support/figs/rss.png) Quer ficar atualizado? Assine o feed comentário para [este capítulo](/feeds/comments/), ou o [livro inteiro](/feeds/comments/).
 
 Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart e John Goerzen. Esta obra está licenciada sob uma [Creative Commons Attribution-Noncommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/). Ícones por [Paul Davey](mailto:mattahan@gmail.com) aka [Mattahan](http://mattahan.deviantart.com/).
-
-[Anterior](getting-started.html) 
-
- 
-
- [Next](defining-types-streamlining-functions.html)
-
-Capítulo 1. Introdução
-
-[Casa](index.html)
-
- Capítulo 3. Definir os tipos, racionalizando as funções
-
-_uacct = "UA-1805907-3"; urchinTracker();
