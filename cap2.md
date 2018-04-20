@@ -724,8 +724,10 @@ Até agora, nós não vimos muitas assinaturas de funções que têm mais de um 
 
 É muito claro que existe alguma coisa acontecendo com um Int e algumas listas, mas porque há dois símbolos `->` na assinatura? Grupos Haskell, essa cadeia de setas da direita para a esquerda, isto é, `->` é associativo à direita. Se introduzirmos parênteses, podemos definir como a assinatura deste tipo será interpretada.
 
+```haskell
 \-\- arquivo: ca02/Take.hs  
 take :: Int -> (\[a\] -> \[a\])
+```
 
 A partir disso, parece que devemos ler a assinatura de tipo como uma função que recebe um argumento, um Int, e retorna outra função. Essa outra função também tem um argumento, uma lista, e retorna uma lista do mesmo tipo, como seu resultado.
 
@@ -733,8 +735,10 @@ Isso é correto, mas não é fácil de ver quais seriam as suas consequências. 
 
 Podemos agora escrever uma assinatura tipo da função `meuDrop` que definimos anteriormente.
 
+```haskel
 \-\- arquivo: ca02/meuDrop.hs  
 meuDrop :: Int -> \[a\] -> \[a\]
+```
 
 Exercícios
 ----------
