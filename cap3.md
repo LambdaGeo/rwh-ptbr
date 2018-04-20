@@ -1,11 +1,9 @@
  
 Capítulo 3. Definindo os tipos e entendendo as funções
-------------------------------------------------------
-
 
 
 Definir um tipo de dado novo
-----------------------------
+
 
 Embora as listas e tuplas são úteis, muitas vezes vamos querer construir nosso próprios tipos de dadis. Isto permite-nos estruturar os valores em nossos programas. Em vez de usar uma tupla anônimo, podemos dar a uma coleção de valores relacionados um nome e um tipo distinto. Definindo nossopróprios tipos também melhoramos a segurança do nosso código: Haskell não permitirá misturar acidentalmente valores de dois tipos que são estruturalmente semelhantes, mas têm nomes diferentes.
 
