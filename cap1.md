@@ -134,43 +134,68 @@ ghci> 313 ^ 15
 Haskell nos apresenta uma peculiaridade no modo como devemos escrever números: é muitas vezes necessário colocar um número negativo entre parênteses. Isto afeta-nos logo que ir além da simples expressões.
 
 Vamos começar por escrever um número negativo.
-
-    ghci> 
-
+```
+ghci> -3
+-3
+```
 O - acima, é um operador unário. Em outras palavras, não escrevemos o número único “-3”; nós escrevemos o número “3”, e aplicado o operador - para ele. O operador - é apenas um operador unário do Haskell, e não podemos misturá-la com os operadores infixo.
+```
+ghci> 2 + -3
 
-    ghci> 
-
+<interactive>:1:0:
+    precedence parsing error
+        cannot mix `(+)' [infixl 6] and prefix `-' [infixl 6] in the same infix expression
+```
 Se quisermos usar o menos unário perto de um operador infixo, devemos envolver a expressão que se aplica a entre parênteses.
-
-    ghci> 
-
+```
+ghci> 2 + (-3)
+-1
+ghci> 3 + (-(13 * 37))
+-478
+```
 Isso evita uma ambigüidade análise. Quando se aplica uma função em Haskell, nós escrevemos o nome da função, seguido do argumento, por exemplo, `f 3`. Se não tivéssemos necessidade de envolver um número negativo entre parênteses, teríamos duas diferentes maneiras de ler profundamente `f-3`: poderia ser “aplicada a função `f` para o número `-3`”, ou “subtrair o número `3` de `f`”
 
 Na maioria das vezes, podemos omitir o espaço em branco (“blank” caracteres, como espaço e guia) de expressões e Haskell irá analisá-los à medida que se destina. Mas nem sempre. Aqui está uma expressão que funciona:
-
-    ghci> 
-
+```
+ghci> 2*3
+6
+```
 E aqui está um caso que parece similar ao exemplo problemático de número negativo acima, mas a mensagem de erro resultante é diferente.
+```
+ghci> 2*-3
 
-    ghci> 
-
+<interactive>:1:1: Not in scope: `*-'
+```
 Aqui, a aplicação Haskell está lendo *- como um único operador. Haskell nos permite definir novos operadores (um assunto que voltaremos mais tarde), mas não temos definido *-. Mais uma vez, uns poucos parênteses nos permite resolver este problema.
-
-    ghci> 
-
+```
+ghci> 2*(-3)
+-6
+```
 Em comparação com outras linguagens, este tratamento incomum de números negativos pode parecer chato, mas representa um trade-off fundamentado. Haskell nos permite definir operadores novos a qualquer momento. O que não é um tipo de recurso de comun a linguagens, vamos ver bastante operadores definidos pelo usuário nos próximos capítulos. Os projetistas da linguagem decidiram aceitar uma sintaxe um pouco pesado para números negativos em troca deste poder expressivo
 
-### Lógica Booleana, operadores e comparações de valores
+#### Lógica Booleana, operadores e comparações de valores
 
 Os valores da lógica booleana em Haskell são `True` e `False`. A capitalização destes nomes é importante. A linguagem foi influenciada por C na definição dos operadores para valores booleanos: `(&&)` é lógico “e”, e `(||)` é lógico.
-
-    ghci> 
-
+```
+ghci> True && False
+False
+ghci> False || True
+True
+```
 Embora algumas linguagens de programação trate o número zero como sinônimo de `False`, Haskell não, nem considera que um valor diferente de zero deve ser `True`.
 
-    ghci> 
+```
+ghci> True && 1
 
+<interactive>:1:8:
+    No instance for (Num Bool)
+      arising from the literal `1' at <interactive>:1:8
+    Possible fix: add an instance declaration for (Num Bool)
+    In the second argument of `(&&)', namely `1'
+    In the expression: True && 1
+    In the definition of `it': it = True && 1
+
+```
 Mais uma vez, somos confrontados com uma mensagem de erro substancial. Em resumo, diz-nos que o tipo Boolean, Bool, não é um membro da família de tipos numéricos, `Num`. A mensagem de erro é bastante longa, pois **ghci** está a apontar a localização do problema, e sugerindo uma possível mudança que nós poderíamos fazer de modo que possa resolver o problema.
 
 Aqui está uma divisão mais detalhada da mensagem de erro.
@@ -182,67 +207,101 @@ Aqui está uma divisão mais detalhada da mensagem de erro.
 *   “``In the definition of `it'``” se refere a uma abreviação **ghci** que iremos rever em algumas páginas a frente.
     
 
-Permaneça sem medo diante das mensagens de erro
+#Permaneça sem medo diante das mensagens de erro#
 
-Temos uma importante consideração a fazer aqui, que vamos repetir em todo o trecho inicial do livro. Se você tiver problemas ou mensagens de erro que você ainda não entender, não se desespere. No início, tudo que você precisa fazer é descobrir o suficiente para progredir em um problema. Como você adquirir experiência, será mais fácil de entender as partes das mensagens de erro que inicialmente parece obscuro.
+>Temos uma importante consideração a fazer aqui, que vamos repetir em todo o trecho inicial do livro. Se você tiver problemas ou mensagens de erro que você ainda não entender, não se desespere. No início, tudo que você precisa fazer é descobrir o suficiente para progredir em um problema. Como você adquirir experiência, será mais fácil de entender as partes das mensagens de erro que inicialmente parece obscuro.
 
-As várias mensagens de erro têm uma finalidade: eles realmente nos ajudar a escrever o código correto, fazendo-nos executar uma certa quantidade de depuração “a frente”, antes que nós executarmos um programa. Se você estiver vindo de um background de trabalho com linguagens mais permissivas, essa forma de trabalho pode vir como uma espécie de choque.
+>As várias mensagens de erro têm uma finalidade: eles realmente nos ajudar a escrever o código correto, fazendo-nos executar uma certa quantidade de depuração “a frente”, antes que nós executarmos um programa. Se você estiver vindo de um background de trabalho com linguagens mais permissivas, essa forma de trabalho pode vir como uma espécie de choque.
 
 A maioria dos operadores de comparação Haskell são similares àqueles usados em C e muitas linguagens que foram influencidas
-
-    ghci> 
-
+```
+ghci> 1 == 1
+True
+ghci> 2 < 3
+True
+ghci> 4 >= 3.99
+True
+```
 Um operador que difere de C é o “não é igual”. Em C, este é escrito como !=. Em Haskell, escrevemos (/=), que se assemelha a notação ≠ usada em matemática.
-
-    ghci> 
-
+```
+ghci> 2 /= 3
+True
+```
 Além disso, onde linguagens similares C costumam usar ! para a negação lógica, Haskell usa a função not.
-
-### Precedência de operadores e associatividade
+```
+ghci> not True
+False
+```
+#### Precedência de operadores e associatividade
 
 Como em álgebra e outras linguagens de programação que usa operadores infixo, Haskell tem uma noção de precedência de operadores. Podemos usar parênteses para explicitamente agrupar partes de uma expressão, e a precedência nos permite omitir alguns parênteses. Por exemplo, o operador de multiplicação tem precedência maior do que o operador de adição, de modo que Haskell trata as seguinte expressões como equivalentes.
-
-    ghci> 
-
+```
+ghci> 1 + (4 * 4)
+17
+ghci> 1 + 4 * 4
+17
+```
 Haskell atribui valores numéricos a precedência dos operadores, sendo 1 a menor precedência e 9 a maior. Um operador de prioridade maior é aplicada antes de um operador de prioridade inferior. Podemos usar ghci para inspecionar os níveis de precedência de operadores individuais, utilizando o seu comando :info ou :i.
-
-    ghci> 
-
+```
+ghci> :info (+)
+class (Eq a, Show a) => Num a where
+  (+) :: a -> a -> a
+  ...
+  	-- Defined in GHC.Num
+infixl 6 +
+ghci> :info (*)
+class (Eq a, Show a) => Num a where
+  ...
+  (*) :: a -> a -> a
+  ...
+  	-- Defined in GHC.Num
+infixl 7 *
+```
 A informação que nós buscamos é na linha “infixl 6 +”, que indica que o (+) operador tem uma precedência de 6. (Nós vamos explicar a saída de outros em um capítulo posterior.) O “infixl 7 *” diz-nos que o (*) operador tem uma precedência de 7. Desde (*) tem uma precedência maior do que (+), podemos ver agora porque 1 + 4 * 4 é avaliado como 1 + (4 * 4), e não (1 + 4) * 4.
 
 Haskell também define associatividade dos operadores. Isso determina se uma expressão contendo múltiplos usos de um operador é avaliada da esquerda para a direita ou para a direita para a esquerda. Os operadores (+) e (*) ficam associativos esquerdos, que é representado como infixl infixl na saída ghci acima. Um operador de direito associativo é exibida com infixr.
-
+```
+ghci> :info (^)
+(^) :: (Num a, Integral b) => a -> b -> a 	-- Defined in GHC.Real
+infixr 8 ^
+```
 A combinação de regras de precedência e associatividade são geralmente referidos como as fixity rules.
 
-### Valores indefinidos, e introduzindo variáveis
+#### Valores indefinidos, e introduzindo variáveis
 
 O prelude de Haskell, a biblioteca padrão mencionado anteriormente, define pelo menos um conhecido constante matemática para nós.
+```
+ghci> pi
+3.141592653589793
+```
+Mas a sua abrangência de constantes matemáticas não é abrangente, como podemos ver rapidamente. Olhemos para o número de Euler, e
+```
+ghci> e
 
-    ghci> 
-
-Mas a sua abrangência de constantes matemáticas não é abrangente, como podemos ver rapidamente. Olhemos para o número de Euler, e.
-
-    ghci> 
-
+<interactive>:1:0: Not in scope: `e'
+```
 Tudo bem. Nós temos que defini-lo nós mesmos.
 
-Não se preocupe com a mensagem de erro
+>#Não se preocupe com a mensagem de erro#
 
-Se a mensagem de erro “not in scope” acima parece um pouco assustador, não se preocupe. Tudo isto significa é que não há nenhuma variável definida com o nome e.
+>Se a mensagem de erro “not in scope” acima parece um pouco assustador, não se preocupe. Tudo isto significa é que não há nenhuma variável definida com o nome e.
 
 Usando a construção let de ghci, nós podemos fazer uma definição temporária e de nós mesmos.
-
-    ghci> 
-
+```
+ghci> let e = exp 1
+```
 Esta é uma aplicação da função exponencial, exp, e nosso primeiro exemplo de aplicação de uma função em Haskell. Enquanto linguagens como Python exigem parênteses os argumentos para uma função, Haskell não.
 
 Com `e` definido, agora podemos usá-lo em expressões aritméticas. O operador (^) de exponenciação que introduzimos anteriormente só pode elevar um número a uma potência inteira. Para usar um número de ponto flutuante como o expoente, usamos o operador de exponenciação (**).
+```
+ghci> (e ** pi) - pi
+19.99909997918947
+```
+>#Essa sintaxe é específica do ghci#
 
-Essa sintaxe é específica do ghci
+>A sintaxe para let que o ghci aceita não é o mesmo que iremos usar no alto nível "de um programa Haskell normal. Vamos ver a sintaxe normal na [seção chamada “Introduzir variáveis locais”]()
 
-A sintaxe para let que o ghci aceita não é o mesmo que iremos usar no alto nível "de um programa Haskell normal. Vamos ver a sintaxe normal na [seção chamada “Introduzir variáveis locais”](defining-types-streamlining-functions.html#deftypes.locals "Introducing local variables")
-
-### Lidar com as regras de precedência e associatividade
+#### Lidar com as regras de precedência e associatividade
 
 Às vezes é melhor deixar pelo menos alguns parênteses no lugar, mesmo quando Haskell permite omitir-los. Sua presença pode ajudar os futuros leitores (incluindo nós mesmos) para entender o que se destina.
 
