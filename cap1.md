@@ -483,7 +483,9 @@ ghci> it ++ "bar"
 "foobar"
 it :: [Char]
 ```
+
 >When evaluating an expression, **ghci** won't change the value of `it` if the evaluation fails. This lets you write potentially bogus expressions with something of a safety net.
+
 ```
 ghci> it
 "foobar"
