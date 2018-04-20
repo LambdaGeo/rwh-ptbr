@@ -65,10 +65,13 @@ A palavra `Prelude` no prompt indica que `Prelude`, uma biblioteca padrão de fu
 **Obtendo ajuda**
 >
 >Se você digitar `:?` no prompt **ghci** ele irá imprimir uma detalhada mensagem de ajuda.
+
 ---
+
 O módulo `Prelude` é muitas vezes referida como “the standard prelude”, porque seu conteúdo é definido pelo padrão Haskell 98. Normalmente, ele é simplesmente reduzido à “o prelude”.
 
 ---
+
 **Sobre o prompt ghci**
 
 >O prompt exibido pelo ghci muda freqüentemente, dependendo de quais módulos temos carregados. Que muitas vezes pode crescer o suficiente para deixar poco espaço visual e uma única linha para a nossa entrada
