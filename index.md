@@ -10,6 +10,8 @@ de Bryan O'Sullivan, Don Stewart, and John Goerzen
 -------------------------------------------------------
 
 Real World Haskell by Bryan O'Sullivan, Don Stewart, and John Goerzen
+
+
 [Por quê programação funcional? Por quê Haskell?](porque_haskell)
 1. [Começando](cap1)
 2. [Tipos e Funções](cap2)
