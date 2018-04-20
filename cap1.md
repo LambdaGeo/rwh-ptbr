@@ -23,9 +23,14 @@ GHC tem três componentes principais.
 *   **ghci** é um intérpretador interativo e depurador.
 *   **runghc** é um programa para a execução de programas Haskell como scripts, sem a necessidade de compilá-los em primeiro lugar.
 
-Como nos referimos aos componentes do GHC
+---
+**NOTA**
 
-Quando discutimos o sistema GHC como um todo, vamos nos referir a ele como GHC. Quando precisarmos falar de um comando específico, vamos falar ghc, ghci ou runghc pelo nome.
+>Como nos referimos aos componentes do GHC
+>
+>Quando discutimos o sistema GHC como um todo, vamos nos referir a ele como GHC. Quando precisarmos falar de um comando específico, vamos falar ghc, ghci ou runghc pelo nome.
+
+---
 
 Neste livro, vamos supor que você está usando pelo menos a versão 6.12.2 do GHC, que foi lançado em 2010. Muitos dos nossos exemplos irá funcionar sem modificações em versões mais antigas. No entanto, _recomendamos_ usar a versão mais recente disponível para sua plataforma. Se você estiver usando Windows ou Mac OS X, você pode começar rápidamente e facilmente usando um instalador pré-construído. Para obter uma cópia do GHC para essas plataformas, visite [a página de download do GHC](http://www.haskell.org/ghc/download.html), e olhe na lista de pacotes binários e instaladores.
 
@@ -45,31 +50,42 @@ Nós normalmente não podemos copiar algum arquivo código de fonte Haskell e co
 Em sistemas Unix-like, rodamos ghci como um comando em uma janela shell. No Windows, está disponível através do Menu Iniciar. Por exemplo, se você instalou usando o instalador do GHC no Windows XP, você deve ir para “Todos programas”, depois “GHC”; então você vai ver ghci na lista. (Veja a seção chamada "Windows".)
 
 Quando rodamos ghci, ele exibe um banner de inicialização, seguido de um prompt Prelude>. Aqui, estamos mostrando a versão 6.12.2 em uma máquina Linux.
-
-    $
-
+```
+$ ghci
+GHCi, version 6.12.2: http://www.haskell.org/ghc/  :? for help
+Loading package ghc-prim ... linking ... done.
+Loading package integer-gmp ... linking ... done.
+Loading package base ... linking ... done.
+Loading package ffi-1.0 ... linking ... done.
+Prelude>
+```
 A palavra `Prelude` no prompt indica que `Prelude`, uma biblioteca padrão de funções úteis, está carregada e pronto para uso. Quando carregar outros módulos ou arquivos de origem, eles vão aparecer no prompt, também.
 
-Obtendo ajuda
-
-Se você digitar `:?` no prompt **ghci** ele irá imprimir uma detalhada mensagem de ajuda.
-
+---
+**Obtendo ajuda**
+>
+>Se você digitar `:?` no prompt **ghci** ele irá imprimir uma detalhada mensagem de ajuda.
+---
 O módulo `Prelude` é muitas vezes referida como “the standard prelude”, porque seu conteúdo é definido pelo padrão Haskell 98. Normalmente, ele é simplesmente reduzido à “o prelude”.
 
-Sobre o prompt ghci
+---
+**Sobre o prompt ghci**
 
-O prompt exibido pelo ghci muda freqüentemente, dependendo de quais módulos temos carregados. Que muitas vezes pode crescer o suficiente para deixar poco espaço visual e uma única linha para a nossa entrada
+>O prompt exibido pelo ghci muda freqüentemente, dependendo de quais módulos temos carregados. Que muitas vezes pode crescer o suficiente para deixar poco espaço visual e uma única linha para a nossa entrada
 
-Por questões de brevidade e coerência, ao longo deste livro, temos substituído o prompt padrão ghci pelo seguinte prompt `ghci>`
+>Por questões de brevidade e coerência, ao longo deste livro, temos substituído o prompt padrão ghci pelo seguinte prompt `ghci>`
 
-Se você quiser fazer isso, use a directiva `:set prompt` de ghci, como se segue.
-
-    Prelude
+>Se você quiser fazer isso, use a directiva `:set prompt` de ghci, como se segue.
+```
+Prelude :set prompt "ghci"
+ghci>
+```
+-	--
 
 O prelude está sempre implicitamente disponível, nós não precisamos de tomar quaisquer medidas para utilizar os tipos, valores ou funções que ele define. Para utilizar as definições de outros módulos, devemos carregá-los em ghci, utilizando o :module ou :m.
-
-    ghci> 
-
+```
+ghci> :m +Data.Ratio
+```
 Agora podemos usar as funcionalidades do módulo `Data.Ratio`, que nos permite trabalhar com números racionais (frações)
 
 Interação básica: usando ghci como uma calculadora
@@ -291,7 +307,7 @@ Uma cadeia de caracteres é cercada por aspas duplas.
 
     ghci> 
 
-Como em muitas linguagens, podemos representar caracteres hard-to-see através de “escaping” delas. Escapes in Haskell e as regras de escaping segue as convenções utilizadas e amplamente estabelecida pela linguagem C. Por exemplo, `'\n'` denota um caractere de nova linha, e `'\t'` é um caracter de tabulação. Para detalhes completos, consulte [Apêndice B, _Caracteres, strings, e regras escapando_](characters-strings-and-escaping-rules.html "Apêndice B. Caracteres, strings, e regras escapando")
+Como em muitas linguagens, podemos representar caracteres hard-to-see através de “escaping” delas. Escapes in Haskell e as regras de escaping segue as convenções utilizadas e amplamente estabelecida pela linguagem C. Por exemplo, `'\n'` denota um caractere de nova linha, e `'\t'` é um caracter de tabulação. Para detalhes completos, consulte [Apêndice B, _Caracteres, strings, e regras escapando_](characters-strings-and-escaping-rules.html "Apêndice B. Caracteres, strings, e regras escapando")
 
     ghci> 
 
@@ -335,14 +351,14 @@ O que `+t` faz é dizer ghci para imprimir o tipo de expressão após a express�
 
 Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart, and John Goerzen. This work is licensed under a [Creative Commons Attribution-Noncommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/). Icons by [Paul Davey](mailto:mattahan@gmail.com) aka [Mattahan](http://mattahan.deviantart.com/).
 
-[Anterior](index.html) 
+[Anterior](index.html) 
 
- 
+ 
 
- [Próximo](getting-started.html)
+ [Próximo](getting-started.html)
 
-Real World Haskell 
+Real World Haskell 
 
 [Inicio](index.html)
 
- Chapter 1. Getting Started
+ Chapter 1. Getting Started
