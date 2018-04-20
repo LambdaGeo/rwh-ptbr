@@ -419,7 +419,21 @@ Você pode perguntar de onde o nome da variável `xs` vem na função Haskell. E
 
 Vamos salvar nossa função Haskell em um arquivo chamado `meuDrop.hs`, em seguida, carregá-lo em **ghci**.
 
-    ghci> 
+    ghci> :load myDrop.hs
+    [1 of 1] Compiling Main             ( myDrop.hs, interpreted )
+    Ok, modules loaded: Main.
+    ghci> myDrop 2 "foobar"
+    "obar"
+    ghci> myDrop 4 "foobar"
+    "ar"
+    ghci> myDrop 4 [1,2]
+    []
+    ghci> myDrop 0 [1,2]
+    [1,2]
+    ghci> myDrop 7 []
+    []
+    ghci> myDrop (-2) "foo"
+    "foo" 
 
 Agora que vimos `meuDrop` em ação, vamos voltar ao código fonte e olhar todas as novidades que temos apresentado.
 
@@ -440,7 +454,10 @@ Lembre-se que o Haskell é uma linguagem funcional baseada em expressões. Em um
 
 Nosso predicado contém algumas novidades a mais. A função `null` indica se a lista é vazia, enquanto o `(||)` realiza um operador lógico “ou” de seus argumentos do tipo Bool.
 
-    ghci> 
+    ghci> :type null
+    null :: [a] -> Bool
+    ghci> :type (||)
+    (||) :: Bool -> Bool -> Bool
 
 ![[Tip]](support/figs/tip.png)
 
@@ -467,14 +484,14 @@ def meuDrop(n, elts):
         elts = elts\[1:\]  
     return elts
 
-Compreender a avaliação através de exemplos
--------------------------------------------
+### Compreender a avaliação através de exemplos
+
 
 Na nossa descrição do `meuDrop`, nós temos até agora focado nas características superfíciais. Precisamos aprofundar e desenvolver um modelo mental útil de como funciona a aplicação de função. Para fazer isso, iremos trabalhar através de alguns simples exemplos, até que possamos caminhar através da avaliação da expressão `meuDrop 2 "abcd"`.
 
 Já falamos várias vezes sobre a substituição de uma expressão para uma variável, e nós vamos fazer uso deste recurso aqui. Nosso procedimento implicará em reescrever expressões repetidas, substituindo as expressões para as variáveis até chegar a um resultado final. Este seria um bom momento para buscar um lápis e papel, de modo que você possa acompanhar nossas descrições, e tenta-lás sozinho.
 
-### Avaliação preguiçosa
+#### Avaliação preguiçosa
 
 Vamos começar olhando para a definição de uma função simples não-recursiva.
 
@@ -491,31 +508,37 @@ Em Haskell, a subexpressão `1 + 2` _não_ será reduzido para o valor `3`. Em v
 
 Avaliação não-estrita é muitas vezes referida como a _avaliação preguiçosa_\[[6](#ftn.id580576)\].
 
-### Um exemplo mais amplo  
+#### Um exemplo mais amplo  
 
 Vamos agora olhar para a avaliação da expressão `meuDrop 2 "abcd"`, onde usamos o `print` para garantir que ele será avaliado.
 
-    ghci> 
+    ghci> print (myDrop 2 "abcd")
+    "cd
 
 Nosso primeiro passo é tentar aplicar `print`, que necessita que o seu argumento seja avaliado. Para fazer isso, nós aplicamos a função `meuDrop` com os valores `2` e `"abcd"`. Nós ligamos a variável `n` para o valor `2`, e `xs` para `"abcd"`. Se substituirmos esses valores em predicado de `meuDrop`, obtemos a seguinte expressão.
 
-    ghci> 
+    ghci> :type  2 <= 0 || null "abcd"
+    2 <= 0 || null "abcd" :: Bool
 
 Em seguida, avaliamos o predicado suficiente para descobrir qual o seu valor. Isso requer que podemos avaliar a expressão `(||)`. Para determinar o seu valor, o operador `(||)` deve examinar o valor de seu operando à esquerda em primeiro lugar.
 
-    ghci> 
+    ghci> 2 <= 0
+    False
 
 Substituindo esse valor para a expressão `(||)`  levará à seguinte expressão.
 
-    ghci> 
+    ghci> :type  False || null "abcd"
+    False || null "abcd" :: Bool
 
 Se o operando esquerdo avaliou para `True`, o operador `(||)` não precisaria avaliar seu operando à direita, uma vez que não irá afetar o resultado da expressão. Uma vez que a avaliação der `False`, o operador `(||)` deve avaliar o operando direito.
-
-    ghci> 
+   
+    ghci> null "abcd"
+    False
 
 Nos agora substituimos este valor de retorno para a expressão `(||)`. Uma vez que ambos os operandos são avaliadas como `False`, a expressão `(||)` tambem, portanto o predicado é avaliado como `False`.
 
-    ghci> 
+    ghci> False || False
+    False
 
 Isso faz com que ramo `else` da expressão `if` será avaliada. Este ramo contém uma aplicação recursiva da função `meuDrop`.
 
@@ -534,63 +557,88 @@ Se escrevermos uma expressão como `newOr` `True (length [1..] > 0)`, não irá 
 
 Se fôssemos escrever uma função comparável, digamos, Python, avaliação rigorosa complicaria nós: ambos os argumentos serão avaliados antes de serem passados para `newOr`, e nós não seriamos capaz de evitar o loop infinito no segundo argumento.
 
-### Recursão
+#### Recursão
 
 Quando aplicamos `meuDrop` recursivamente, `n` é obrigado a thunk `2 - 1`, e `xs` a `tail "abcd"`.
 
 Estamos avaliando agora `meuDrop` desde o início novamente. Nós substituímos os novos valores de `n` e `xs` no predicado.
 
-    ghci> 
+    ghci> :type (2 - 1) <= 0 || null (tail "abcd")
+    (2 - 1) <= 0 || null (tail "abcd") :: Bool 
 
 Aqui está uma versão condensada da avaliação do operando à esquerda.
 
-    ghci> 
+    ghci> :type (2 - 1) <= 0
+    (2 - 1) <= 0 :: Bool
+    ghci> 2 - 1
+    1
+    ghci> 1 <= 0
+    False
 
 Como devemos agora esperar, não avaliamos a expressão `2 - 1` até que nós precisávamos do seu valor. Também avaliamos o operando direito preguiçosamente, adiando `tail "abcd"` até precisarmos  do seu valor.
 
-    ghci> 
+    ghci> :type null (tail "abcd")
+    null (tail "abcd") :: Bool
+    ghci> tail "abcd"
+    "bcd"
+    ghci> null "bcd"
+    False
 
 O predicado novamente é avaliado como `False`, fazendo com que a clausula `else`  seja avaliada mais uma vez.
 
 Porque nós avaliamos as expressões para `n` e `xs` para avaliar o predicado, agora sabemos que nessa aplicação do `meuDrop`, `n` tem o valor `1` e `xs` tem o valor `"bcd"`.
 
-### Finalizando a recursividade
+##### Finalizando a recursividade
 
 Na próxima aplicação recursiva de `meuDrop`, ligamos `n` para `1 - 1` a `xs` a `tail "bcd"`.
 
-    ghci> 
+    ghci> :type (1 - 1) <= 0 || null (tail "bcd")
+    (1 - 1) <= 0 || null (tail "bcd") :: Bool
 
 Mais uma vez, para o `(||)` é necessário avaliar seu operando à esquerda em primeiro lugar.
 
-    ghci> 
+    ghci> :type (1 - 1) <= 0
+    (1 - 1) <= 0 :: Bool
+    ghci> 1 - 1
+    0
+    ghci> 0 <= 0
+    True 
 
 Finalmente, esta expressão foi avaliada como `True`!
 
-    ghci> 
+    ghci> True || null (tail "bcd")
+    True
 
 Porque o operando direito não pode afetar o resultado de `(||)`, não é avaliado, eo resultado do predicado é `True`. Isso nos leva a avaliar a clausula `then`.
 
-    ghci> 
+    ghci> :type tail "bcd"
+    tail "bcd" :: [Char]
 
-### Retornando a recursão
+##### Retornando a recursão
 
 Lembre-se, agora estamos dentro da nossa segunda aplicação recursiva do `meuDrop`. Esta aplicação é avaliada como `tail "bcd"`. Voltamos a partir da aplicação da função, substituindo esta expressão para `meuDrop (1 - 1) (tail "bcd")`, retornando o resultado dessa aplicação.
 
-    ghci> 
+    ghci> myDrop (1 - 1) (tail "bcd") == tail "bcd"
+    True 
 
 Nós então retornamos a partir da primeira aplicação recursiva, substituindo o resultado da segunda aplicação recursiva para `meuDrop (2 - 1) (tail "abcd")`, retornando o resultado dessa aplicação.
 
-    ghci> 
+    ghci> myDrop (2 - 1) (tail "abcd") == tail "bcd"
+    True
 
 Finalmente, o nosso retorno de aplicação original, substituindo o resultado da primeira aplicação recursiva.
 
-    ghci> 
+    ghci> myDrop 2 "abcd" == tail "bcd"
+    True
 
 Observe que como nós retornamos a partir de cada aplicação recursiva sucessiva, nenhum deles necessitou avaliar a expressão `tail "bcd"`: o resultado final da avaliação da expressão original é um _thunk_. O thunk só é avaliado quando finalmente **ghci** precisar imprimi-lo.
 
-    ghci> 
+    ghci> myDrop 2 "abcd"
+    "cd"
+    ghci> tail "bcd"
+    "cd"
 
-### O que aprendemos?
+#### O que aprendemos?
 
 Nós estabelecemos vários pontos importantes aqui.
 
@@ -601,18 +649,22 @@ Nós estabelecemos vários pontos importantes aqui.
 *   O resultado da aplicação de uma função pode ser um thunk (uma expressão em diferido).
     
 
-Polimorfismo em Haskell
------------------------
+### Polimorfismo em Haskell
+
 
 Quando introduzimoas as listas, mencionamos que o tipo de lista é polimórfico. Vamos falar sobre o polimorfismo Haskell em mais detalhes aqui.
 
 Se quisermos buscar o último elemento de uma lista, usamos a função `last`. O valor que ele retorna deve ter o mesmo tipo que os elementos da lista, mas `last` opera da mesma maneira, não importa qual o tipo desses elementos realmente são.
 
-    ghci> 
+    ghci> last [1,2,3,4,5]
+    5
+    ghci> last "baz"
+    'z'
 
 Para captar esta idéia, a sua assinatura tipo contém uma "type variable".
 
-    ghci> 
+    ghci> :type last
+    last :: [a] -> a
 
 Aqui, `a` é a "type variable". Podemos ler a assinatura como “tem uma lista, da qual todos os elementos têm algum tipo `a`, e retorna um valor do mesmo tipo `a`”.
 
@@ -648,11 +700,12 @@ Também é comum o polimorfismo _coerção_ o que permite um valor de um tipo a 
 
 Isso não é toda a história do polimorfismo em Haskell: vamos voltar ao assunto no [Capítulo 6, _Usando Typeclasses_](using-typeclasses.html "Chapter 6. Using Typeclasses").
 
-### Raciocínio sobre funções polimórficas
+#### Raciocínio sobre funções polimórficas
 
 Na [seção denominada “Tipos de função e pureza”](types-and-functions.html#funcstypes.sigs "Function types and purity"), falamos sobre como descobrir o comportamento de uma função com base na sua assinatura. Podemos aplicar o mesmo tipo de raciocínio para funções polimórficas. Vamos dar uma olhada novamente na `fst`.
 
-    ghci> 
+    ghci> :type fst
+    fst :: (a, b) -> a
 
 Em primeiro lugar, observe que o seu argumento contém duas variáveis do tipo, `a` e `b`, o que significa que os elementos da tupla pode ser de diferentes tipos.
 
@@ -664,12 +717,13 @@ Há um profundo sentido matemático em que qualquer função não-patológicos d
 
 _Tem sido sugerido que nós devemos criar “uma caixa de teoria” para as discussões das coisas profundas, e referências a trabalhos acadêmicos._
 
-O tipo de uma função de mais de um argumento
---------------------------------------------
+### O tipo de uma função de mais de um argumento
+
 
 Até agora, nós não vimos muitas assinaturas de funções que têm mais de um argumento. Já tinhamos usados algumas dessas funções, vamos olhar para a assinatura de uma, `take`.
 
-    ghci> 
+    ghci> :type take
+    take :: Int -> [a] -> [a] 
 
 É muito claro que existe alguma coisa acontecendo com um Int e algumas listas, mas porque há dois símbolos `->` na assinatura? Grupos Haskell, essa cadeia de setas da direita para a esquerda, isto é, `->` é associativo à direita. Se introduzirmos parênteses, podemos definir como a assinatura deste tipo será interpretada.
 
@@ -700,14 +754,15 @@ Escreva uma função `lastButOne,` que retorna o elemento _antes_ do último.
 
 Carregue seu função `lastButOne` no **ghci**, e teste-o em listas de diferentes comprimentos. O que acontece quando você passar uma lista que é muito curta?
 
-Por que a confusão sobre a pureza?
-----------------------------------
+### Por que a confusão sobre a pureza?
+
 
 Poucas linguagens de programação vai tão longe como Haskell, insistindo que a pureza deve ser o padrão. Esta escolha tem consequências profundas e valiosas.
 
 Como o resultado da aplicação de uma função pura só pode depender de seus argumentos, muitas vezes podemos obter um forte indício de que uma função pura faz simplesmente lendo o seu nome e compreensão da sua assinatura. Como exemplo, vamos olhar `not`.
 
-    ghci> 
+    ghci> :type not
+    not :: Bool -> Bool 
 
 Mesmo que não saiba o nome desta função, a sua assinatura só limita a validade comportamentos possíveis que poderia ter.
 
