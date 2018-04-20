@@ -1,96 +1,17 @@
- Capítulo <function>. Programação funcional   
+---
+# You don't need to edit this file, it's empty on purpose.
+# Edit theme's home layout instead if you wanna make some changes
+# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
+layout: page
+---
+Uma tradução não oficial do livro Real World Haskell 
+de Bryan O'Sullivan, Don Stewart, and John Goerzen
 
-[Real World Haskell](http://book.realworldhaskell.org/)de Bryan O'Sullivan, Don Stewart, e John Goerzen
--------------------------------------------------------------------------------------------------------
+-------------------------------------------------------
 
-Capítulo . Programação funcional
 
-[Anterior](types-and-functions.html) 
-
- 
-
- [Próximo](writing-a-library-working-with-json-data.html)
-
-Capítulo . Programação funcional
+Capítulo 4. Programação funcional
 --------------------------------
-
-**Índice analítico**
-
-Carregue todas as observações (**devagar**)
-
-[Pensando no Haskell](#fp.thinking)
-
-[Um framework de linha de comando simples](#fp.framework)
-
-[Warming up: Separação das linhas de texto portavel](#fp.splitlines)
-
-[Um programa de conversão de fim de linha](#id589136)
-
-[Funções infix](#fp.infix)
-
-[Trabalhar com as listas](#fp.lists)
-
-[Manipulação de listas básica](#fp.lists.basic)
-
-[Trabalhar segura e saudavelmente a com funções crashy](#fp.lists.safe)
-
-[Funções parcial e total](#id590211)
-
-[Mais manipulações de listas simples](#id590283)
-
-[Trabalhar com sublistas](#id590714)
-
-[Buscando listas](#fp.list.search)
-
-[Trabalhando com muitas listas ao mesmo tempo](#id591412)
-
-[Funções especiais de manipulação de string](#fp.lists.strings)
-
-[Exercícios](#id591678)
-
-[Como pensar a respeito de loops](#fp.loop)
-
-[Recursão explícita](#fp.tailrecursion)
-
-[Transformando cada peça de input](#id592265)
-
-[Mapeando sobre uma lista](#id592470)
-
-[Seleção de peças de entrada](#fp.filter)
-
-[Computing uma resposta sobre um conjunto](#id592937)
-
-[A fold esquerda](#fp.foldl)
-
-[Por dobras usar folds, maps e filters?](#id593448)
-
-[Folding da direita](#fp.foldr.filter)
-
-[Folds esquerdos, preguiça e space leaks](#id594142)
-
-[Exercícios](#fp.fold.exercises)
-
-[Leitura complementar](#id594881)
-
-[Funções (lambda) anónimos](#fp.anonymous)
-
-[Aplicação da função parcial e currying](#fp.partialapp)
-
-[Secções](#id596329)
-
-[Padrões As](#fp.aspattern)
-
-[Reutilização de código através da composição](#fp.compose)
-
-[Use a cabeça sabiamente](#id597329)
-
-[Dicas para escrever código legível](#fp.readability)
-
-[Space leaks e avaliação rigorosa](#fp.seq)
-
-[Evitar space leaks com seq](#id597540)
-
-[Aprender a usar o seq](#id597688)
 
 Pensando no Haskell
 -------------------
