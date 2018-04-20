@@ -39,7 +39,7 @@ Tipagem forte pode tornar mais difícil escrevermos certos tipos de código. Por
 A grande vantagem da tipagem forte é que ela captura bugs real em nosso código antes que possam causar problemas. Por exemplo, em uma linguagem fortemente tipada, não podemos acidentalmente utilizar uma cadeia onde um inteiro é esperado.
 
 
->![[Note]]({{site.url}}/wh-ptbr/assets/note.png)**Os tipos mais fracos e os tipos mais fortes**
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**Os tipos mais fracos e os tipos mais fortes**
 
 >É útil ter consciência de que muitas comunidades linguísticas têm suas próprias definições de um “tipo forte”. No entanto, vamos falar brevemente e em termos gerais sobre a noção de força nos sistemas do tipo.
 
@@ -399,7 +399,18 @@ Nós não podemos atribuir um valor para `x` duas vezes.
 
 Como muitas outras linguagens, em Haskell temos uma expressão `if` . Vamos vê-la em ação, então iremos explicar o que está acontecendo. Por exemplo, vamos escrever nossa própria versão da função `drop`. Antes de começar, vamos aprofundar um pouco sobre como `drop` de funções. Antes de começar, vamos aprofundar um pouco sobre como o `drop` se comporta, para que possamos reproduzir seu comportamento.
 
-    ghci> 
+    ghci> drop 2 "foobar"
+    "obar"
+    ghci> drop 4 "foobar"
+    "ar"
+    ghci> drop 4 [1,2]
+    []
+    ghci> drop 0 [1,2]
+    [1,2]
+    ghci> drop 7 []
+    []
+    ghci> drop (-2) "foo"
+    "foo"
 
 Do exposto, parece que a `drop` retorna a lista original, se o número a remover é inferior ou igual a zero. Caso contrário, ele remove os elementos até que se esgote ou atingir o número indicado. Aqui está uma função `meuDrop` que tem o mesmo comportamento, e usa a expressão Haskell `if` para decidir o que fazer. A função `null` abaixo verifica se a lista está vazia.
 
