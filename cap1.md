@@ -1,5 +1,5 @@
 
-[Anterior](porque_haskell.html)            [Inicio](index.html)            [Próximo]() 
+[Anterior](porque_haskell)            [Inicio](index)            [Próximo]() 
 
 Capítulo 1. Começando
 ---------------------
