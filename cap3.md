@@ -22,7 +22,11 @@ Depois motivação, vamos considerar alguns tipos de dados que uma pequena livra
 
 Nós definimos um novo tipo de dado usando o palavra-chave `data`.
 
+```haskell
     -- arquivo: ca03/Livraria.hs
+    data BookInfo = Book Int String [String]
+                deriving (Show)
+```
 
 O InfoLivro após a palavra-chave `data` é o nome do nosso novo tipo. Chamamos InfoLivro um _construtor de tipo_. Assim que tiver definido um tipo, usaremos o construtor de tipo para se referir a ela. Como já mencionado, um nome de tipo e, portanto, um construtor de tipo, deve começar com uma letra maiúscula.
 
@@ -34,170 +38,269 @@ Neste exemplo, o Int representa um identificador (por exemplo, usado no banco de
 
 Para fazer o link para um conceito já vimos, o tipo InfoLivro contém os mesmos componentes como a 3-tupla do tipo (Int, String, \[String\]), mas tem um tipo distinto. Não podemos acidentalmente (ou deliberadamente) usar um em um contexto onde um outro tipo é o esperado. Por exemplo, uma livraria também é passível de ter revistas.
 
-    -- arquivo: ca03/Livraria.hs
+```haskell
+-- arquivo: ca03/Livraria.hs
+data MagazineInfo = Magazine Int String [String] 
+			deriving (Show)
+```
 
 Mesmo que este tipo InfoRevista tem a mesma estrutura que o nosso tipo InfoLivro, Haskell trata os tipos come distintos porque a sua natureza e construtores de valor têm nomes diferentes.
 
 ![[Note]](support/figs/note.png)
 
-Derivando o quê?
+>Derivando o quê?
 
-Nós vamos explicar o significado completo de `deriving Show` depois, em [seção denominada “Show”](using-typeclasses.html#typeclasses.wellknown.show "Show"). Por enquanto, é o suficiente saber que precisamos disso em uma declaração deste tipo para que o **ghci** automaticamente saiba como imprimir um valor deste tipo.
+>Nós vamos explicar o significado completo de `deriving Show` depois, em [seção denominada “Show”](using-typeclasses.html#typeclasses.wellknown.show "Show"). Por enquanto, é o suficiente saber que precisamos disso em uma declaração deste tipo para que o **ghci** automaticamente saiba como imprimir um valor deste tipo.
 
 Podemos criar um novo valor do tipo InfoLivro tratando `Livro` como uma função, e aplicá-lo com argumentos do tipo Int, String, e \[String\].
 
+```haskell
     -- arquivo: ca03/Livraria.hs
+    myInfo = Book 9780135072455 "Algebra of Programming"
+         ["Richard Bird", "Oege de Moor"]
+```
 
 Uma vez que tenhamos definido um modelo, podemos experimentar-lo com o **ghci**. Nós começamos usando o comando **:load** ou **:l** para carregar nosso arquivo de origem.
 
-    ghci> 
+	:load Livraria
+	[1 of 1] Compiling Main             ( Livraria.hs, interpreted )
+	Ok, modules loaded: Main.
 
 Lembre-se que a variável `meuInfo`  é definida no nosso arquivo fonte. Aqui está ela.
 
-    ghci> 
+    	ghci> myInfo
+	Book 9780135072455 "Algebra of Programming" ["Richard Bird","Oege de Moor"]
+	ghci> :type myInfo
+	myInfo :: BookInfo
 
 Podemos construir novos valores interativamente no **ghci** também.
 
-    ghci> 
+	ghci> Book 0 "The Book of Imaginary Beings" ["Jorge Luis Borges"]
+	Book 0 "The Book of Imaginary Beings" ["Jorge Luis Borges"]
 
 O comando **ghci** **:type** ou **:t** nos permite ver o tipo de expressão é.
 
-    ghci> 
+    	ghci> :type Book 1 "Cosmicomics" ["Italo Calvino"]
+	Book 1 "Cosmicomics" ["Italo Calvino"] :: BookInfo
 
 Lembre-se que, se quisermos definir uma nova variável dentro do **ghci**, a sintaxe é ligeiramente diferente daquela de um arquivo fonte Haskell: é preciso colocar um `let` na frente da variável.
 
-    ghci> 
+    	ghci> let cities = Book 173 "Use of Weapons" ["Iain M. Banks"]
 
 Para saber mais sobre um tipo, podemos usar alguns **ghci** capabilidades de browsing. O comando **:info** ou **:i** recebe informações do **ghci** para nos dizer tudo o que se sabe sobre um determinado nome.
 
-    ghci> 
+    	ghci> :info BookInfo
+	data BookInfo = Book Int String [String]
+		-- Defined at BookStore.hs:4:5-12
+	instance Show BookInfo -- Defined at Livraria.hs:4:5-12
 
-Podemos também descobrir como usamos `Livro` para construir um novo valor do tipo InfoLivro.
+Podemos também descobrir como usamos `Book` para construir um novo valor do tipo InfoLivro.
 
-    ghci> 
+    	ghci> :type Book
+	Book :: Int -> String -> [String] -> BookInfo
 
 Podemos tratar um construtor de valor como uma outra função qualquer, o que ele faz é criar e retornar um novo valor do tipo que desejamos.
 
 ### Nomenclatura de tipos e valores
 
-Quando introduzimos o tipo de InfoLivro, nos deliberadamente escolhemos dar ao construtor do tipo InfoLivro um nome diferente a partir do construtor valor `Livro`, apenas para torná-lo evidente quem era quem.
+Quando introduzimos o tipo de InfoLivro, nos deliberadamente escolhemos dar ao construtor do tipo BookInfo um nome diferente a partir do construtor valor `Book`, apenas para torná-lo evidente quem era quem.
 
 No entanto, em Haskell, os nomes dos tipos e valores são independentes uns dos outros. Nós só usamos um construtor de tipo (ou seja, nome do tipo) em uma declaração do tipo ou em umaassinatura do tipo. Nós só usamos um construtor de valor em código real. Porque estes usos são distintos, não há ambigüidade se dermos a um construtor de tipo econstrutor valor o mesmo nome. Se estamos escrevendo uma assinatura de tipo, então estamos referindo a um construtor de tipo. Se estamos escrevendo uma expressão, então estamos usando o construtor de valor.
 
-    -- arquivo: ca03/Livraria.hs-- Vamos apresentar o tipo de IDCliente em breve.
+```haskell
+    -- arquivo: ca03/Livraria.hs
+    -- Vamos apresentar o tipo de CustomerID em breve.
+    data BookReview = BookReview BookInfo CustomerID String
+```
 
 Esta definição diz que o tipo chamado RevisãoLivro tem um construtor de valor que também é chamado `RevisãoLivro`.
 
 Não só é _legal_ para um construtor de valor para ter o mesmo nome de seu construtor de tipo, como é _normal_: você vai ver isso o tempo todo em código Haskell.
 
-Sinónimos de tipo
------------------
+###Sinónimos
+
 
 Podemos introduzir um _sinônimo_ para um tipo existente em qualquer momento, para dar um tipo de nome mais descritivo. Por exemplo, o tipo String no nosso tipo RevisãoLivro não nos diz para que a string é usada, mas podemos esclarecer isso.
 
-    -- arquivo: ca03/Livraria.hs
+```haskell
+    	-- arquivo: ca03/Livraria.hs
+    	type CustomerID = Int
+	type ReviewBody = String
+	data BetterReview = BetterReview BookInfo CustomerID ReviewBody
+```
 
 O palavra-chave `type` apresenta um sinônimo tipo. O novo nome é do lado esquerdo da `=`, com o nome existente do lado direito. Os dois nomes identificam o mesmo tipo, então sinônimos  são usados _apenas_ para tornar o código mais legível.
 
 Nós também podemos usar um sinônimo de tipo para criar um nome mais curto para um modelo detalhado.
-
+```haskell
     -- arquivo: ca03/Livraria.hs
+    type BookRecord = (BookInfo, BookReview)
+```
 
 Isto indica que podemos utilizar NotaLivro como um sinônimo para a tupla (nfoLivro, RevisãoLivro). Um sinônimo de tipo só cria um novo nome que se refere a um tipo existente\[[7](#ftn.id582956)\]. Continuamos a usar os mesmos construtores de valor para criar um valor do tipo.
 
-Tipos de dado algébricos
-------------------------
+### Tipos de dado algébricos
+
 
 O nosso conhecido Bool é o mais comum e simples exemplo de uma categoria de tipo chamada _tipo de dado algébricos_. Um tipo de dado algébrico pode ter mais de um construtor de valor.
 
-    -- arquivo: ca03/Bool.hs
+```haskell
+    	-- arquivo: ca03/Bool.hs
+	data Bool = False | True
+```
 
 O tipo Bool tem dois construtores, os valores `True` e `False`. Cada construtor de valor é separado na definição por um caracter `|`, que pode ler-se “ou”: nós podemos construir um Bool que tem o valor `True`, ou o valor `False`. Quando um tipo tem mais de um construtor de valor, são normalmente referido como _alternativas_ ou _casos_. Podemos usar qualquer uma das alternativas para criar um valor desse tipo.
 
 ![[Note]](support/figs/note.png)
 
-Uma nota sobre nomeação
+>Uma nota sobre nomeação
 
-Embora a expressão “tipo de dado algébrico” seja longa, nós estamos tendo o cuidado de evitar o uso da sigla “TAD”. Essa sigla já é amplamente entendida como suporte para o “tipo _abstrato_ de dado”. Desde que Haskell suporte ambos, tipos de dados algébricos e tipos de dados abstratos, vamos ser explícito e evitar a sigla inteiramente.
+>Embora a expressão “tipo de dado algébrico” seja longa, nós estamos tendo o cuidado de evitar o uso da sigla “TAD”. Essa sigla já é amplamente entendida como suporte para o “tipo _abstrato_ de dado”. Desde que Haskell suporte ambos, tipos de dados algébricos e tipos de dados abstratos, vamos ser explícito e evitar a sigla inteiramente.
 
 Cada um dos construtores de valor de um tipo de dados algébricos podem ter zero ou mais argumentos. Por exemplo, aqui está uma forma que poderia representar informações de faturas.
 
-    -- arquivo: ca03/Livraria.hs
+```haskell
+-- arquivo: ca03/Livraria.hs
+-- file: ch03/BookStore.hs
+type CardHolder = String
+type CardNumber = String
+type Address = [String]
+
+data BillingInfo = CreditCard CardNumber CardHolder Address
+                 | CashOnDelivery
+                 | Invoice CustomerID
+                   deriving (Show)
+```
 
 Aqui, nós estamos dizendo que suportamos três formas de faturar as compras dos nossos clientes. Se quiser pagar com cartão de crédito, deve fornecer o número do cartão, o nome do titular, e endereço do titular da fatura como argumentos para o construtor do valor `CartãoCrédito`. Alternativamente, é possível pagar a pessoa que entregou a sua encomenda. Uma vez que não precisamos guardar qualquer informação adicional neste caso, nós não especificamos nenhum argumento para o construtor `PagamentoContraEntrega`. Por último, poderemos enviar uma fatura para o cliente especificado,neste caso precisamos do seu IDCliente como argumento para o construtor `Fatura`.
 
 Quando usamos um construtor de valor para criar um valor do tipo InfoFaturamento, devemos fornecer os argumentos que ele necessita.
 
-    ghci> 
+	ghci> :type CreditCard
+	CreditCard :: CardNumber -> CardHolder -> Address -> BillingInfo
+	ghci> CreditCard "2901650221064486" "Thomas Gradgrind" ["Dickens", "England"]
+	CreditCard "2901650221064486" "Thomas Gradgrind" ["Dickens","England"]
+	ghci> :type it
+	it :: BillingInfo
+	ghci> Invoice
+
+	<interactive>:1:0:
+	    No instance for (Show (CustomerID -> BillingInfo))
+	      arising from a use of `print' at <interactive>:1:0-6
+	    Possible fix:
+	      add an instance declaration for (Show (CustomerID -> BillingInfo))
+	    In the expression: print it
+	    In a 'do' expression: print it
+	ghci> :type it
+	it :: BillingInfo
 
 A mensagem de erro `No instance` surgiu porque nós não fornecemos um argumento para o construtor `Fatura`. Como resultado, nós estávamos tentando imprimir o construtor `Fatura` de si mesmo. Construtor que requer um argumento e retorna um valor, por isso é uma função. Nós não podemos imprimir funções em Haskell, que é basicamente a razão pela qual o intérprete reclamou.
 
-### Tuplas, tipos de dado algébricos, e quando utilizar cada
+#### Tuplas, tipos de dado algébricos, e quando utilizar cada
 
 Há alguma sobreposição entre tuplas e definidas pelo usuário tipos de dado algébricos. Se quiséssemos, poderíamos representar o nosso tipo de InfoLivro anteriormente como um tupla (Int, String, \[String\]).
 
-    ghci> 
+    	ghci> Book 2 "The Wealth of Networks" ["Yochai Benkler"]
+    	Book 2 "The Wealth of Networks" ["Yochai Benkler"]
+	ghci> (2, "The Wealth of Networks", ["Yochai Benkler"])
+	(2,"The Wealth of Networks",["Yochai Benkler"])
 
 Tipos de dado algébrica nos permite distinguir entre idênticas partes umw informação. Duas tuplas com elementos do mesmo tipo são estruturalmente idênticos, então elas tem o mesmo tipo.
-
-    -- arquivo: ca03/Distinção.hs
+```haskell
+    -- arquivo: ca03/Distincao.hs
+    a = ("Porpoise", "Grey")
+    b = ("Table", "Oak")
+```
 
 Uma vez que eles têm nomes diferentes, dois tipos de dados algébrica tem tipos distintos, mesmo que sejam estruturalmente equivalentes.
 
-    -- arquivo: ca03/Distinção.hs
+```haskell
+-- arquivo: ca03/Distincao.hs
+data Cetacean = Cetacean String String
+data Furniture = Furniture String String
+
+c = Cetacean "Porpoise" "Grey"
+d = Furniture "Table" "Oak"
+```
 
 Isso nos permite trazer ao sistema de tipos a possibilidade de escrever programas com menos erros. Com as tuplas definidos acima, poderíamos passar uma descrição de uma baleia para uma função que esperava uma cadeira, e o sistema de tipos não poderia nos ajudar. Com os tipos de dados algébricos, não há essa possibilidade de confusão.
 
 Aqui está um exemplo mais sutil. Considere as seguintes representações de um vetor de duas dimensões.
 
-    -- arquivo: ca03/VetorAlgébrico.hs-- Coordenadas x e y ou comprimentos:
+```haskell
+    -- arquivo: ca03/VetorAlgébrico.hs
+    -- Coordenadas x e y ou comprimentos:
+    data Cartesian2D = Cartesian2D Double Double
+                   deriving (Eq, Show)
+
+     -- Angle and distance (magnitude).
+     data Polar2D = Polar2D Double Double
+		       deriving (Eq, Show)
+```
 
 As formas polares e cartesianas usam os mesmos tipos para seus dois elementos. No entanto, os _significados_ dos elementos são diferentes. Porque Cartesiano2D e Polar2D são tipos distintos, o sistema de tipos não vai nos deixar acidentalmente usar um valor Cartesian2D onde um Polar2D é esperado, ou vice-versa.
 
-    ghci> 
+	ghci> Cartesian2D (sqrt 2) (sqrt 2) == Polar2D (pi / 4) 2
+
+	<interactive>:1:33:
+	    Couldn't match expected type `Cartesian2D'
+		   against inferred type `Polar2D'
+	    In the second argument of `(==)', namely `Polar2D (pi / 4) 2'
+	    In the expression:
+		  Cartesian2D (sqrt 2) (sqrt 2) == Polar2D (pi / 4) 2
+	    In the definition of `it':
+		it = Cartesian2D (sqrt 2) (sqrt 2) == Polar2D (pi / 4) 
 
 O operador `(==)` exige que os seus argumentos sejam do mesmo tipo.
 
 ![[Tip]](support/figs/tip.png)
 
-Comparando-se a igualdade
+>Comparando-se a igualdade
 
-Observe que no cláusule `deriving` de vector tipos nossa, nós adicionamos uma outra palavra, `Eq`. Isso faz com que a aplicação Haskell para gerar o código que nos permite comparar os valores de igualdade.
+>Observe que no cláusule `deriving` de vector tipos nossa, nós adicionamos uma outra palavra, `Eq`. Isso faz com que a aplicação Haskell para gerar o código que nos permite comparar os valores de igualdade.
 
 Se usássemos tuplas para representar esses valores, podemos rapidamente nos terrenos em água quente, misturando as duas representações de forma inadequada.
 
-    ghci> 
+	ghci> (1, 2) == (1, 2)
+	True 
 
 O sistema de tipos não pode salvar-nos aqui: na medida em que se preocupa, estamos comparando dois (Double, Double) pares, que é uma coisa perfeitamente válido para fazer. Na verdade, não podemos dizer que pela inspeção desses valores é suposto ser polar ou cartesiana, mas `(1,2)` tem um significado diferente em cada representação.
 
 Não há nenhuma régua dura e rápida para decidir quando é melhor usar uma tupla ou um tipo de dados distintas, mas aqui é uma regra a seguir. Se você estiver usando valores compostos amplamente em seu código (como quase todos os programas não-trivial fazer), acrescentando data das declarações vai beneficiar você em ambos os tipo de segurança e legibilidade. Para os mais pequenos, usa localizada, uma tupla é geralmente fina.
 
-### Análogos aos tipos de dado algébricos em outras línguas
+#### Análogos aos tipos de dado algébricos em outras línguas
 
 Tipos de dado algébricos fornecer uma poderosa forma única para descrever tipos de dados. Outras línguas muitas vezes precisam de várias características diferentes para atingir o mesmo grau de expressividade. Aqui estão alguns análogos de C e C++, o que pode tornar mais claro o que podemos fazer com os tipos de dados algébricos, e como eles se relacionam com os conceitos que poderia ser mais familiar.
 
-#### A estrutura
+##### O "struct" do C
 
 Com apenas um construtor, um tipo de dados algébrico é semelhante a uma tupla: ele agrupa os valores relacionados juntos em um valor composto. Corresponde a uma `struct` em C ou C++, e seus componentes correspondem aos campos de uma `struct`. e seus componentes correspondem aos campos do tipo InfoLivro que definimos anteriormente.
 
+```C
 struct info_livro {  
     int id;  
     char *nome;  
     char **autores;  
 };
+```
 
 A diferença principal entre os dois é que os campos do tipo Haskell são anônimos e de posicionamento.
 
+```haskell
     -- arquivo: ca03/Livraria.hs
+data BookInfo = Book Int String [String]
+                deriving (Show)
+```
 
 Por _posicional_, queremos dizer que o número de seção é o primeiro campo do tipo Haskell, eo título é na segunda. Nós nos referimos a eles pelo local, e não pelo nome.
 
 Na [seção chamada “casamento de padrões”](defining-types-streamlining-functions.html#deftypes.pattern "Pattern matching"), veremos como acessar os campos de um valor Livraria. Na [seção intitulada “Sintaxe record”](defining-types-streamlining-functions.html#deftypes.record "Record syntax"), vamos introduzir uma sintaxe alternativa para a definição de tipos de dados que parece um pouco mais similar a C.
 
-#### A enumeração
+##### Tipos enumerados
 
-Tipos de dado algébrica também servir onde usaria um `enum` em C ou C + +, para representar um conjunto de valores simbólicos. Esses tipos de dados algébricos são muitas vezes referidos como tipos de enumeração. Aqui está um exemplo de C.
+Tipos de dado algébricos também servem onde usaria um `enum` em C ou C + +, para representar um conjunto de valores simbólicos. Esses tipos de dados algébricos são muitas vezes referidos como tipos de enumeração. Aqui está um exemplo de C.
 
+```C
 enum vlavaiv {  
     vermelho,  
     laranja,  
@@ -207,23 +310,50 @@ enum vlavaiv {
     indigo,  
     violeta,  
 };
+```
 
 E aqui está um equivalente Haskell.
 
-    -- arquivo: ca03/Vlavaiv.hs
-
+```haskell
+    -- arquivo: ca03/Roygbiv.hs
+    data Roygbiv = Red
+             | Orange
+             | Yellow
+             | Green
+             | Blue
+             | Indigo
+             | Violet
+               deriving (Eq, Show)
+```
+	       
 Podemos tentar estes no **ghci**.
 
-    ghci> 
+	ghci> :type Yellow
+	Yellow :: Roygbiv
+	ghci> :type Red
+	Red :: Roygbiv
+	ghci> Red == Yellow
+	False
+	ghci> Green == Green
+	True 
 
 Em C, os elementos de um `enum` são inteiros. Podemos usar um número inteiro em um contexto onde um `enum` é esperado, e vice-versa: de um compilador C automaticamente converter valores entre os dois tipos. Isto pode ser uma fonte de bugs. Em Haskell, esse tipo de problema não ocorre. Por exemplo, nós não podemos usar um valor Vlavaiv onde um `Int` é esperado.
 
-    ghci> 
+	 ghci> take 3 "foobar"
+	"foo"
+	ghci> take Red "foobar"
 
-#### A união discriminada
+	<interactive>:1:5:
+	    Couldn't match expected type `Int' against inferred type `Roygbiv'
+	    In the first argument of `take', namely `Red'
+	    In the expression: take Red "foobar"
+	    In the definition of `it': it = take Red "foobar" 
 
-Se um tipo de dados algébrico tem várias alternativas, podemos pensar nele como semelhante a uma `union` em C ou C + +. A grande diferença entre os dois é que um sindicato não nos diz qual a alternativa que está realmente presente, temos de forma explícita e controlar manualmente qual a alternativa que estamos usando, normalmente em outro campo de uma estrutura envolvente. Isto significa que os sindicatos podem ser fontes de bugs, onde a nossa noção de qual a alternativa que nós devemos usar está incorrecto.
+##### A união disjunta
 
+Se um tipo de dados algébrico tem várias alternativas, podemos pensar nele como semelhante a uma `union` em C ou C + +. A grande diferença entre os dois é que um union não nos diz qual a alternativa que está realmente presente, temos de forma explícita controlar manualmente qual a alternativa que estamos usando, normalmente em outro campo de uma estrutura envolvente. Isto significa que os sindicatos podem ser fontes de bugs, onde a nossa noção de qual a alternativa que nós devemos usar está incorrecto.
+
+```
 enum tipo_forma {  
     forma_circulo,  
     forma_poligono,  
@@ -232,10 +362,11 @@ enum tipo_forma {
 struct circulo {  
     struct vetor centro;  
     float raio;  
-};  
+};
+
   
 struct poligono {  
-    size\_t num\_vertices;  
+    size_t num_vertices;  
     struct vetor *vertices;  
 };  
   
@@ -247,23 +378,30 @@ struct forma
 	struct poligono poligono;  
     } forma;  
 };
+```
 
 No exemplo acima, a `union` pode conter dados válidos para qualquer um `struct circulo` ou um `struct poligono`. Nós temos que usar o `enum shape_type` com a mão para indicar que tipo de valor está armazenado na `union`.
 
 A versão em Haskell deste código é tanto drasticamente mais curta e mais segura do que o equivalente C.
 
+```haskell
     -- arquivo: ca03/UnionForma.hs
+    type Vector = (Double, Double)
+
+     data Shape = Circle Vector Double
+           | Poly [Vector]
+```
 
 Se criarmos um valor Forma usando o construtor `Circulo`, o fato de que nós criamos um `Circulo` é armazenado. Quando mais tarde usar um `Circulo`, não podemos tratá-la acidentalmente, como um `Quadrado`. Vamos ver por que [o “Casamento de padrões”](defining-types-streamlining-functions.html#deftypes.pattern "Pattern matching").
 
 ![[Tip]](support/figs/tip.png)
 
-Algumas notas
+>Algumas notas
 
-Da leitura dos capítulos anteriores, que agora deve ficar claro que _todos_ os tipos de dados que define a palavra-chave `data` são os tipos de dados algébricos. Alguns podem ter apenas uma alternativa, enquanto outros têm vários, mas eles estão todos usando as mesmas máquinas.
+>Da leitura dos capítulos anteriores, que agora deve ficar claro que _todos_ os tipos de dados que define a palavra-chave `data` são os tipos de dados algébricos. Alguns podem ter apenas uma alternativa, enquanto outros têm vários, mas eles estão todos usando as mesmas máquinas.
 
-Casamento de padrões
---------------------
+### Casamento de padrões
+
 
 Agora que vimos como a construção de valores com os tipos de dados algébricos, vamos discutir como podemos trabalhar com esses valores. Se tivermos um valor de algum tipo, há duas coisas que gostaria de ser capaz de fazer.
 
@@ -276,7 +414,11 @@ Haskell tem um recurso simples, mas extremament útil, que é o _casamento de pa
 
 Um padrão nos permite olhar para dentro de um valor e variáveis de vinculação com os dados que ele contém. Aqui está um exemplo de combinação de padrões em ação em um valor Bool: vamos reproduzir a função `not`.
 
-    -- arquivo: ca03/soma.hs
+```haskell
+-- arquivo: ca03/soma.hs
+myNot True  = False
+myNot False = True
+```
 
 Pode parecer que temos duas funções chamado `meuNot` aqui, mas Haskell nos permite definir uma função como uma _série de equações_: estes dois são cláusulas que definem o comportamento da mesma função para diferentes padrões de entrada. Em cada linha, os padrões são os itens a seguir ao nome da função, até o símbolo `=`.
 
@@ -286,7 +428,11 @@ Quando aplicamos `meuNot`, o runtime Haskell verifica o valor que fornecemos con
 
 Aqui está um exemplo um pouco mais prolongado. Essa função adiciona os elementos de uma lista.
 
-    -- arquivo: ca03/soma.hs
+```haskell
+-- arquivo: ca03/soma.hs
+sumList (x:xs) = x + sumList xs
+sumList []     = 0    
+```
 
 Vamos passo a passo através da avaliação de `somaLista [1,2]`. A notação de lista `[1,2]` é uma abreviação para a expressão `(1:(2:[]))`. Começamos por tentar compatibilizar o padrão da primeira equação da definição de `somaLista`. No padrão `(x:xs)`, o “`:`” é o construtor da lista familiar, `(:)`. Estamos agora a usá-lo para casar contra um valor, não para construir um . O valor `(1:(2:[]))` foi construído com `(:)`,então o construtor do valor corresponde ao construtor no padrão. Dizemos que o padrão _casou_, ou que o casamento foi _bem-sucedido_.
 
@@ -300,13 +446,13 @@ O resultado da `somaLista [1,2]` é, portanto `1 + (2 + (0))`, ou `3`.
 
 ![[Note]](support/figs/note.png)
 
-A ordenação é importante
+>A ordenação é importante
 
-Como já mencionado, a implementação Haskell checa o padrão para casar na  mesma ordem em que especificá-mos em nossas funções. Procedimento de "casamento" é de cima para baixo, e termina no primeiro sucesso.
+>Como já mencionado, a implementação Haskell checa o padrão para casar na  mesma ordem em que especificá-mos em nossas funções. Procedimento de "casamento" é de cima para baixo, e termina no primeiro sucesso.
 
 Como nota final, já existe uma função padrão chamada `sum`, que realiza esta soma de lista para nós. Nossa `somaLista` é meramente ilustrativa.
 
-### Construção e deconstrução
+#### Construção e deconstrução
 
 Damos um passo a trás e daremos uma olhada na relação entre a construção de um valor e o seu casamento de padrão.
 
@@ -329,41 +475,68 @@ Como o padrão combina age como o inverso da construção, é por vezes referido
 
 ![[Note]](support/figs/note.png)
 
-A desconstrução não destrói nada
+>A desconstrução não destrói nada
 
-Se você está mergulhada em programação orientada a objeto jargão, não confunda a desconstrução com destruição! Correspondência de um padrão não tem nenhum efeito sobre o valor que estamos examinando: só nos permite “olhar para dentro” dele.
+>Se você está mergulhada em programação orientada a objeto jargão, não confunda a desconstrução com destruição! Correspondência de um padrão não tem nenhum efeito sobre o valor que estamos examinando: só nos permite “olhar para dentro” dele.
 
-### Outras aventuras
+#### Outras aventuras
 
 A sintaxe de casamento de padrões em uma tupla é similar à sintaxe para a construção de uma tupla. Aqui está uma função que retorna o último elemento de uma 3-tuplo.
 
-    -- arquivo: ca03/Tuplo.hs
+
+```
+-- arquivo: ca03/Tuplo.hs
+third (a, b, c) = c
+```
 
 Não há limite para o tão “profundo” dentro de um valor padrão podemos olhar. Esta definição olha tanto dentro de uma tupla quanto dentro de uma lista em uma tupla.
 
-    -- arquivo: ca03/Tuplo.hs
+    -- arquivo: ca03/Tupla.hs
+    complicated (True, a, x:xs, 5) = (a, xs)
 
 Podemos tentar fazer isso de forma interativa.
 
-    ghci> 
+	ghci> :load Tuple.hs
+	[1 of 1] Compiling Main             ( Tuple.hs, interpreted )
+	Ok, modules loaded: Main.
+	ghci> complicated (True, 1, [1,2,3], 5)
+	(1,[2,3])
 
 Sempre que um valor literal está presente em um padrão (`True` e `5` do padrão da tupla acima), esse valor tem de corresponder exatamente ao padrão para ter sucesso. Se o padrão dentro de uma série de equações não corresponde ao valor de entrada, temos então um erro de execução.
 
-    ghci> 
+	ghci> complicated (False, 1, [1,2,3], 5)
+	*** Exception: Tuple.hs:10:0-39: Non-exhaustive patterns in function complicated
+
 
 Para uma explicação sobre essa mensagem de erro, avance um pouco, para [a seção chamada “Padrões exaustivos e curingas”](defining-types-streamlining-functions.html#deftypes.patterns.nonexhaustive "Exhaustive patterns and wild cards").
 
 Nós podemos casar padrões em um tipo de dados algébrico usando o valor seus construtores. Lembrando-se do tipo InfoLivro definido anteriormente: podemos extrair os valores de um InfoLivro como se segue.
 
-    -- arquivo: ca03/Livraria.hs
+```haskell
+-- arquivo: ca03/Livraria.hs
+-- file: ch03/BookStore.hs
+bookID      (Book id title authors) = id
+bookTitle   (Book id title authors) = title
+bookAuthors (Book id title authors) = authors
+```
 
 Vamos vê-lo em ação.
 
-    ghci> 
+	ghci> bookID (Book 3 "Probability Theory" ["E.T.H. Jaynes"])
+	3
+	ghci> bookTitle (Book 3 "Probability Theory" ["E.T.H. Jaynes"])
+	"Probability Theory"
+	ghci> bookAuthors (Book 3 "Probability Theory" ["E.T.H. Jaynes"])
+	["E.T.H. Jaynes"]
 
 O compilador pode inferir os tipos de funções de acesso baseado no construtor que estamos usando no nosso padrão.
 
-    ghci> 
+	ghci> :type bookID
+	bookID :: BookInfo -> Int
+	ghci> :type bookTitle
+	bookTitle :: BookInfo -> String
+	ghci> :type bookAuthors
+	bookAuthors :: BookInfo -> [String]
 
 Se usarmos um valor literal em um padrão, a parte correspondente ao valor que estamos combinando deverá conter um valor idêntico. Por exemplo, o padrão `(3:xs)` antes de mais nada é verificado se um valor é uma lista não vazia, casando com o construtor `(:)`. Ele também garante que a cabeça da lista tem o valor exato `3`. Se ambas as condições obtivere exitos, a cauda da lista encontra-se vinculada à variável `xs`.
 
