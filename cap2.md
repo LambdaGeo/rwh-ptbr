@@ -248,9 +248,7 @@ Muitas vezes usamos tuplas para devolver múltiplos valores de uma função. Nó
 
 ### Exercícios
 
-**1.**
-
-Quais são os tipos das seguintes expressões?
+**1.** Quais são os tipos das seguintes expressões?
 
 *   `False`
     
@@ -282,7 +280,7 @@ Se o seu background  for em uma outra linguagem de programação, estes exemplo
 
 
 
->![[Note]]({{site.url}}/wh-ptbr/assets/note.png)**Tuplas Haskell não são listas imutáveis**
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**Tuplas Haskell não são listas imutáveis**
 
 >Se você está vindo do mundo do Python, você provavelmente tem usado listas e tuplas como conceitos quase intercambiáveis. Embora os elementos de uma tupla Python são imutáveis, que podem ser indexados e iterada usando os mesmos métodos como uma lista. Este não é o caso em Haskell, portanto, não tente levar essa idéia com você em território linguístico desconhecido.
 
@@ -741,17 +739,11 @@ meuDrop :: Int -> \[a\] -> \[a\]
 Exercícios
 ----------
 
-**1.**
+**1.** Haskell oferece uma função padrão, `last :: [a] -> a`, que retorna o último elemento de uma lista. Da leitura do tipo sozinho, quais são os possíveis comportamentos válidos (omitindo falhas e loops infinitos) que esta função poderia ter? Que coisas que esta função claramente não pode fazer?
 
-Haskell oferece uma função padrão, `last :: [a] -> a`, que retorna o último elemento de uma lista. Da leitura do tipo sozinho, quais são os possíveis comportamentos válidos (omitindo falhas e loops infinitos) que esta função poderia ter? Que coisas que esta função claramente não pode fazer?
+**2.** Escreva uma função `lastButOne,` que retorna o elemento _antes_ do último.
 
-**2.**
-
-Escreva uma função `lastButOne,` que retorna o elemento _antes_ do último.
-
-**3.**
-
-Carregue seu função `lastButOne` no **ghci**, e teste-o em listas de diferentes comprimentos. O que acontece quando você passar uma lista que é muito curta?
+**3.** Carregue seu função `lastButOne` no **ghci**, e teste-o em listas de diferentes comprimentos. O que acontece quando você passar uma lista que é muito curta?
 
 ### Por que a confusão sobre a pureza?
 
