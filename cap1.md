@@ -9,14 +9,13 @@ de Bryan O'Sullivan, Don Stewart, and John Goerzen
 
 -------------------------------------------------------
 
-Capítulo 1. Começando
-----------------------
+## Capítulo 1. Começando
+
 
 
 Enquanto lê os primeiros capítulos deste livro, tenha em mente que iremos as vezes apresentar alguns conceitos de modo restrito e simplificado. Haskell é uma linguagem ampla, e apresentar todos os aspectos de um determinado assunto de uma vez só pode atrapalhar o seu aprendizado. Como queremos construir uma base sólida em Haskell, iremos expandir estas explicações iniciais mais a frente.
 
-Seu ambiente Haskell
---------------------
+### Seu ambiente Haskell
 
 Haskell é uma linguagem com muitas implementações, dos quais dois estão em ampla utilização. Hugs é um intérpretador que é usado principalmente para o ensino. Para aplicações reais, o Glasgow Haskell Compiler (GHC) é muito mais popular. Comparado com Hugs, GHCé mais adequado para o “trabalho real”: ele compila para código nativo, suporta a execução paralela e fornece ferramentas de análise de desempenho e de depuração. Por estas razões, GHC é a implementação Haskell que iremos utilizar ao longo deste livro.
 
@@ -94,26 +93,41 @@ ghci> :m +Data.Ratio
 ```
 Agora podemos usar as funcionalidades do módulo `Data.Ratio`, que nos permite trabalhar com números racionais (frações)
 
-Interação básica: usando ghci como uma calculadora
---------------------------------------------------
+### Interação básica: usando ghci como uma calculadora
+
 
 Além de fornecer uma interface conveniente para testar fragmentos de código, ghci pode funcionar como uma calculadora de desktop facilmente acessível. Podemos facilmente exprimir qualquer operação na calculadora ghci e, como bônus, podemos acrescentar operações mais complexas quando nós nos tornamos mais familiarizado com Haskell. Mesmo utilizando o intérprete desta forma simples, ele pode ajudar-nos a tornar-se mais confortáveis com o modo que o Haskell funciona.
 
-### Aritméticas simples
+#### Aritméticas simples
 
 Podemos começar imediatamente a entrar expressões, para ver o que ghci vai fazer com eles. Aritmética simples funciona de forma semelhante a linguagens como C e Python: nós escrevemos expressões na forma infixa onde o operador aparece entre os seus operandos.
 
-    ghci> 
+´´´
+ghci> 2 + 2
+4
+ghci> 31337 * 101
+3165037
+ghci> 7.0 / 2.0
+3.5
+´´´
 
 O estilo de escrever um infixo expressão é apenas uma conveniência: também podemos escrever uma expressão em forma de prefixo, onde o operador precede os seus argumentos. Para fazer isso, devemos colocar o operador em parênteses.
 
-    ghciInicio; 
+´´´
+ghci> 2 + 2
+4
+ghci> (+) 2 2
+4
+´´´
 
 Como as expressões acima implicam, ao Haskell ter uma noção de números inteiros e de ponto flutuante. Inteiros podem ser arbitrariamente grande. Aqui, (^) fornece exponenciação inteiro.
 
-    ghci> 
+´´´
+ghci> 313 ^ 15
+27112218957718876716220410905036741257
+´´´
 
-### Um equívoco aritmético: escrever números negativos
+#### Um equívoco aritmético: escrever números negativos
 
 Haskell nos apresenta uma peculiaridade no modo como devemos escrever números: é muitas vezes necessário colocar um número negativo entre parênteses. Isto afeta-nos logo que ir além da simples expressões.
 
