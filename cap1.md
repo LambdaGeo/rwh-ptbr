@@ -1,8 +1,6 @@
-
-[Anterior](porque_haskell)            [Inicio](index)            [Próximo]() 
-
 Capítulo 1. Começando
----------------------
+-----------------------------------
+
 
 Enquanto lê os primeiros capítulos deste livro, tenha em mente que iremos as vezes apresentar alguns conceitos de modo restrito e simplificado. Haskell é uma linguagem ampla, e apresentar todos os aspectos de um determinado assunto de uma vez só pode atrapalhar o seu aprendizado. Como queremos construir uma base sólida em Haskell, iremos expandir estas explicações iniciais mais a frente.
 
