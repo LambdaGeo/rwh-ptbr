@@ -81,6 +81,7 @@ O módulo `Prelude` é muitas vezes referida como “the standard prelude”, po
 >Por questões de brevidade e coerência, ao longo deste livro, temos substituído o prompt padrão ghci pelo seguinte prompt `ghci>`
 
 >Se você quiser fazer isso, use a directiva `:set prompt` de ghci, como se segue.
+
 ```
 Prelude :set prompt "ghci"
 ghci>
@@ -88,6 +89,7 @@ ghci>
 
 
 O prelude está sempre implicitamente disponível, nós não precisamos de tomar quaisquer medidas para utilizar os tipos, valores ou funções que ele define. Para utilizar as definições de outros módulos, devemos carregá-los em ghci, utilizando o :module ou :m.
+
 ```
 ghci> :m +Data.Ratio
 ```
@@ -102,30 +104,30 @@ Além de fornecer uma interface conveniente para testar fragmentos de código, g
 
 Podemos começar imediatamente a entrar expressões, para ver o que ghci vai fazer com eles. Aritmética simples funciona de forma semelhante a linguagens como C e Python: nós escrevemos expressões na forma infixa onde o operador aparece entre os seus operandos.
 
-´´´
+```
 ghci> 2 + 2
 4
 ghci> 31337 * 101
 3165037
 ghci> 7.0 / 2.0
 3.5
-´´´
+```
 
 O estilo de escrever um infixo expressão é apenas uma conveniência: também podemos escrever uma expressão em forma de prefixo, onde o operador precede os seus argumentos. Para fazer isso, devemos colocar o operador em parênteses.
 
-´´´
+```
 ghci> 2 + 2
 4
 ghci> (+) 2 2
 4
-´´´
+```
 
 Como as expressões acima implicam, ao Haskell ter uma noção de números inteiros e de ponto flutuante. Inteiros podem ser arbitrariamente grande. Aqui, (^) fornece exponenciação inteiro.
 
-´´´
+```
 ghci> 313 ^ 15
 27112218957718876716220410905036741257
-´´´
+```
 
 #### Um equívoco aritmético: escrever números negativos
 
