@@ -1,97 +1,17 @@
-Capítulo 2. Tipos e Funções           
+---
+# You don't need to edit this file, it's empty on purpose.
+# Edit theme's home layout instead if you wanna make some changes
+# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
+layout: page
+---
+Uma tradução não oficial do livro Real World Haskell 
+de Bryan O'Sullivan, Don Stewart, and John Goerzen
+-------------------------------------------------------
 
-[Real World Haskell](/)por Bryan O'Sullivan, Don Stewart e John Goerzen
------------------------------------------------------------------------
 
-Capítulo 2. Tipos e Funções  
+## Capítulo 2. Tipos e Funções           
 
-[Anterior](getting-started.html) 
-
-   
-
- [Próximo](defining-types-streamlining-functions.html)
-
-Capítulo 2. Tipos e Funções
----------------------------
-
-**Índice analítico**
-
-[Por que se preocupar com os tipos?](types-and-functions.html#id577672)  
-
-[O sistema de tipo de Haskell](types-and-functions.html#funcstypes.types)  
-
-[Tipos fortes](types-and-functions.html#id577786)  
-
-[Tipos estáticos](types-and-functions.html#id577931)  
-
-[Inferência de tipo](types-and-functions.html#id578066)  
-
-  
-
-[O que esperar do sistema tipo](types-and-functions.html#id578095)  
-
-[Alguns tipos básicos comuns](types-and-functions.html#funcstypes.basic)  
-
-[Aplicação de função](types-and-functions.html#funcstypes.calling)  
-
-[Tipos de dados compostas uteis: listas e tuplas](types-and-functions.html#funcstypes.composite)  
-
-[Exercícios](types-and-functions.html#funcstypes.composite.exercises)  
-
-  
-
-[Funções sobre listas e tuplas](types-and-functions.html#id579120)  
-
-[Passando uma expressão para uma função](types-and-functions.html#funcstypes.calling.expr)  
-
-  
-
-[Tipos de função e pureza](types-and-functions.html#funcstypes.sigs)  
-
-[Arquivos fonte Haskell, e escrever funções simples](types-and-functions.html#funcstypes.srcfile)  
-
-[Apenas o que é uma variável, afinal?](types-and-functions.html#funcstypes.variable)  
-
-[Avaliação condicional](types-and-functions.html#funcstypes.if)  
-
-  
-
-[Compreender a avaliação por exemplo](types-and-functions.html#id580425)  
-
-[Avaliação preguiçosa](types-and-functions.html#id580456)  
-
-[Um exemplo mais envolvido](types-and-functions.html#id580594)  
-
-[Recursão](types-and-functions.html#id580915)  
-
-[Acabar com a recursividade](types-and-functions.html#id581112)  
-
-[Retornando da recursão](types-and-functions.html#id581267)  
-
-[O que aprendemos?](types-and-functions.html#id581397)  
-
-  
-
-[Polimorfismo em Haskell](types-and-functions.html#funcstypes.polymorphism)  
-
-[Raciocínio sobre funções polimórficas](types-and-functions.html#id581696)  
-
-[Outras leituras](types-and-functions.html#id581793)  
-
-  
-
-  
-
-[O tipo de uma função de mais de um argumento](types-and-functions.html#id581829)  
-
-[Exercícios](types-and-functions.html#funcstypes.sigs.exercises)  
-
-[Por que a confusão sobre a pureza?](types-and-functions.html#id582031)  
-
-[Conclusão](types-and-functions.html#funcstypes.end)  
-
-Por que se preocupar com tipos?
--------------------------------
+### Por que se preocupar com tipos?
 
 Cada expressão e função em Haskell tem um _tipo_. Por exemplo, o valor `True` tem o tipo Bool, enquanto o valor `"foo"` tem o tipo String. O tipo de um valor indica que ele compartilha certas propriedades com outros valores do mesmo tipo. Por exemplo, podemos adicionar os números, e podemos concatenar as listas, que são propriedades desses tipos. Dizemos que uma expressão “tem tipo `X`”, ou “é do tipo `X`”.
 
