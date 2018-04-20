@@ -1,47 +1,6 @@
 
-[Real World Haskell](http://book.realworldhaskell.org/)by Bryan O'Sullivan, Don Stewart, and John Goerzen
----------------------------------------------------------------------------------------------------------
-
-Capítulo 21. Usando Bancos de Dados
-
-[Prev](http://book.realworldhaskell.org/read/systems-programming-in-haskell.html) 
-
- 
-
- [Next](http://book.realworldhaskell.org/read/extended-example-web-client-programming.html)
-
 Capítulo 21. Usando Bancos de Dados
 -----------------------------------
-
-**Índice**
-
-Carregar todos os comentários (**slow**)
-
-[Resumo do HDBC](http://book.realworldhaskell.org/read/using-databases.html#databases.hdbc)
-
-[Instalando HDBC e Drivers](http://book.realworldhaskell.org/read/using-databases.html#databases.hdbc.install)
-
-[Conectando aos Bancos de Dados](http://book.realworldhaskell.org/read/using-databases.html#databases.connect)
-
-[Transações](http://book.realworldhaskell.org/read/using-databases.html#databases.transactions)
-
-[Pesquisas Simples](http://book.realworldhaskell.org/read/using-databases.html#databases.simplequeries)
-
-[SqlValues](http://book.realworldhaskell.org/read/using-databases.html#database.sqlvalue)
-
-[Parâmetros de Pesquisa](http://book.realworldhaskell.org/read/using-databases.html#databases.args)
-
-[Declarações Preparadas](http://book.realworldhaskell.org/read/using-databases.html#databases.statements)
-
-[Leitura de Resultados](http://book.realworldhaskell.org/read/using-databases.html#databases.readingresults)
-
-[Leitura de Declarações](http://book.realworldhaskell.org/read/using-databases.html#databases.readingstatements)
-
-[Leitura Preguiçosa](http://book.realworldhaskell.org/read/using-databases.html#databases.readinglazy)
-
-[Metadados de Banco de Dados](http://book.realworldhaskell.org/read/using-databases.html#databases.metadata)
-
-[Tratamento de Erro](http://book.realworldhaskell.org/read/using-databases.html#databases.errors)
 
 Tudo desde fóruns a podcatchers ou até mesmo programas de backup freqüentemente usam bancos de dados para armazenamento persistente. Bancos de dados baseados em SQL são bastante convenientes: eles são rápidos, a escala de tamanhos pode variar de minúsculo a enorme, pode operar através da rede, frequentemente ajuda a lidar com travamentos e operações, e pode ainda fornecer tratamento de erros e melhorias em redundância para aplicações. Bases de dados vêm em diferentes formas: a grandes bases de dados comerciais, tais como Oracle, engines de código aberto, como MySQL ou PostgreSQL, e ainda engines integradas como Sqlite. [6 comments](comments: show / hide)
 
