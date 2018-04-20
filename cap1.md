@@ -469,11 +469,11 @@ O que `+t` faz é dizer ghci para imprimir o tipo de expressão após a express�
 *   Aqui, a expressão “it” tem o tipo \[Char\]. (O nome String é frequentemente utilizado em vez de \[Char\]. É simplesmente um sinônimo para \[Char\].)
 
 
-![[Tip]](/support/figs/tip.png)
 
-**The joy of “it”**
 
-That `it` variable is a handy **ghci** shortcut. It lets us use the result of the expression we just evaluated in a new expression.
+>![[Tip]](/figs/tip.png) **The joy of “it”**
+
+>That `it` variable is a handy **ghci** shortcut. It lets us use the result of the expression we just evaluated in a new expression.
 
 ```
 ghci> "foo"
@@ -484,7 +484,7 @@ ghci> it ++ "bar"
 it :: [Char]
 ```
 
-When evaluating an expression, **ghci** won't change the value of `it` if the evaluation fails. This lets you write potentially bogus expressions with something of a safety net.
+>When evaluating an expression, **ghci** won't change the value of `it` if the evaluation fails. This lets you write potentially bogus expressions with something of a safety net.
 
 ```
 ghci> it
@@ -507,7 +507,7 @@ ghci> it ++ "baz"
 it :: [Char]
 ```
 
-When we couple `it` with liberal use of the arrow keys to recall and edit the last expression we typed, we gain a decent way to experiment interactively: the cost of mistakes is very low. Take advantage of the opportunity to make cheap, plentiful mistakes when you're exploring the language!
+>When we couple `it` with liberal use of the arrow keys to recall and edit the last expression we typed, we gain a decent way to experiment interactively: the cost of mistakes is very low. Take advantage of the opportunity to make cheap, plentiful mistakes when you're exploring the language!
 
 Here are a few more of Haskell's names for types, from expressions of the sort we've already seen.
 
