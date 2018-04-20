@@ -1,5 +1,5 @@
 
-[Anterior](why-functional-programming-why-haskell_ptbr.html) [Inicio](index.html) [Próximo](getting-started.html) 
+[Anterior](why-functional-programming-why-haskell_ptbr.html)            [Inicio](index.html)            [Próximo](getting-started.html) 
 
 Capítulo 1. Começando
 ---------------------
