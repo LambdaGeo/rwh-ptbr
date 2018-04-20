@@ -471,69 +471,132 @@ O que `+t` faz é dizer ghci para imprimir o tipo de expressão após a express�
 
 ![[Tip]](/support/figs/tip.png)
 
-The joy of “it”
+>**The joy of “it”**
 
-That `it` variable is a handy **ghci** shortcut. It lets us use the result of the expression we just evaluated in a new expression.
+>That `it` variable is a handy **ghci** shortcut. It lets us use the result of the expression we just evaluated in a new expression.
+```
+ghci> "foo"
+"foo"
+it :: [Char]
+ghci> it ++ "bar"
+"foobar"
+it :: [Char]
+```
+>When evaluating an expression, **ghci** won't change the value of `it` if the evaluation fails. This lets you write potentially bogus expressions with something of a safety net.
+```
+ghci> it
+"foobar"
+it :: [Char]
+ghci> it ++ 3
 
-    ghci> 
-
-When evaluating an expression, **ghci** won't change the value of `it` if the evaluation fails. This lets you write potentially bogus expressions with something of a safety net.
-
-    ghci> 
-
-When we couple `it` with liberal use of the arrow keys to recall and edit the last expression we typed, we gain a decent way to experiment interactively: the cost of mistakes is very low. Take advantage of the opportunity to make cheap, plentiful mistakes when you're exploring the language!
+<interactive>:1:6:
+    No instance for (Num [Char])
+      arising from the literal `3' at <interactive>:1:6
+    Possible fix: add an instance declaration for (Num [Char])
+    In the second argument of `(++)', namely `3'
+    In the expression: it ++ 3
+    In the definition of `it': it = it ++ 3
+ghci> it
+"foobar"
+it :: [Char]
+ghci> it ++ "baz"
+"foobarbaz"
+it :: [Char]
+```
+>When we couple `it` with liberal use of the arrow keys to recall and edit the last expression we typed, we gain a decent way to experiment interactively: the cost of mistakes is very low. Take advantage of the opportunity to make cheap, plentiful mistakes when you're exploring the language!
 
 Here are a few more of Haskell's names for types, from expressions of the sort we've already seen.
-
-    ghci> 
-
+```
+ghci> 7 ^ 80
+40536215597144386832065866109016673800875222251012083746192454448001
+it :: Integer
+```
 Haskell's integer type is named Integer. The size of an Integer value is bounded only by your system's memory capacity.
 
 Rational numbers don't look quite the same as integers. To construct a rational number, we use the `(%)` operator. The numerator is on the left, the denominator on the right.
-
-    ghci> 
-
+```
+ghci> :m +Data.Ratio
+ghci> 11 % 29
+11%29
+it :: Ratio Integer
+```
 For convenience, **ghci** lets us abbreviate many commands, so we can write **:m** instead of **:module** to load a module.
 
 Notice _two_ words on the right hand side of the `::` above. We can read this as a “Ratio of Integer”. We might guess that a Ratio must have values of type Integer as both numerator and denominator. Sure enough, if we try to construct a Ratio where the numerator and denominator are of different types, or of the same non-integral type, **ghci** complains.
+```
+ghci> 3.14 % 8
 
-    ghci> 
+<interactive>:1:0:
+    Ambiguous type variable `t' in the constraints:
+      `Integral t' arising from a use of `%' at <interactive>:1:0-7
+      `Fractional t'
+        arising from the literal `3.14' at <interactive>:1:0-3
+    Probable fix: add a type signature that fixes these type variable(s)
+ghci> 1.2 % 3.4
 
+<interactive>:1:0:
+    Ambiguous type variable `t' in the constraints:
+      `Integral t' arising from a use of `%' at <interactive>:1:0-8
+      `Fractional t'
+        arising from the literal `3.4' at <interactive>:1:6-8
+    Probable fix: add a type signature that fixes these type variable(s)
+```
 Although it is initially useful to have **`:set +t`** giving us type information for every expression we enter, this is a facility we will quickly outgrow. After a while, we will often know what type we expect an expression to have. We can turn off the extra type information at any time, using the **:unset** command.
-
-    ghci> 
-
+```
+ghci> :unset +t
+ghci> 2
+2
+```
 Even with this facility turned off, we can still get that type information easily when we need it, using another **ghci** command.
-
-    ghci> 
-
+```
+ghci> :type 'a'
+'a' :: Char
+ghci> "foo"
+"foo"
+ghci> :type it
+it :: [Char]
+```
 The **:type** command will print type information for any expression we give it (including `it`, as we see above). It won't actually evaluate the expression; it only checks its type and prints that.
 
 Why are the types reported for these two expressions different?
-
-    ghci> 
-
+```
+ghci> 3 + 2
+5
+ghci> :type it
+it :: Integer
+ghci> :type 3 + 2
+3 + 2 :: (Num t) => t
+```
 Haskell has several numeric types. For example, a literal number such as `1` could, depending on the context in which it appears, be an integer or a floating point value. When we force **ghci** to evaluate the expression `3 + 2`, it has to choose a type so that it can print the value, and it defaults to Integer. In the second case, we ask **ghci** to print the type of the expression without actually evaluating it, so it does not have to be so specific. It answers, in effect, “its type is numeric”. We will see more of this style of type annotation in [Chapter 6, _Using Typeclasses_](using-typeclasses.html "Chapter 6. Using Typeclasses").
 
-A simple program
-----------------
+### A simple program
+
 
 Let's take a small leap ahead, and write a small program that counts the number of lines in its input. Don't expect to understand this yet; it's just fun to get our hands dirty. In a text editor, enter the following code into a file, and save it as `WC.hs`.
 
-\-\- file: ch01/WC.hs
-\-\- lines beginning with "--" are comments.
+```haskell
+-- file: ch01/WC.hs
+-- lines beginning with "--" are comments.
 
 main = interact wordCount
-    where wordCount input = show (length (lines input)) ++ "\\n"
-
+    where wordCount input = show (length (lines input)) ++ "\n"
+```
 Find or create a text file; let's call it `quux.txt`\[[1](#ftn.id577349)\].
-
-    $
-
+```
+$ cat quux.txt
+Teignmouth, England
+Paris, France
+Ulm, Germany
+Auxerre, France
+Brunswick, Germany
+Beaumont-en-Auge, France
+Ryazan, Russia
+```
 From a shell or command prompt, run the following command.
-
-    $
-
+```
+$ runghc WC < quux.txt
+7
+```
 We have successfully written a simple program that interacts with the real world! In the chapters that follow, we will successively fill the gaps in our understanding until we can write programs of our own.
 
 Exercises
