@@ -26,7 +26,7 @@ GHC tem três componentes principais.
 *   **runghc** é um programa para a execução de programas Haskell como scripts, sem a necessidade de compilá-los em primeiro lugar.
 
 
-**NOTA**
+>**NOTA**
 
 >Como nos referimos aos componentes do GHC
 >
@@ -64,7 +64,7 @@ Prelude>
 A palavra `Prelude` no prompt indica que `Prelude`, uma biblioteca padrão de funções úteis, está carregada e pronto para uso. Quando carregar outros módulos ou arquivos de origem, eles vão aparecer no prompt, também.
 
 
-**Obtendo ajuda**
+>**Obtendo ajuda**
 >
 >Se você digitar `:?` no prompt **ghci** ele irá imprimir uma detalhada mensagem de ajuda.
 
@@ -74,7 +74,7 @@ O módulo `Prelude` é muitas vezes referida como “the standard prelude”, po
 
 
 
-**Sobre o prompt ghci**
+>**Sobre o prompt ghci**
 
 >O prompt exibido pelo ghci muda freqüentemente, dependendo de quais módulos temos carregados. Que muitas vezes pode crescer o suficiente para deixar poco espaço visual e uma única linha para a nossa entrada
 
@@ -207,7 +207,7 @@ Aqui está uma divisão mais detalhada da mensagem de erro.
 *   “``In the definition of `it'``” se refere a uma abreviação **ghci** que iremos rever em algumas páginas a frente.
     
 
-#Permaneça sem medo diante das mensagens de erro#
+>**Permaneça sem medo diante das mensagens de erro**
 
 >Temos uma importante consideração a fazer aqui, que vamos repetir em todo o trecho inicial do livro. Se você tiver problemas ou mensagens de erro que você ainda não entender, não se desespere. No início, tudo que você precisa fazer é descobrir o suficiente para progredir em um problema. Como você adquirir experiência, será mais fácil de entender as partes das mensagens de erro que inicialmente parece obscuro.
 
@@ -282,7 +282,7 @@ ghci> e
 ```
 Tudo bem. Nós temos que defini-lo nós mesmos.
 
->#Não se preocupe com a mensagem de erro#
+>**Não se preocupe com a mensagem de erro**
 
 >Se a mensagem de erro “not in scope” acima parece um pouco assustador, não se preocupe. Tudo isto significa é que não há nenhuma variável definida com o nome e.
 
@@ -297,7 +297,7 @@ Com `e` definido, agora podemos usá-lo em expressões aritméticas. O operador 
 ghci> (e ** pi) - pi
 19.99909997918947
 ```
->#Essa sintaxe é específica do ghci#
+>**Essa sintaxe é específica do ghci**
 
 >A sintaxe para let que o ghci aceita não é o mesmo que iremos usar no alto nível "de um programa Haskell normal. Vamos ver a sintaxe normal na [seção chamada “Introduzir variáveis locais”]()
 
