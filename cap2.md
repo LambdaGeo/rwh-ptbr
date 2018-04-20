@@ -40,7 +40,7 @@ A grande vantagem da tipagem forte é que ela captura bugs real em nosso código
 
 
 
->![[Note]]({{site.url}}/assets/note.png)**Os tipos mais fracos e os tipos mais fortes**
+>![[Note]]()**Os tipos mais fracos e os tipos mais fortes**
 
 >É útil ter consciência de que muitas comunidades linguísticas têm suas próprias definições de um “tipo forte”. No entanto, vamos falar brevemente e em termos gerais sobre a noção de força nos sistemas do tipo.
 
