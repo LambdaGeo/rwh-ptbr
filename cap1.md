@@ -309,109 +309,142 @@ Ainda mais importante, expressões complexas que confiam totalmente na precedên
 
 Não há necessidade de lembrar todas as regras de precedência e associatividade números: é mais simples de adicionar parênteses se tiver dúvidas.
 
-Edição de linha de comando em ghci
-----------------------------------
+### Edição de linha de comando em ghci
+
 
 Na maioria dos sistemas, **ghci** tem uma certa quantidade capacidade de edição de linha de comando. Caso você não esteja familiarizado com edição de linha de comando, é uma enorme economia de tempo. Os princípios básicos são comuns a ambos Unix-like e Windows. Pressionando a tecla de seta para **cima** no seu teclado recorda a última linha de entrada que você entrou; pressionando **cima** repetidamente ciclos através de linhas antes da entrada. Você pode usar as teclas **esquerda** e **direita** seta para se movimentar dentro de uma linha de entrada. Em Unix (mas não no Windows, infelizmente), a tecla de **tabulação** completa os identificadores parcialmente inseridos.
 
-Onde procurar mais informações
+>**Onde procurar mais informações**
 
-Nós mal arranhamos a superfície de edição de linha de comando aqui. Desde que você pode trabalhar com mais eficiência se você estiver mais familiarizado com as capacidades do seu sistema de edição de linha de comando, você pode achar útil fazer algumas leituras complementares.
+>Nós mal arranhamos a superfície de edição de linha de comando aqui. Desde que você pode trabalhar com mais eficiência se você estiver mais familiarizado com as capacidades do seu sistema de edição de linha de comando, você pode achar útil fazer algumas leituras complementares.
 
-Em sistemas Unix-like, ghci usa a [biblioteca GNU readline](http://tiswww.case.edu/php/chet/readline/rltop.html#Documentation) , que é poderoso e personalizável. No Windows, a capacidade do ghci de edição de linha de comando são fornecidas pelo [comando **doskey**](http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/doskey.mspx).
+>Em sistemas Unix-like, ghci usa a [biblioteca GNU readline](http://tiswww.case.edu/php/chet/readline/rltop.html#Documentation) , que é poderoso e personalizável. No Windows, a capacidade do ghci de edição de linha de comando são fornecidas pelo [comando **doskey**](http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/doskey.mspx).
 
-Listas
-------
+### Listas
 
 A lista é definida entre colchetes, os elementos são separados por vírgulas:
+```
+ghci> [1, 2, 3]
+[1,2,3] 
+```
+>**Vírgulas são separadores, não terminadores**
 
-    ghci> 
-
-Vírgulas são separadores, não terminadores
-
-Algumas linguagens permitem o último elemento de uma lista seja seguido por uma vírgula à direita opcional antes de um parêntese de fecho, mas Haskell não permite isso. Se você deixar uma vírgula no final (por exemplo, \[1,2,\]), ), você receberá um erro de análise
+>Algumas linguagens permitem o último elemento de uma lista seja seguido por uma vírgula à direita opcional antes de um parêntese de fecho, mas Haskell não permite isso. Se você deixar uma vírgula no final (por exemplo, \[1,2,\]), ), você receberá um erro de análise
 
 A lista pode ser de qualquer tamanho. Uma lista vazia é escrita \[\]
-
-.
-
-    ghci> 
-
+```
+ ghci> []
+[]
+ghci> ["foo", "bar", "baz", "quux", "fnord", "xyzzy"]
+["foo","bar","baz","quux","fnord","xyzzy"]
+```
 Todos os elementos de uma lista devem ser do mesmo tipo. Aqui, violamos esta regra: a nossa lista começa com dois valores Bool mas termina com um string.
+```
+ghci> [True, False, "testing"]
 
-    ghci> 
-
+<interactive>:1:14:
+    Couldn't match expected type `Bool' against inferred type `[Char]'
+      Expected type: Bool
+      Inferred type: [Char]
+    In the expression: "testing"
+    In the expression: [True, False, "testing"]
+```
 Mais uma vez, é uma mensagem de erro **ghci** detalhada, mas ela simplesmente diz que não há maneira de transformar a string em um valor booleano, então a expressão lista não está corretamente digitado.
 
 Se nós escrevemos uma série de elementos usando a notação de enumeração, Haskell irá preencher o conteúdo da lista para nós.
-
-    ghci> 
-
+```
+ghci> [1..10]
+[1,2,3,4,5,6,7,8,9,10]
+```
 Aqui, os .. caracteres denotam uma enumeração. Só podemos usar esta notação para os tipos cujos elementos, podemos enumerar. Não faz sentido para cadeias de texto, por exemplo: não há qualquer sensível, forma geral, para enumerar `["foo".."quux"].`
 
 De qualquer modo, observe que a utilização acima de notação intervalo nos dá um intervalo fechado; a lista contém os dois pontos finais.
 
 Quando escrevemos uma enumeração, podemos, opcionalmente, especificar o tamanho do passo para utilização, fornecendo os primeiros dois elementos, seguido pelo valor em que parar de gerar a enumeração.
-
-    ghci> 
-
+```
+ghci> [1.0,1.25..2.0]
+[1.0,1.25,1.5,1.75,2.0]
+ghci> [1,4..15]
+[1,4,7,10,13]
+ghci> [10,9..1]
+[10,9,8,7,6,5,4,3,2,1]
+```
 Neste último caso acima, a lista é quase sensata faltando o ponto final da contagem, porque não é um elemento da série que nós definimos.
 
 Nós podemos omitir o ponto final de uma enumeração. Se um tipo não tem um natural “limite superior”, isso vai produzir valores indefinidamente. Por exemplo, se você digitar \[1..\] no prompt ghci você terá que interromper ou matar ghci para parar de imprimir uma sucessão infinita de números cada vez maiores. Se você está tentado a fazer isso, tecle Ctrl-C para interromper a contagem. Nós vamos encontrar mais tarde que as listas infinitas são frequentemente útil no Haskell.
 
-Cuidado ao enumerar números de ponto flutuante Aqui está um pouco não-intuitivo.
+>**Cuidado ao enumerar números de ponto flutuante Aqui está um pouco não-intuitivo**
+```
+ghci> [1.0..1.8]
+[1.0,2.0]
+```
+>Nos bastidores, para evitar problemas de arredondamento em ponto flutuante, o Haskell implementa a enumeração de `1.0` a `1.8+0.5. 12`.
 
-    ghci> 
+>Usando a notação de enumeração sobre números de ponto flutuante pode pegar mais algumas surpresas, por isso, se você usá-lo, seja cuidadoso. Comportamento de ponto flutuante é peculiar em todas as linguagens de programação, não há nada exclusivo para Haskell aqui.
 
-Nos bastidores, para evitar problemas de arredondamento em ponto flutuante, o Haskell implementa a enumeração de `1.0` a `1.8+0.5. 12`.
-
-Usando a notação de enumeração sobre números de ponto flutuante pode pegar mais algumas surpresas, por isso, se você usá-lo, seja cuidadoso. Comportamento de ponto flutuante é peculiar em todas as linguagens de programação, não há nada exclusivo para Haskell aqui.
-
-### Operadores em listas
+#### Operadores em listas
 
 Existem dois operadores onipresente para trabalhar com listas. Nós concatenamos duas listas com o operador `(++)`.
-
-    ghci> 
-
+```
+ghci> [3,1,3] ++ [3,7]
+[3,1,3,3,7]
+ghci> [] ++ [False,True] ++ [True]
+[False,True,True] 
+```
 O mais básico operador é o (:), que acrescenta um elemento para a frente de uma lista. Esta é pronunciado como “cons” (abreviação de “construção”).
-
-    ghci> 
-
+```
+ghci> 1 : [2,3]
+[1,2,3]
+ghci> 1 : []
+[1]
+```
 Você pode estar tentado a tentar escrever \[`1,2]:3` para adicionar um elemento ao final de uma lista, mas o ghci irá rejeitar-lo com uma mensagem de erro, porque o primeiro argumento `(:)` deve ser um elemento, e o segundo deve ser uma lista.
 
-Strings e caracteres
---------------------
+### Strings e caracteres
 
 Se você conhece uma linguagem como Perl ou C, você vai achar as anotações Haskell para strings familiar.
 
 Uma cadeia de caracteres é cercada por aspas duplas.
-
-    ghci> 
+```
+ghci> "This is a string."
+"This is a string."
+```
 
 Como em muitas linguagens, podemos representar caracteres hard-to-see através de “escaping” delas. Escapes in Haskell e as regras de escaping segue as convenções utilizadas e amplamente estabelecida pela linguagem C. Por exemplo, `'\n'` denota um caractere de nova linha, e `'\t'` é um caracter de tabulação. Para detalhes completos, consulte [Apêndice B, _Caracteres, strings, e regras escapando_](characters-strings-and-escaping-rules.html "Apêndice B. Caracteres, strings, e regras escapando")
-
-    ghci> 
-
+```
+ghci> putStrLn "Here's a newline -->\n<-- See?"
+Here's a newline -->
+<-- See?
+```
 O função putStrLn imprime uma string.
 
 Haskell faz uma distinção entre um único caracter e cadeias de caracteres. Um único caractere é colocado entre aspas simples.
-
-    ghci> 
-
+```
+ghci> 'a'
+'a'
+```
 De fato, uma cadeia de texto é simplesmente uma lista de caracteres individuais. Aqui está uma maneira dolorosa para escrever uma string curta, que ghci devolve-nos de uma forma mais familiar.
-
-    ghci> 
-
+```
+ghci> let a = ['l', 'o', 't', 's', ' ', 'o', 'f', ' ', 'w', 'o', 'r', 'k']
+ghci> a
+"lots of work"
+ghci> a == "lots of work"
+True
+```
 A cadeia vazia é escrito "", e é um sinônimo para \[\].
-
-    ghci> 
-
+```
+ghci> "" == []
+True
+```
 Desde uma string é uma lista de caracteres, podemos utilizar os operadores de lista regulares para a construção de novas cadeias.
+```
+ghci> 'a':"bc"
+"abc"
+ghci> "foo" ++ "bar"
+"foobar"
+```
+### Primeiros passos com os tipos
 
-    ghci> 
-
-Primeiros passos com os tipos
------------------------------
 
 Enquanto nós ja falamos um pouco sobre os tipos, nossas interações com ghci têm sido até agora livre de pensamento do tipo. Nós não disse que tipos em ghci que nós vimos utilizando, e é na sua maioria, dispostos a aceitar a nossa entrada.
 
