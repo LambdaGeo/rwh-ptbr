@@ -10,11 +10,10 @@ de Bryan O'Sullivan, Don Stewart, and John Goerzen
 -------------------------------------------------------
 
 
-Capítulo 4. Programação funcional
---------------------------------
+## Capítulo 4. Programação funcional
 
-Pensando no Haskell
--------------------
+
+### Pensando no Haskell
 
 Nossa aprendizagem precoce de Haskell possui dois aspectos distintos. A primeira é chegar a um acordo com a mudança de mentalidade da programação imperativa de funcionamento: temos de substituir a programação de nossos hábitos de outras línguas. Fazemos isso não porque as técnicas imperativos são ruins, mas porque, em uma linguagem funcional de outras técnicas de trabalho melhor. 
 
