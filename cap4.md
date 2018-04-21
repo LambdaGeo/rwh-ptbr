@@ -16,50 +16,78 @@ Capítulo 4. Programação funcional
 Pensando no Haskell
 -------------------
 
-Nossa aprendizagem precoce de Haskell possui dois aspectos distintos. A primeira é chegar a um acordo com a mudança de mentalidade da programação imperativa de funcionamento: temos de substituir a programação de nossos hábitos de outras línguas. Fazemos isso não porque as técnicas imperativos são ruins, mas porque, em uma linguagem funcional de outras técnicas de trabalho melhor. [?? comments](comments: show / hide)
+Nossa aprendizagem precoce de Haskell possui dois aspectos distintos. A primeira é chegar a um acordo com a mudança de mentalidade da programação imperativa de funcionamento: temos de substituir a programação de nossos hábitos de outras línguas. Fazemos isso não porque as técnicas imperativos são ruins, mas porque, em uma linguagem funcional de outras técnicas de trabalho melhor. 
 
-O nosso segundo desafio é aprender a nossa maneira de contornar o Haskell bibliotecas padrão. Como em qualquer linguagem, bibliotecas de funcionar como alavanca, habilitando-nos a multiplicar a nossa solução de problemas de energia. Bibliotecas Haskell tendem a operar em um nível maior de abstração do que aqueles em muitas outras línguas. Precisaremos trabalhar um pouco difícil aprender usar a bibliotecas, mas na troca eles oferecem uma grande quantidade de poder. [?? comments](comments: show / hide)
+O nosso segundo desafio é aprender a nossa maneira de contornar o Haskell bibliotecas padrão. Como em qualquer linguagem, bibliotecas de funcionar como alavanca, habilitando-nos a multiplicar a nossa solução de problemas de energia. Bibliotecas Haskell tendem a operar em um nível maior de abstração do que aqueles em muitas outras línguas. Precisaremos trabalhar um pouco difícil aprender usar a bibliotecas, mas na troca eles oferecem uma grande quantidade de poder. [?? comments]
 
-Neste capítulo, vamos introduzir uma série de técnicas de programação funcionais. Nós vamos recorrer a exemplos de linguagens imperativas destacar a mudança no pensamento que vamos precisar fazer. Como o fazemos, nós vamos caminhar por alguns dos fundamentos da norma de bibliotecas Haskell. Nós também intermitentemente cobrir algumas línguas mais recursos no caminho. [?? comments](comments: show / hide)
+Neste capítulo, vamos introduzir uma série de técnicas de programação funcionais. Nós vamos recorrer a exemplos de linguagens imperativas destacar a mudança no pensamento que vamos precisar fazer. Como o fazemos, nós vamos caminhar por alguns dos fundamentos da norma de bibliotecas Haskell. Nós também intermitentemente cobrir algumas línguas mais recursos no caminho. 
 
-Um framework de linha de comando simples
-----------------------------------------
+### Um simple framework de linha de comando 
 
-Na maioria deste capítulo, que incidirá nos com o código que tem qualquer interacção com o mundo exterior. Manter o foco no código prático, vamos começar por desenvolver uma passagem entre o nosso código “puro” eo mundo lá fora. O nosso quadro simplesmente lê o conteúdo de um arquivo, aplicar uma função para o arquivo e escreve o resultado para outro arquivo. [?? comments](comments: show / hide)
 
-    -- arquivo: ca04/InteraçãoCom.hs
-    -- Salvar esta em um arquivo de fonte, por exemplo InteraçãoCom.hs
+Na maioria deste capítulo, que incidirá nos com o código que tem qualquer interacção com o mundo exterior. Manter o foco no código prático, vamos começar por desenvolver uma passagem entre o nosso código “puro” eo mundo lá fora. O nosso quadro simplesmente lê o conteúdo de um arquivo, aplicar uma função para o arquivo e escreve o resultado para outro arquivo. 
 
-[?? comments](comments: show / hide)
+```haskell
+-- file: ch04/InteractWith.hs
+-- Save this in a source file, e.g. Interact.hs
+
+import System.Environment (getArgs)
+
+interactWith function inputFile outputFile = do
+  input <- readFile inputFile
+  writeFile outputFile (function input)
+
+main = mainWith myFunction
+  where mainWith function = do
+          args <- getArgs
+          case args of
+            [input,output] -> interactWith function input output
+            _ -> putStrLn "error: exactly two arguments needed"
+
+        -- replace "id" with the name of our function below
+        myFunction = id
+```
 
 Esta é a todos nós necessitamos de escrever simples, mas completa, de arquivo de programas de processamento. Esse é um programa completos. Nós podemos compilá-lo para um executável chamado `InteraçãoCom`como se segue. [?? comments](comments: show / hide)
 
-    sistema> 
+    $ ghc --make InteractWith
+    [1 of 1] Compiling Main             ( InteractWith.hs, InteractWith.o )
+    Linking InteractWith ...
 
-[?? comments](comment: add)
 
-Se executar este programa desde o reservatório ou comandos, que aceita duas nomes de arquivos: o nome da arquivo de ler, o nome e de um arquivo para escrever. [?? comments](comments: show / hide)
+Se executar este programa desde o shell ou prompt de comando, que aceita dois nomes de arquivos: o nome da arquivo de ler, o nome e de um arquivo para escrever. 
 
-    sistema> 
+    $ ./Interact
+    error: exactly two arguments needed
+    $ ./Interact hello-in.txt hello-out.txt
+    $ cat hello-in.txt
+    hello world
+    $ cat hello-out.txt
+    hello world
 
-[?? comments](comment: add)
 
 Algumas das notação no nosso arquivo fonte é nova. O que introduz uma palavra-chave bloco de ações que podem provocar efeitos no mundo real, tais como a leitura ou a escrita de um arquivo. O operador `<-`é o equivalente de uma atribuição dentro um bloco `do`. Esta é a explicação bastante começar nós começou. Falaremos em mais detalhe muito sobre esses detalhes do notação e de I/O em geral, em [Capítulo 7, _I/O_](io.html "Capítulo 7, I/O"). [?? comments](comments: show / hide)
 
 Quando se deseja testar uma função que não pode falar com o mundo lá fora, que simplesmente substitui o nome `id`ino código acima com o nome da função que queremos testar. Qualquer que seja nossa função faz, ele precisa ter o tipo de String->String: em outras palavras, ela deve aceitar uma string e retornam uma string. [?? comments](comments: show / hide)
 
-Warming up: Separação das linhas de texto portavel
---------------------------------------------------
+### Warming up: Separação das linhas de texto portavel
+
 
 Haskell provê uma função built-in de `lines`, que deixa nós dividir uma string de texto em linha de limites. Ele retorna um lista das cadeias de caracteres com terminação de linha omitida. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type lines
+    lines :: String -> [String]
+    ghci> lines "line 1\nline 2"
+    ["line 1","line 2"]
+    ghci> lines "foo\n\nbar\n"
+    ["foo","","bar"]
 
 [?? comments](comment: add)
 
 Embora de `lines`parece úteis, se baseia em nós ler um arquivo de em “modo texto” para o trabalho. Modo texto é uma característica comum a muitas linguagens: proporciona um comportamento especial quando lêem e escrevem arquivos no Windows. Quando se lê um arquivo em modo de texto, o arquivo de biblioteca I/O traduz a fim de linha de seqüência `"\r\n"`(retorno do carro seguido por nova linha) à `"\n"`(nova linha sozinho), e faz o inverso quando Escrever um arquivo. Em semelhante sistemas do Unix, o modo de texto não exerce qualquer translação. Como resultado desta diferença, se ler um arquivo de uma plataforma que estava escrito em outro o final de linha devem se tornar uma bagunça. (Ambos `readFile`e `writeFile`operar em modo texto). [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> lines "a\r\nb"
+    ["a\r","b"]
 
 [?? comments](comment: add)
 
@@ -69,13 +97,28 @@ Nós confortavelmente usado o suporte “universal newline” do Python apoio a 
 
 Uma vez que estamos ainda cedo em nossa carreira de leitura de código Haskell, vamos discutir nossa aplicação em Haskell bastante detalhe alguns. [?? comments](comments: show / hide)
 
-    -- arquivo: ca04/LinhasSeparadas.hs
+```haskell
+-- file: ch04/SplitLines.hs
+splitLines :: String -> [String]
+```
 
 [?? comments](comments: show / hide)
 
 A assinatura do tipo de nossa função indica que aceita uma única corda, o conteúdo de um arquivo com alguma linha que termina convenção desconhecido. Ele retorna a lista de seqüências de caracteres, que representa cada linha do processo. [?? comments](comments: show / hide)
 
-    -- arquivo: ca04/LinhasSeparadas.hs
+```haskell
+-- file: ch04/SplitLines.hs
+splitLines [] = []
+splitLines cs =
+    let (pre, suf) = break isLineTerminator cs
+    in  pre : case suf of 
+                ('\r':'\n':rest) -> splitLines rest
+                ('\r':rest)      -> splitLines rest
+                ('\n':rest)      -> splitLines rest
+                _                -> []
+
+isLineTerminator c = c == '\r' || c == '\n'
+```
 
 [?? comments](comments: show / hide)
 
@@ -83,7 +126,12 @@ Antes de nos aprofundarmos em detalhes, como primeira notícia que se organizara
 
 O Prelude define uma função chamada `break`que podemos usar para particionar um de lista em duas partes. É preciso uma função que seu primeiro parâmetro. Essa função deverá examinar elementos de lista, e retorna uma Boolindicar se deseja interromper a lista nesse momento. A função `break`retorna um par, que consiste no sublista consumidos antes do predicado retornado `True`(o _prefixo_), eo resto da lista (o _sufixo_). [?? comments](comments: show / hide)
 
-    ghci> 
+
+    ghci> break odd [2,4,5,6,8]
+    ([2,4],[5,6,8])
+    ghci> :module +Data.Char
+    ghci> break isUpper "isUpper"
+    ("is","Upper")
 
 [?? comments](comment: add)
 
@@ -101,37 +149,43 @@ Uma descrição em prosa de uma função Haskell não necessariamente fáceis de
 
 Começamos a separação por uma seqüência que não contém qualquer separadores de linhas. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> splitLines "foo"
+    ["foo"]
 
 [?? comments](comment: add)
 
 Aqui a nossa aplicação da `break`nunca encontra um terminador de linha, assim que o sufixo retorna vazio. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> break isLineTerminator "foo"
+    ("foo","")
 
 [?? comments](comment: add)
 
 A expressão `case`em `linhasSeparadas`como tal devem ser combinados no quarto ramo e estamos acabados. E quanto um caso um pouco mais interessante? [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> splitLines "foo\r\nbar"
+    ["foo","bar"]
 
 [?? comments](comment: add)
 
 Nossa primeira aplicação de `break`nos oferece um sufixo não vazio. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> break isLineTerminator "foo\r\nbar"
+    ("foo","\r\nbar")
 
 [?? comments](comment: add)
 
 Devido o sufixo começa com um regresso transporte, seguido de uma nova linha, que correspondem a primeira sucursal de a expressão `case`. Isto dá-nos `prefixo`ligado a `"foo"`, e `sufixo`ligado a `"bar"`. Nós aplicar `linhasSeparadas`recursivamente, desta vez no `"bar"`sozinho. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> splitLines "bar"
+    ["bar"]
 
 [?? comments](comment: add)
 
 O resultado é que vamos construir a lista cuja cabeça é `"foo"`e cuja cauda é `["bar"]`. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> "foo" : ["bar"]
+    ["foo","bar"]
 
 [?? comments](comment: add)
 
@@ -139,17 +193,24 @@ Este tipo de experimentos com **ghci**Este tipo de experimentos com **ghci**, po
 
 Este estilo de criar e de reutilização de partes pequenas, poderoso do código é uma parte fundamental da programação funcional. [?? comments](comments: show / hide)
 
-### Um programa de conversão de fim de linha
+#### Um programa de conversão de fim de linha
 
 Deixe de ligar a nossa função `linhasSeparadas`em âmbito pouco que escreveu anteriormente. Faça um cópia do arquivo de fonte `InteraçãoCom.hs`; vamos chamar o arquivo novo `LinhasAdaptadas.hs`. Adicione a função `linhasSeparadas`para o novo arquivo de origem. Desde a nossa função precisa elaborar um único String, temos que costurar a lista de linhas de volta. O Prelude fornece uma função `unlines`que concatena a lista das cadeias, acrescentando uma nova linha para o final de cada um. [?? comments](comments: show / hide)
 
-    -- arquivo: ch04/LinhasAdaptadas.hs
+```haskell
+-- file: ch04/SplitLines.hs
+fixLines :: String -> String
+fixLines input = unlines (splitLines input)
+```
 
 [?? comments](comments: show / hide)
 
 Se substitui a função `id`com `linhasAdaptadas`, podemos compilar um executável que irá converter um arquivo de texto para a linha materna nosso sistema termina. [?? comments](comments: show / hide)
 
-    sistema> 
+
+    $ ghc --make FixLines
+    [1 of 1] Compiling Main             ( FixLines.hs, FixLines.o )
+    Linking FixLines ...
 
 [?? comments](comment: add)
 
@@ -157,12 +218,17 @@ Se você é em um sistema Windows, localizar e transferir um arquivo texto criad
 
 Em semelhantes os sistemas Unix, o padrão pagers e editores esconder terminações de linha de Windows. Isto faz mais difícil de verificar se **LinhasAdaptadas**é realmente eliminá-los. Aqui estão uns poucos comandos que deve ajudar. [?? comments](comments: show / hide)
 
-    sistema> 
+    $ file gpl-3.0.txt
+    gpl-3.0.txt: ASCII English text
+    $ unix2dos gpl-3.0.txt
+    unix2dos: converting file gpl-3.0.txt to DOS format ...
+    $ file gpl-3.0.txt
+    gpl-3.0.txt: ASCII English text, with CRLF line terminator
 
 [?? comments](comment: add)
 
-Funções infix
--------------
+### Funções infixas
+
 
 Normalmente, quando se define ou aplicar uma função em Haskell, nós escrevemos o nome da função, seguido por seus argumentos. Esta notação é chamada de _prefixo_, porque o nome da função vem perante seus argumentos. [?? comments](comments: show / hide)
 
@@ -170,37 +236,61 @@ Caso uma função ou construtor necessários dois ou mais discussões, temos a o
 
 Definir ou aplicar uma função de construtor ou o valor usando a notação infixo, nós coloque seu nome nos personagens backtick (também conhecido como backquotes). Aqui estão as definições infixo simples de uma função e um tipo. [?? comments](comments: show / hide)
 
-    -- arquivo: ca04/Plus.hs
+```haskell
+-- file: ch04/Plus.hs
+a `plus` b = a + b
+
+data a `Pair` b = a `Pair` b
+                  deriving (Show)
+
+-- we can use the constructor either prefix or infix
+foo = Pair 1 2
+bar = True `Pair` "quux"
+```
 
 [?? comments](comments: show / hide)
 
 Dado que a notação infixa é meramente uma conveniência sintático, não muda a função de comportamento um. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> 1 `plus` 2
+    3
+    ghci> plus 1 2
+    3
+    ghci> True `Pair` "something"
+    True `Pair` "something"
+    ghci> Pair True "something"
+    True `Pair` "something"
 
 [?? comments](comment: add)
 
 A notação Infix pode frequentemente ajudar legibilidade. De exemplo Prelude define uma função, `elem`, que indicam se há um valor presente em um de lista. Se usarmos `elem`com anotação de prefixo, é bastante fácil de ler. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> elem 'a' "camogie"
+    True
 
 [?? comments](comment: add)
 
 Se vamos mudar a infixo registo, o código fica até mais fácil de entender. É agora claro que estamos verificando se o valor à esquerda está presente na lista da certo. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> 3 `elem` [1,2,4,8]
+    False
 
 [?? comments](comment: add)
 
 Vemos uma expressiva melhora mais com algumas funções úteis da módulo `Data.List`. A função `isPrefixOf`diz-nos se numa lista coincide com o começo de outra. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :module +Data.List
+    ghci> "foo" `isPrefixOf` "foobar"
+    True 
 
 [?? comments](comment: add)
 
 As funções `isInfixOf`e `isSuffixOf`corresponder qualquer lugar em um lista e em seu final, respectivamente. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> "needle" `isInfixOf` "haystack full of needle thingies"
+    True
+    ghci> "end" `isSuffixOf` "the end"
+    True
 
 [?? comments](comment: add)
 
@@ -208,14 +298,14 @@ Não há e rápida regra rígida que determina quando você deveria usar infixo 
 
 ![[Note]](support/figs/note.png)
 
-Cuidados com anotação familiar em um idioma desconhecido
+>Cuidados com anotação familiar em um idioma desconhecido
 
-A algumas outras linguagens de programação utilizar backticks mas, apesar das semelhanças visual, a fim de backticks em Haskell não lembram remotamente o seu significado em, por exemplo: Perl, Python, shell scripts ou Unix. [?? comments](comments: show / hide)
+>A algumas outras linguagens de programação utilizar backticks mas, apesar das semelhanças visual, a fim de backticks em Haskell não lembram remotamente o seu significado em, por exemplo: Perl, Python, shell scripts ou Unix. [?? comments](comments: show / hide)
 
-A única coisa legal que podemos fazer com backticks em Haskell é envolver-los ao redor do nome da função. Não pode, por exemplo usá-las para incluir a expressão complexa cujo valor é uma função. Pode ser conveniente, se pudéssemos, mas que não é como a linguagem actual. [?? comments](comments: show / hide)
+>A única coisa legal que podemos fazer com backticks em Haskell é envolver-los ao redor do nome da função. Não pode, por exemplo usá-las para incluir a expressão complexa cujo valor é uma função. Pode ser conveniente, se pudéssemos, mas que não é como a linguagem actual. [?? comments](comments: show / hide)
 
-Trabalhar com as listas
------------------------
+### Trabalhando com as listas
+
 
 Como o pão ea manteiga da programação funcional, listas de merecer alguma atenção. O prelúdio norma define dezenas de funções para lidar com listas. Muitos destes serão ferramentas indispensáveis, por isso é importante que eles aprendam desde cedo.[?? comments](comments: show / hide)
 
@@ -223,63 +313,93 @@ Para melhor ou pior, esta secção vai ler um pouco como uma “lista suja” de
 
 O módulo `Data.List` e o casa lógica “real” de todas as funções da lista. O Prelude meramente re-exporta uma grande subconjunto das funções exportadas pela `Data.List`. Diversas funções úteis no `Data.List` _não_ são re-exportados pelo prelúdio padrão. Ao andarmos funções de lista nas seções que seguem, vamos mencionar explicitamente aqueles que estão apenas em `Data.List`.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :module +Data.List
 
 [?? comments](comment: add)
 
 Como nenhuma dessas funções é complexo ou tem mais de cerca de três linhas de Haskell para escrever, vamos ser breves nas nossas descrições de cada um. De fato, uma aprendizagem útil e rápido exercício é escrever uma definição de cada função depois que você já leu sobre isso.[?? comments](comments: show / hide)
 
-### Manipulação de listas básica
+#### Manipulação de listas básica
 
 A função `length` nos informa quantos elementos estão em uma lista.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type length
+    length :: [a] -> Int
+    ghci> length []
+    0
+    ghci> length [1,2,3]
+    3
+    ghci> length "strings are lists, too"
+    22
 
 [?? comments](comment: add)
 
 Se você precisa determinar se uma lista está vazia, use a função `null`.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type null
+    null :: [a] -> Bool
+    ghci> null []
+    True
+    ghci> null "plugh"
+    False
 
 [?? comments](comment: add)
 
 Para acessar o primeiro elemento de uma lista, usamos a função `head`.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type head
+    head :: [a] -> a
+    ghci> head [1,2,3]
+    1
 
 [?? comments](comment: add)
 
 O inverso, `tail`, volta tudo, _mas_ a cabeça de uma lista.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type tail
+    tail :: [a] -> [a]
+    ghci> tail "foo"
+    "oo" 
 
 [?? comments](comment: add)
 
 Outra função, `last`, retorna o último elemento de uma lista.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type last
+    last :: [a] -> a
+    ghci> last "bar"
+    'r'
 
 [?? comments](comment: add)
 
 O inverso da `last` é `init`, que retorna uma lista de todos mas o último elemento de sua entrada.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type init
+    init :: [a] -> [a]
+    ghci> init "bar"
+    "ba"
 
 [?? comments](comment: add)
 
 Várias das funções acima se comportam mal em uma lista vazia, então tome cuidado se você não souber ou não uma lista está vazia. Como se dá sua má conduta tomar?[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> head []
+    *** Exception: Prelude.head: empty list
 
 [?? comments](comment: add)
 
 Tente cada uma das funções acima, no **ghci**. Quais falhar quando dada uma lista vazia?[?? comments](comments: show / hide)
 
-### Trabalhar segura e saudavelmente a com funções crashy
+#### Trabalhar segura e saudavelmente a com funções crashy
 
 Quando queremos usar uma função como a `head`, onde sabemos que poderia explodir em nós se passar em uma lista vazia, a tentação pode inicialmente ser forte para verificar o comprimento da lista antes que chamamos de `head`. Vamos construir um exemplo artificial para ilustrar o nosso ponto.[?? comments](comments: show / hide)
 
-    -- arquivo: ca04/ListaEfficiente.hs
+```haskell
+-- file: ch04/EfficientList.hs
+myDumbExample xs = if length xs > 0
+                   then head xs
+                   else 'Z'
+```
 
 [?? comments](comments: show / hide)
 
@@ -291,11 +411,19 @@ Portanto, quando só se preocupam ou não uma lista é vazia, chamada `length` n
 
 A função mais adequada para chamar aqui ao contrário é `null`, que é executado em tempo constante. Melhor ainda, usando `null` torna nosso código de indicar o imóvel da lista que realmente nos importa. Aqui estão duas maneiras de se expressar melhor `meuExemploEstúpido`. [?? comments](comments: show / hide)
 
-    -- arquivo: ca04/ListaEfficiente.hs
+```haskell
+-- file: ch04/EfficientList.hs
+mySmartExample xs = if not (null xs)
+                    then head xs
+                    else 'Z'
+
+myOtherExample (x:_) = x
+myOtherExample [] = 'Z'
+```
 
 [?? comments](comments: show / hide)
 
-### Funções parcial e total
+#### Funções parcial e total
 
 Funções que só têm valores de retorno definido para um subconjunto de entradas válidas são chamadas de funções _parciais_ (chamar `error` não se qualifica como retornar um valor!). Nós chamamos funções que retornam resultados válidos sobre os seus domínios de entrada inteira funções _totais_.[?? comments](comments: show / hide)
 
@@ -305,61 +433,122 @@ Alguns programadores Haskell ir tão longe para dar nomes de funções parciais 
 
 É indiscutivelmente uma deficiência do prelúdio padrão que define um bom número funções parciais “inseguros”, como a `head`, sem oferecer equivalentes totais “seguros”.[?? comments](comments: show / hide)
 
-### Mais manipulações de listas simples
+#### Mais manipulações de listas simples
 
 O nome Haskell para a função “append” é `(++)`. [?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type (++)
+    (++) :: [a] -> [a] -> [a]
+    ghci> "foo" ++ "bar"
+    "foobar"
+    ghci> [] ++ [1,2,3]
+    [1,2,3]
+    ghci> [True] ++ []
+    [True]
 
 [?? comments](comment: add)
 
 A função `concat` recebe uma lista de listas, todas do mesmo tipo, e concatena-los em uma única lista.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type concat
+    concat :: [[a]] -> [a]
+    ghci> concat [[1,2,3], [4,5,6]]
+    [1,2,3,4,5,6]
 
 [?? comments](comment: add)
 
 Ele remove um nível de aninhamento.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> concat [[[1,2],[3]], [[4],[5],[6]]]
+    [[1,2],[3],[4],[5],[6]]
+    ghci> concat (concat [[[1,2],[3]], [[4],[5],[6]]])
+    [1,2,3,4,5,6]
 
 [?? comments](comment: add)
 
 A função `reverse` retorna os elementos de uma lista em ordem inversa.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type reverse
+    reverse :: [a] -> [a]
+    ghci> reverse "foo"
+    "oof"
 
 [?? comments](comment: add)
 
 Para listas de Bool, as funções `and` e `or`, generalizar seus primos de dois argumentos`(&&)` e `(||)`, sobre as listas.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type and
+    and :: [Bool] -> Bool
+    ghci> and [True,False,True]
+    False
+    ghci> and []
+    True
+    ghci> :type or
+    or :: [Bool] -> Bool
+    ghci> or [False,False,False,True,False]
+    True
+    ghci> or []
+    False
 
 [?? comments](comment: add)
 
 Eles têm primos mais úteis, `all` e `any`, que operam em listas de qualquer tipo. Cada um leva um predicado como seu primeiro argumento, `all`retorna `True` se o predicado for bem-sucedido em cada elemento da lista, enquanto `any`retorna `True` se o predicado for bem-sucedido em pelo menos um elemento da lista.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type all
+    all :: (a -> Bool) -> [a] -> Bool
+    ghci> all odd [1,3,5]
+    True
+    ghci> all odd [3,1,4,1,5,9,2,6,5]
+    False
+    ghci> all odd []
+    True
+    ghci> :type any
+    any :: (a -> Bool) -> [a] -> Bool
+    ghci> any even [3,1,4,1,5,9,2,6,5]
+    True
+    ghci> any even []
+    False
 
 [?? comments](comment: add)
 
-### Trabalhar com sublistas
+#### Trabalhar com sublistas
 
 A função `take`, de que já reuniu em [“aplicação de função”](types-and-functions.html#funcstypes.calling "“aplicação de função”"), retorna uma sublista consistindo de primeiros _k_ elementos de uma lista. Seu inverso, `drop`, quedas de _k_ elementos, desde o início da lista.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type take
+    take :: Int -> [a] -> [a]
+    ghci> take 3 "foobar"
+    "foo"
+    ghci> take 2 [1]
+    [1]
+    ghci> :type drop
+    drop :: Int -> [a] -> [a]
+    ghci> drop 3 "xyzzy"
+    "zy"
+    ghci> drop 1 []
+    []
 
 [?? comments](comment: add)
 
 A função `splitAt` combina as funções de `take` e `drop`, voltando um par da lista de entrada, dividido o índice determinado.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type splitAt
+    splitAt :: Int -> [a] -> ([a], [a])
+    ghci> splitAt 3 "foobar"
+    ("foo","bar")
 
 [?? comments](comment: add)
 
 As funções `takeWhile` e `dropWhile`levar predicados: `takeWhile` toma elementos a partir do início de uma lista tão longa quanto o predicado retornar `True`, enquanto `dropWhile` gotas elementos da lista, enquanto o predicado retornar `True`.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type takeWhile
+    takeWhile :: (a -> Bool) -> [a] -> [a]
+    ghci> takeWhile odd [1,3,5,6,8,9,11]
+    [1,3,5]
+    ghci> :type dropWhile
+    dropWhile :: (a -> Bool) -> [a] -> [a]
+    ghci> dropWhile even [2,4,6,7,9,10,12]
+    [7,9,10,12]
 
 [?? comments](comment: add)
 
@@ -367,21 +556,36 @@ Assim como `splitAt`“tuplas” os resultados de `take` e `drop`, as funções 
 
 Cada função tem um predicado; `break` consome a sua entrada enquanto o predicado falha, enquanto `span` consome enquanto seu predicado êxito.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type span
+    span :: (a -> Bool) -> [a] -> ([a], [a])
+    ghci> span even [2,4,6,7,9,10,11]
+    ([2,4,6],[7,9,10,11])
+    ghci> :type break
+    break :: (a -> Bool) -> [a] -> ([a], [a])
+    ghci> break even [1,3,5,6,8,9,10]
+    ([1,3,5],[6,8,9,10])
 
 [?? comments](comment: add)
 
-### Buscando listas
+#### Buscando listas
 
 Como já vimos, a função `elem`indica se um valor está presente em uma lista. Ele tem uma função complementar, `notElem`.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type elem
+    elem :: (Eq a) => a -> [a] -> Bool
+    ghci> 2 `elem` [5,3,2,1,1]
+    True
+    ghci> 2 `notElem` [5,3,2,1,1]
+    False
 
 [?? comments](comment: add)
 
 Para uma pesquisa mais geral, `filter` tem um predicado, e retorna todos os elementos da lista em que o predicado for bem-sucedido.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type filter
+    filter :: (a -> Bool) -> [a] -> [a]
+    ghci> filter odd [2,4,1,3,6,8,5,7]
+    [1,3,5,7]
 
 [?? comments](comment: add)
 
@@ -389,80 +593,104 @@ Em `Data.List`, três predicados, `isPrefixOf`, `isInfixOf` e `isSuffixOf`, vamo
 
 A função `isPrefixOf` nos diz se o seu argumento deixou coincide com o início da sua tese direita.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :module +Data.List
+    ghci> :type isPrefixOf
+    isPrefixOf :: (Eq a) => [a] -> [a] -> Bool
+    ghci> "foo" `isPrefixOf` "foobar"
+    True
+    ghci> [1,2] `isPrefixOf` []
+    False 
 
 [?? comments](comment: add)
 
 A função `isInfixOf` indica se o seu argumento de esquerda é uma sublista de seu direito.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :module +Data.List
+    ghci> [2,6] `isInfixOf` [3,1,4,1,5,9,2,6,5,3,5,8,9,7,9]
+    True
+    ghci> "funk" `isInfixOf` "sonic youth"
+    False
 
 [?? comments](comment: add)
 
 A operação de `isSuffixOf` não deve precisar de qualquer explicação.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :module +Data.List
+    ghci> ".c" `isSuffixOf` "crashme.c"
+    True
 
 [?? comments](comment: add)
 
-### Trabalhando com muitas listas ao mesmo tempo
+#### Trabalhando com muitas listas ao mesmo tempo
 
 A função `zip`recebe duas listas e “fecha-los” em uma única lista de pares. A lista resultante é o mesmo comprimento que o mais curto dos dois insumos.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type zip
+    zip :: [a] -> [b] -> [(a, b)]
+    ghci> zip [12,72,93] "zippity"
+    [(12,'z'),(72,'i'),(93,'p')]
 
 [?? comments](comment: add)
 
 Mais útil é `zipWith`, que pega duas listas e aplica uma função para cada par de elementos, gerando uma lista que é do mesmo comprimento que o menor dos dois.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> :type zipWith
+    zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+    ghci> zipWith (+) [1,2,3] [4,5,6]
+    [5,7,9]
 
 [?? comments](comment: add)
 
 O sistema de tipo de Haskell torna um desafio interessante para escrever funções que recebem número variável de argumentos\[[8](#ftn.id591518)\]. Portanto, se queremos zip três listas em conjunto, chamamos `zip3` ou `zipWith3`, e assim por diante até `zip7` e `zipWith7`.[?? comments](comments: show / hide)
 
-### Funções especiais de manipulação de string
+#### Funções especiais de manipulação de string
 
 Nós já encontramos a função padrão `lines` em [a seção chamada “Warming up: Separação das linhas de texto portavel”](#fp.splitlines "a seção chamada “Warming up: Separação das linhas de texto portavel”"), eo seu homólogo padrão, `unlines`. Observe que `unlines` sempre coloca uma nova linha no final do seu resultado.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> lines "foo\nbar"
+    ["foo","bar"]
+    ghci> unlines ["foo", "bar"]
+    "foo\nbar\n"
 
 [?? comments](comment: add)
 
 A função `words` divide uma seqüência de entrada em qualquer espaço em branco. Sua contraparte, `unwords`, usa um único espaço para participar de uma lista de palavras.[?? comments](comments: show / hide)
 
-    ghci> 
+    ghci> words "the  \r  quick \t  brown\n\n\nfox"
+    ["the","quick","brown","fox"]
+    ghci> unwords ["jumps", "over", "the", "lazy", "dog"]
+    "jumps over the lazy dog"
 
 [?? comments](comment: add)
 
 ### Exercícios
 
-**1.**
+**1.** Escreva seus próprios definições “seguras” das funções de lista parcial normal, mas certifique-se que o seu nunca falham. Como dica, você pode querer considerar usando os seguintes tipos.[?? comments](comments: show / hide)
 
-Escreva seus próprios definições “seguras” das funções de lista parcial normal, mas certifique-se que o seu nunca falham. Como dica, você pode querer considerar usando os seguintes tipos.[?? comments](comments: show / hide)
-
-    -- arquivo: ca04/ch04.exercises.hs
-
-[?? comments](comments: show / hide)
-
-**2.**
-
-Escreva uma função `splitWith` que atua de forma semelhante a `words`, mas leva um predicado e uma lista de qualquer tipo, e divide sua lista de entrada em cada elemento para o qual o predicado retornar `False`.[?? comments](comments: show / hide)
-
-    -- arquivo: ca04/ch04.exercises.hs
+```haskell
+-- file: ch04/ch04.exercises.hs
+safeHead :: [a] -> Maybe a
+safeTail :: [a] -> Maybe [a]
+safeLast :: [a] -> Maybe a
+safeInit :: [a] -> Maybe [a]
+```
 
 [?? comments](comments: show / hide)
 
-**3.**
+**2.** Escreva uma função `splitWith` que atua de forma semelhante a `words`, mas leva um predicado e uma lista de qualquer tipo, e divide sua lista de entrada em cada elemento para o qual o predicado retornar `False`.[?? comments](comments: show / hide)
 
-Usando a estrutura de comando da [seção chamada “Um framework de linha de comando simples”](#fp.framework "seção chamada “Um framework de linha de comando simples”"), escreva um programa que imprime a primeira palavra de cada linha de sua entrada.[?? comments](comments: show / hide)
+```haskell
+-- file: ch04/ch04.exercises.hs
+splitWith :: (a -> Bool) -> [a] -> [[a]]
+```
+[?? comments](comments: show / hide)
 
-**4.**
+**3.** Usando a estrutura de comando da [seção chamada “Um framework de linha de comando simples”](#fp.framework "seção chamada “Um framework de linha de comando simples”"), escreva um programa que imprime a primeira palavra de cada linha de sua entrada.[?? comments](comments: show / hide)
 
-Escreva um programa que transpõe o texto em um arquivo. Por exemplo, ele deve converter `"hello\nworld\n"` para `"hw\neo\nlr\nll\nod\n"`.[?? comments](comments: show / hide)
+**4.** Escreva um programa que transpõe o texto em um arquivo. Por exemplo, ele deve converter `"hello\nworld\n"` para `"hw\neo\nlr\nll\nod\n"`.[?? comments](comments: show / hide)
 
-Como pensar a respeito de loops
--------------------------------
+### Como pensar a respeito de loops
+
 
 Diferentemente das linguagens tradicionais, Haskell não tem nem um `for` loop nem `while` loop. Se nós temos um monte de dados para processar, o que queremos usar no lugar? Existem várias respostas possíveis a esta pergunta.[?? comments](comments: show / hide)
 
