@@ -693,31 +693,40 @@ splitWith :: (a -> Bool) -> [a] -> [[a]]
 
 Diferentemente das linguagens tradicionais, Haskell não tem nem um `for` loop nem `while` loop. Se nós temos um monte de dados para processar, o que queremos usar no lugar? Existem várias respostas possíveis a esta pergunta.
 
-### Recursão explícita
+#### Recursão explícita
 
 Uma maneira simples de fazer o salto a partir de uma linguagem que tem laços com uma que não é executado através de alguns exemplos, olhando para as diferenças. Aqui está uma função C que recebe uma string de dígitos decimais e os transforma em um inteiro.
 
+```c
 int as_int(char *string){
     int acc; `/* accumulate the partial result */`
     for(acc= 0; isdigit(*string); string++)
         acc= acc\*10 + (\*string - '0');
     return acc;
 }
-
+```
 
 
 Dado que Haskell não possui construções de repetição, como devemos pensar sobre o que representa um simples pedaço bastante de código como este?
 
 Nós não temos de começar por escrever um tipo de assinatura, mas ajuda a nos lembrar que estamos trabalhando.
 
-    -- arquivo: ca04/IntParse.hs
+```haskell
+-- file: ch04/IntParse.hs
+import Data.Char (digitToInt) -- we'll need ord shortly
 
+asInt :: String -> Int
+```
 
 
 O código C calcula o resultado de forma incremental, uma vez que percorre a string, o código Haskell pode fazer a mesma função. No entanto, Haskell, podemos expressar o equivalente a um ciclo como um arquivo. Vamos chamar o nosso `loop` só para manter as coisas agradáveis e explícita.
 
-    -- arquivo: ca04/IntParse.hs
+```haskell
+-- file: ch04/IntParse.hs
+loop :: Int -> String -> Int
 
+asInt xs = loop 0 xs
+```
 
 
 Esse primeiro parâmetro para `loop` é a variável acumulador estaremos usando. Passando em zero é equivalente a inicialização do `acc` variável em C, no início do loop.
@@ -726,27 +735,31 @@ Ao invés de pular em código chamas, vamos pensar sobre os dados que temos para
 
 Podemos expressar este pensamento estrutural directamente pelo padrão correspondente na lista de construtores do tipo. Muitas vezes é útil pensar sobre os casos fáceis primeiro: aqui, o que significa que vamos considerar o caso de lista vazia.
 
-    -- arquivo: ca04/IntParse.hs
-
+```haskell
+-- file: ch04/IntParse.hs
+loop acc [] = acc
+```
 
 
 Uma lista vazia não significa apenas “o String de entrada está vazia”; é também o caso, vamos encontrar quando percorremos todo o caminho até o fim de uma lista não-vazia para fora. Então, nós não queremos “erro” se vemos uma lista vazia. Em vez disso, devemos fazer algo sensato. Aqui, a única coisa sensata é a de terminar o ciclo, e voltar o nosso valor acumulado.
 
 O outro caso temos que considerar surge quando a lista de entrada não estiver vazia. Precisamos fazer alguma coisa com o elemento atual da lista, e algo com o resto da lista.
 
-    -- arquivo: ca04/IntParse.hs
-
-
+```haskell
+-- file: ch04/IntParse.hs
+loop acc (x:xs) = let acc' = acc * 10 + digitToInt x
+                  in loop acc' xs
+```
 
 Calculamos um novo valor para o acumulador, e dar-lhe o nome de `acc'`. Em seguida, chamamos a função `words` divide uma seqüência de entrada em qualquer espaço em branco. Sua contraparte, `unwords`, usa um único espaço para participar de uma lista de palavras.
 
 ![[Note]](support/figs/note.png)
 
-As aspas simples em nomes de variáveis
+>**As aspas simples em nomes de variáveis**
 
-Lembre-se, uma única citação é um personagem legal para usar em um nome de variável Haskell, e é pronunciado como “prime”. Há uma expressão comum em programas Haskell envolvendo uma variável, digamos `foo` e outra variável, por exemplo `foo'`. Normalmente podemos assumir que `foo'` é de alguma forma relacionada com `foo`. É muitas vezes um novo valor para `foo`, como no nosso código acima.
+>Lembre-se, uma única citação é um personagem legal para usar em um nome de variável Haskell, e é pronunciado como “prime”. Há uma expressão comum em programas Haskell envolvendo uma variável, digamos `foo` e outra variável, por exemplo `foo'`. Normalmente podemos assumir que `foo'` é de alguma forma relacionada com `foo`. É muitas vezes um novo valor para `foo`, como no nosso código acima.
 
-Às vezes, vamos ver essa expressão alargado, como `foo''`. Como manter o controle do número de aspas simples tacheada no final de um nome rapidamente se torna enfadonho, o uso de mais de dois em uma fileira, felizmente, é rara. Na verdade, mesmo uma única citação pode ser fácil de se perder, o que pode levar a confusão por parte dos leitores. Talvez seja melhor pensar no uso de aspas simples como uma convenção de codificação que você deve ser capaz de reconhecer, e menos como um que você deve realmente seguir.
+>Às vezes, vamos ver essa expressão alargado, como `foo''`. Como manter o controle do número de aspas simples tacheada no final de um nome rapidamente se torna enfadonho, o uso de mais de dois em uma fileira, felizmente, é rara. Na verdade, mesmo uma única citação pode ser fácil de se perder, o que pode levar a confusão por parte dos leitores. Talvez seja melhor pensar no uso de aspas simples como uma convenção de codificação que você deve ser capaz de reconhecer, e menos como um que você deve realmente seguir.
 
 Cada vez que a função `loop` chama a si mesmo, tem um novo valor para o acumulador, e consome um elemento da lista de entrada. Eventualmente, ele vai acertar o final da lista, em que o tempo `[]` padrão irá corresponder, e as chamadas recursivas cessará.
 
