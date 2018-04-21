@@ -81,14 +81,14 @@ Haskell provê uma função built-in de `lines`, que deixa nós dividir uma stri
     ghci> lines "foo\n\nbar\n"
     ["foo","","bar"]
 
-[?? comments](comment: add)
+
 
 Embora de `lines`parece úteis, se baseia em nós ler um arquivo de em “modo texto” para o trabalho. Modo texto é uma característica comum a muitas linguagens: proporciona um comportamento especial quando lêem e escrevem arquivos no Windows. Quando se lê um arquivo em modo de texto, o arquivo de biblioteca I/O traduz a fim de linha de seqüência `"\r\n"`(retorno do carro seguido por nova linha) à `"\n"`(nova linha sozinho), e faz o inverso quando Escrever um arquivo. Em semelhante sistemas do Unix, o modo de texto não exerce qualquer translação. Como resultado desta diferença, se ler um arquivo de uma plataforma que estava escrito em outro o final de linha devem se tornar uma bagunça. (Ambos `readFile`e `writeFile`operar em modo texto). 
 
     ghci> lines "a\r\nb"
     ["a\r","b"]
 
-[?? comments](comment: add)
+
 
 A função `lines`só divide em caracteres de nova linha, deixando retorna carro balançando nas extremidades das linhas de. Se ler um arquivo de texto gerou-Windows em um sistema Linux ou caixa Unix nós vamos arrastando carro retorna no final da cada uma delas. 
 
@@ -132,7 +132,7 @@ O Prelude define uma função chamada `break`que podemos usar para particionar u
     ghci> break isUpper "isUpper"
     ("is","Upper")
 
-[?? comments](comment: add)
+
 
 Uma vez que só precisa corresponder a um único transporte de retorno ou nova linha de cada vez, analisar um elemento da lista ao mesmo tempo é bom o suficiente para as necessidades. 
 
@@ -151,42 +151,42 @@ Começamos a separação por uma seqüência que não contém qualquer separador
     ghci> splitLines "foo"
     ["foo"]
 
-[?? comments](comment: add)
+
 
 Aqui a nossa aplicação da `break`nunca encontra um terminador de linha, assim que o sufixo retorna vazio. 
 
     ghci> break isLineTerminator "foo"
     ("foo","")
 
-[?? comments](comment: add)
+
 
 A expressão `case`em `linhasSeparadas`como tal devem ser combinados no quarto ramo e estamos acabados. E quanto um caso um pouco mais interessante? 
 
     ghci> splitLines "foo\r\nbar"
     ["foo","bar"]
 
-[?? comments](comment: add)
+
 
 Nossa primeira aplicação de `break`nos oferece um sufixo não vazio. 
 
     ghci> break isLineTerminator "foo\r\nbar"
     ("foo","\r\nbar")
 
-[?? comments](comment: add)
+
 
 Devido o sufixo começa com um regresso transporte, seguido de uma nova linha, que correspondem a primeira sucursal de a expressão `case`. Isto dá-nos `prefixo`ligado a `"foo"`, e `sufixo`ligado a `"bar"`. Nós aplicar `linhasSeparadas`recursivamente, desta vez no `"bar"`sozinho. 
 
     ghci> splitLines "bar"
     ["bar"]
 
-[?? comments](comment: add)
+
 
 O resultado é que vamos construir a lista cuja cabeça é `"foo"`e cuja cauda é `["bar"]`. 
 
     ghci> "foo" : ["bar"]
     ["foo","bar"]
 
-[?? comments](comment: add)
+
 
 Este tipo de experimentos com **ghci**Este tipo de experimentos com **ghci**, por isso tendem a gravação funciona mais pequenas. Esta pode ainda ajudar a legibilidade do código. 
 
@@ -211,7 +211,7 @@ Se substitui a função `id`com `linhasAdaptadas`, podemos compilar um executáv
     [1 of 1] Compiling Main             ( FixLines.hs, FixLines.o )
     Linking FixLines ...
 
-[?? comments](comment: add)
+
 
 Se você é em um sistema Windows, localizar e transferir um arquivo texto criado em um sistema Unix (por exemplo [gpl-3.0.txt](http://www.gnu.org/licenses/gpl-3.0.txt)). Abrir no editor texto padrão Notepad. As linhas devem correr tudo junto, fazendo o arquivo praticamente ilegível. Process o ficheiro utilizando o **LinhasAdaptadas**mando criado e abra o arquivo de saída no Bloco de notas. As terminações de linha agora deve ser fixada acima. 
 
@@ -224,7 +224,7 @@ Em semelhantes os sistemas Unix, o padrão pagers e editores esconder terminaç�
     $ file gpl-3.0.txt
     gpl-3.0.txt: ASCII English text, with CRLF line terminator
 
-[?? comments](comment: add)
+
 
 ### Funções infixas
 
@@ -260,21 +260,21 @@ Dado que a notação infixa é meramente uma conveniência sintático, não muda
     ghci> Pair True "something"
     True `Pair` "something"
 
-[?? comments](comment: add)
+
 
 A notação Infix pode frequentemente ajudar legibilidade. De exemplo Prelude define uma função, `elem`, que indicam se há um valor presente em um de lista. Se usarmos `elem`com anotação de prefixo, é bastante fácil de ler. 
 
     ghci> elem 'a' "camogie"
     True
 
-[?? comments](comment: add)
+
 
 Se vamos mudar a infixo registo, o código fica até mais fácil de entender. É agora claro que estamos verificando se o valor à esquerda está presente na lista da certo. 
 
     ghci> 3 `elem` [1,2,4,8]
     False
 
-[?? comments](comment: add)
+
 
 Vemos uma expressiva melhora mais com algumas funções úteis da módulo `Data.List`. A função `isPrefixOf`diz-nos se numa lista coincide com o começo de outra. 
 
@@ -282,7 +282,7 @@ Vemos uma expressiva melhora mais com algumas funções úteis da módulo `Data.
     ghci> "foo" `isPrefixOf` "foobar"
     True 
 
-[?? comments](comment: add)
+
 
 As funções `isInfixOf`e `isSuffixOf`corresponder qualquer lugar em um lista e em seu final, respectivamente. 
 
@@ -291,7 +291,7 @@ As funções `isInfixOf`e `isSuffixOf`corresponder qualquer lugar em um lista e 
     ghci> "end" `isSuffixOf` "the end"
     True
 
-[?? comments](comment: add)
+
 
 Não há e rápida regra rígida que determina quando você deveria usar infixo versus notação de prefixo, apesar de notação de prefixo é muito mais comuns. É a mais melhor escolher o que faz o seu código mais legível em uma determinada situação. 
 
@@ -314,7 +314,7 @@ O módulo `Data.List` e o casa lógica “real” de todas as funções da lista
 
     ghci> :module +Data.List
 
-[?? comments](comment: add)
+
 
 Como nenhuma dessas funções é complexo ou tem mais de cerca de três linhas de Haskell para escrever, vamos ser breves nas nossas descrições de cada um. De fato, uma aprendizagem útil e rápido exercício é escrever uma definição de cada função depois que você já leu sobre isso.
 
@@ -331,7 +331,7 @@ A função `length` nos informa quantos elementos estão em uma lista.
     ghci> length "strings are lists, too"
     22
 
-[?? comments](comment: add)
+
 
 Se você precisa determinar se uma lista está vazia, use a função `null`.
 
@@ -342,7 +342,7 @@ Se você precisa determinar se uma lista está vazia, use a função `null`.
     ghci> null "plugh"
     False
 
-[?? comments](comment: add)
+
 
 Para acessar o primeiro elemento de uma lista, usamos a função `head`.
 
@@ -351,7 +351,7 @@ Para acessar o primeiro elemento de uma lista, usamos a função `head`.
     ghci> head [1,2,3]
     1
 
-[?? comments](comment: add)
+
 
 O inverso, `tail`, volta tudo, _mas_ a cabeça de uma lista.
 
@@ -360,7 +360,7 @@ O inverso, `tail`, volta tudo, _mas_ a cabeça de uma lista.
     ghci> tail "foo"
     "oo" 
 
-[?? comments](comment: add)
+
 
 Outra função, `last`, retorna o último elemento de uma lista.
 
@@ -369,7 +369,7 @@ Outra função, `last`, retorna o último elemento de uma lista.
     ghci> last "bar"
     'r'
 
-[?? comments](comment: add)
+
 
 O inverso da `last` é `init`, que retorna uma lista de todos mas o último elemento de sua entrada.
 
@@ -378,14 +378,14 @@ O inverso da `last` é `init`, que retorna uma lista de todos mas o último elem
     ghci> init "bar"
     "ba"
 
-[?? comments](comment: add)
+
 
 Várias das funções acima se comportam mal em uma lista vazia, então tome cuidado se você não souber ou não uma lista está vazia. Como se dá sua má conduta tomar?
 
     ghci> head []
     *** Exception: Prelude.head: empty list
 
-[?? comments](comment: add)
+
 
 Tente cada uma das funções acima, no **ghci**. Quais falhar quando dada uma lista vazia?
 
@@ -445,7 +445,7 @@ O nome Haskell para a função “append” é `(++)`.
     ghci> [True] ++ []
     [True]
 
-[?? comments](comment: add)
+
 
 A função `concat` recebe uma lista de listas, todas do mesmo tipo, e concatena-los em uma única lista.
 
@@ -454,7 +454,7 @@ A função `concat` recebe uma lista de listas, todas do mesmo tipo, e concatena
     ghci> concat [[1,2,3], [4,5,6]]
     [1,2,3,4,5,6]
 
-[?? comments](comment: add)
+
 
 Ele remove um nível de aninhamento.
 
@@ -463,7 +463,7 @@ Ele remove um nível de aninhamento.
     ghci> concat (concat [[[1,2],[3]], [[4],[5],[6]]])
     [1,2,3,4,5,6]
 
-[?? comments](comment: add)
+
 
 A função `reverse` retorna os elementos de uma lista em ordem inversa.
 
@@ -472,7 +472,7 @@ A função `reverse` retorna os elementos de uma lista em ordem inversa.
     ghci> reverse "foo"
     "oof"
 
-[?? comments](comment: add)
+
 
 Para listas de Bool, as funções `and` e `or`, generalizar seus primos de dois argumentos`(&&)` e `(||)`, sobre as listas.
 
@@ -489,7 +489,7 @@ Para listas de Bool, as funções `and` e `or`, generalizar seus primos de dois 
     ghci> or []
     False
 
-[?? comments](comment: add)
+
 
 Eles têm primos mais úteis, `all` e `any`, que operam em listas de qualquer tipo. Cada um leva um predicado como seu primeiro argumento, `all`retorna `True` se o predicado for bem-sucedido em cada elemento da lista, enquanto `any`retorna `True` se o predicado for bem-sucedido em pelo menos um elemento da lista.
 
@@ -508,7 +508,7 @@ Eles têm primos mais úteis, `all` e `any`, que operam em listas de qualquer ti
     ghci> any even []
     False
 
-[?? comments](comment: add)
+
 
 #### Trabalhar com sublistas
 
@@ -527,7 +527,7 @@ A função `take`, de que já reuniu em [“aplicação de função”](types-an
     ghci> drop 1 []
     []
 
-[?? comments](comment: add)
+
 
 A função `splitAt` combina as funções de `take` e `drop`, voltando um par da lista de entrada, dividido o índice determinado.
 
@@ -536,7 +536,7 @@ A função `splitAt` combina as funções de `take` e `drop`, voltando um par da
     ghci> splitAt 3 "foobar"
     ("foo","bar")
 
-[?? comments](comment: add)
+
 
 As funções `takeWhile` e `dropWhile`levar predicados: `takeWhile` toma elementos a partir do início de uma lista tão longa quanto o predicado retornar `True`, enquanto `dropWhile` gotas elementos da lista, enquanto o predicado retornar `True`.
 
@@ -549,7 +549,7 @@ As funções `takeWhile` e `dropWhile`levar predicados: `takeWhile` toma element
     ghci> dropWhile even [2,4,6,7,9,10,12]
     [7,9,10,12]
 
-[?? comments](comment: add)
+
 
 Assim como `splitAt`“tuplas” os resultados de `take` e `drop`, as funções `break` (que já vimos na [seção chamada “Warming up: Separação das linhas de texto portavel”](#fp.splitlines "seção chamada “Warming up: Separação das linhas de texto portavel”")) e `span` até tupla os resultados de `takeWhile` e `dropWhile`.
 
@@ -564,7 +564,7 @@ Cada função tem um predicado; `break` consome a sua entrada enquanto o predica
     ghci> break even [1,3,5,6,8,9,10]
     ([1,3,5],[6,8,9,10])
 
-[?? comments](comment: add)
+
 
 #### Buscando listas
 
@@ -577,7 +577,7 @@ Como já vimos, a função `elem`indica se um valor está presente em uma lista.
     ghci> 2 `notElem` [5,3,2,1,1]
     False
 
-[?? comments](comment: add)
+
 
 Para uma pesquisa mais geral, `filter` tem um predicado, e retorna todos os elementos da lista em que o predicado for bem-sucedido.
 
@@ -586,7 +586,7 @@ Para uma pesquisa mais geral, `filter` tem um predicado, e retorna todos os elem
     ghci> filter odd [2,4,1,3,6,8,5,7]
     [1,3,5,7]
 
-[?? comments](comment: add)
+
 
 Em `Data.List`, três predicados, `isPrefixOf`, `isInfixOf` e `isSuffixOf`, vamos testar a presença de sublistas dentro de uma grande lista. A maneira mais fácil de usá-los é usando a notação infixa.
 
@@ -600,7 +600,7 @@ A função `isPrefixOf` nos diz se o seu argumento deixou coincide com o início
     ghci> [1,2] `isPrefixOf` []
     False 
 
-[?? comments](comment: add)
+
 
 A função `isInfixOf` indica se o seu argumento de esquerda é uma sublista de seu direito.
 
@@ -610,7 +610,7 @@ A função `isInfixOf` indica se o seu argumento de esquerda é uma sublista de 
     ghci> "funk" `isInfixOf` "sonic youth"
     False
 
-[?? comments](comment: add)
+
 
 A operação de `isSuffixOf` não deve precisar de qualquer explicação.
 
@@ -618,7 +618,7 @@ A operação de `isSuffixOf` não deve precisar de qualquer explicação.
     ghci> ".c" `isSuffixOf` "crashme.c"
     True
 
-[?? comments](comment: add)
+
 
 #### Trabalhando com muitas listas ao mesmo tempo
 
@@ -629,7 +629,7 @@ A função `zip`recebe duas listas e “fecha-los” em uma única lista de pare
     ghci> zip [12,72,93] "zippity"
     [(12,'z'),(72,'i'),(93,'p')]
 
-[?? comments](comment: add)
+
 
 Mais útil é `zipWith`, que pega duas listas e aplica uma função para cada par de elementos, gerando uma lista que é do mesmo comprimento que o menor dos dois.
 
@@ -638,7 +638,7 @@ Mais útil é `zipWith`, que pega duas listas e aplica uma função para cada pa
     ghci> zipWith (+) [1,2,3] [4,5,6]
     [5,7,9]
 
-[?? comments](comment: add)
+
 
 O sistema de tipo de Haskell torna um desafio interessante para escrever funções que recebem número variável de argumentos\[[8](#ftn.id591518)\]. Portanto, se queremos zip três listas em conjunto, chamamos `zip3` ou `zipWith3`, e assim por diante até `zip7` e `zipWith7`.
 
@@ -651,7 +651,7 @@ Nós já encontramos a função padrão `lines` em [a seção chamada “Warming
     ghci> unlines ["foo", "bar"]
     "foo\nbar\n"
 
-[?? comments](comment: add)
+
 
 A função `words` divide uma seqüência de entrada em qualquer espaço em branco. Sua contraparte, `unwords`, usa um único espaço para participar de uma lista de palavras.
 
@@ -660,7 +660,7 @@ A função `words` divide uma seqüência de entrada em qualquer espaço em bran
     ghci> unwords ["jumps", "over", "the", "lazy", "dog"]
     "jumps over the lazy dog"
 
-[?? comments](comment: add)
+
 
 ### Exercícios
 
@@ -754,13 +754,13 @@ Como isso funciona bem a função? Para inteiros positivos, é perfeitamente cro
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Como isso funciona bem a função? Para inteiros positivos, é perfeitamente cromulent.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Vamos adiar a fixação função nossas deficiências para [Q: 1](#fp.asInt.fix "Q: 1").
 
@@ -842,7 +842,7 @@ Este é o nosso primeiro olhar de perto uma função que recebe outra função c
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 A assinatura nos diz que `map` tem dois argumentos. A primeira é uma função que assume um valor de um tipo, `a`, e retorna um valor de outro tipo, `b`.
 
@@ -868,7 +868,7 @@ Procuramos a nossa função `meuMap` para nos dar alguma garantia de que ele se 
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Este padrão de manchas um idioma repetida, então abstraí-lo para que possamos reutilizar (e escrever menos!) De código, é um aspecto comum de programação Haskell. Enquanto a abstração não é exclusivo para Haskell, funções de ordem superior tornam extremamente fácil.
 
@@ -884,13 +884,13 @@ Vamos ver isso em ação.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Mais uma vez, essa expressão é tão comum que o Prelude define uma função, `filter`, que já introduziu. Ele elimina a necessidade de código clichê para recurse sobre a lista.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 A função `filter` tem um predicado e aplica a cada elemento em sua lista de entrada, retornando uma lista de apenas aqueles para os quais o predicado avaliar para `True`. Nós iremos rever `filter` novamente em breve, na [seção chamada “Folding da direita”](#fp.foldr.filter "seção chamada “Folding da direita”").
 
@@ -1059,13 +1059,13 @@ Ela transforma uma lista em uma cópia de si mesmo.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Se `foldr` substitui o fim de uma lista com algum outro valor, isto dá-nos uma outra maneira de olhar para afunção Haskell de acréscimo das listas, `(++)`.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Tudo o que temos de fazer para anexar uma lista para outra é substituir essa lista segundo para o fim da nossa primeira lista.
 
@@ -1077,7 +1077,7 @@ Vamos tentar fazer isso.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Aqui, podemos substituir cada construtor lista com outro construtor da lista, mas substituir a lista vazia com a lista que deseja acrescentar sobre o fim da nossa primeira lista.
 
@@ -1099,13 +1099,13 @@ Quando GHC está avaliando uma expressão thunked, ele usa uma pilha interna par
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 De olhar para a expansão acima, podemos supor que este cria uma conversão que consiste em 1.000 inteiros e 999 pedidos de `(+)`. Isso é um monte de memória e esforço para representar um único número! Com uma expressão maior, embora o tamanho ainda é modesta, os resultados são mais dramáticos.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Em expressões pequenas, `foldl` irá funcionar corretamente, mas lentamente, devido à sobrecarga thunking em que incorre. Nós nos referimos a este thunking invisível como um _space leak_(vazamento de espaço), porque o nosso código está funcionando normalmente, mas com muito mais memória do que deveria.
 
@@ -1115,7 +1115,7 @@ O módulo `Data.List` define uma função chamada `foldl'` que é semelhante ao 
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Devido ao comportamento de thunking de `foldl`, é prudente evitar essa função em programas reais: mesmo que não falham completamente, será desnecessariamente ineficiente. Em vez disso, importa `Data.List` e utilisa `foldl'`.
 
@@ -1133,13 +1133,13 @@ Sua função deve se comportar como se segue.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Estenda a sua função para tratar os seguintes tipos de condições excepcionais chamando `error`.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 **2.**
 
@@ -1151,7 +1151,7 @@ A função `asInt_fold` usa `error`, por isso seus chamadores não pode manipula
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 **3.**
 
@@ -1233,7 +1233,7 @@ Esta definição de `headInseguro` vai explodir em nossas faces se chamá-lo com
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 A definição typechecks, assim ele vai compilar, então o erro irá ocorrer durante a execução. A moral desta história é que ter cuidado em como usar padrões para definir uma função anônima: certifique-se de seus padrões não pode falhar!
 
@@ -1250,7 +1250,7 @@ Você pode se perguntar por que a seta `->` é usado para o que parece ser a doi
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Parece que o `->` é separar os argumentos para `dropWhile` umas das outras, mas que também separa os argumentos do tipo de retorno. Mas, na verdade `->` tem apenas um significado: ele denota uma função que recebe um argumento do tipo à esquerda, e retorna um valor do tipo do lado direito.
 
@@ -1258,25 +1258,25 @@ A implicação aqui é muito importante: em Haskell, _todas as funções de toma
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Bem, _isso_ parece útil. O valor `dropWhile isSpace` é uma função que retira líder espaço em branco de uma string. Como isso é útil? Como exemplo, podemos usá-lo como um argumento para uma função de ordem superior.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Toda vez que nós fornecemos um argumento para uma função, nós podemos “cortar” um elemento fora da parte dianteira de sua assinatura tipo. Vamos tomar como exemplo `zip3` para ver o que queremos dizer, esta é uma função que fecha três listas em uma lista de três tuplas.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Se aplicarmos `zip3` com apenas um argumento, temos uma função que aceita dois argumentos. Não importa o que nós fornecemos argumentos para esta função compostos, seu primeiro argumento será sempre o valor fixo que especificamos.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Quando passamos menos argumentos para uma função que a função pode aceitar, nós chamamos isso de _aplicação parcial_ da função: estamos aplicando a função a que apenas alguns de seus argumentos.
 
@@ -1286,7 +1286,7 @@ Isto aplica-se tão bem se fixar dois argumentos, dando-nos uma função de apen
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Aplicação parcial de função nos permite evitar a criação de funções descartáveis cansativo. Muitas vezes é mais útil para este propósito que as funções anônimas que introduzimos na [seção chamada “Funções (lambda) anónimos”](#fp.anonymous "seção chamada “Funções (lambda) anónimos”"). Olhando para trás, a função `isInAny` nós definimos lá, aqui está como nós usaríamos uma função parcialmente aplicado em vez de uma função auxiliar chamada ou uma lambda.
 
@@ -1316,7 +1316,7 @@ Haskell fornece um atalho útil para notação vamos escrever uma função parci
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Se nos fornecer o argumento à esquerda dentro da seção, chamando a função resultante com um material argumento argumento do lado direito do operador. E vice-versa.
 
@@ -1324,19 +1324,19 @@ Lembre-se que nós podemos envolver um nome de função em backquotes usá-lo co
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 A definição acima fixa o segundo argumento de `elem` dando-nos uma função que verifica se seu argumento for uma letra minúscula.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Usando isso como um argumento para `all`, temos uma função que verifica uma seqüência inteira para ver se está tudo em minúsculas.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Se usarmos esse estilo, podemos melhorar ainda mais a leitura de nossa função `isInAny3` anterior.
 
@@ -1351,13 +1351,13 @@ A função Haskell `tails`, no módulo `Data.List`, generaliza a função `tail`
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Cada uma dessas cadeias é um _sufixo_ de String inicial, para `tails` produz uma lista de todos os sufixos, além de uma lista vazia extra no final. Ela produz sempre que a lista extra vazio, mesmo quando sua lista de entrada está vazia.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 E se queremos uma função que se comporta como `tails`, mas que retorna _apenas_ os sufixos não vazios? Uma possibilidade seria para nós a escrever a nossa própria versão a mão. Vamos usar uma nova peça de notação, o símbolo `@`.
 
@@ -1371,7 +1371,7 @@ No nosso exemplo, se o padrão depois do “@” corresponde, `xs` será obrigad
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 O padrão as torna o código nosso mais legível. Para ver como isso ajuda, vamos comparar uma definição que não tenha um padrão as.
 
@@ -1398,7 +1398,7 @@ Esta função `sufixos2` funciona igualmente a `sufixos`, mas é um única linha
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Se tomarmos um passo para trás, vemos o reflexo de um padrão aqui: nós estamos aplicando uma função, em seguida, aplicar uma outra função para o seu resultado. Vamos transformar esse padrão em uma definição de função.
 
@@ -1431,7 +1431,7 @@ O operador `(.)` não é uma parte especial da sintaxe da linguagem, é apenas u
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Podemos criar novas funções a qualquer momento por escrito cadeias de funções compostas, costurado com `(.)`, tanto tempo (é claro) como o tipo de resultado da função no lado direito de cada um `(.)` corresponde ao tipo de parâmetro que o função na esquerda pode aceitar.
 
@@ -1439,25 +1439,25 @@ Como exemplo, vamos resolver um enigma muito simples: a contagem do número de p
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Podemos entender que esta função é composta pela análise das suas peças. A função `(.)` é associativa direito, por isso vamos prosseguir da direita para a esquerda.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 A função `words` tem um tipo de resultado de \[String\], para o que está no lado esquerdo de `(.)` deve aceitar um argumento compatível.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Essa função retorna `True` se uma palavra começa com uma letra maiúscula (testá-lo em **ghci**), os `filter (isUpper . head)` retorna uma lista de Strings contendo apenas palavras que começam com letras maiúsculas.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Uma vez que esta expressão retorna uma lista, tudo o que resta é calcular o comprimento da lista, o que fazemos com outra composição.
 
@@ -1489,19 +1489,19 @@ Mais uma vez, procede da direita para a esquerda. A primeira função é `words`
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Em seguida, aplicamos `tail` para o resultado de `words`.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Finalmente, aplicando `head` para o resultado de `drop 1 . words` nos dará o nome de nossa macro.
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 ### Use a cabeça sabiamente
 
@@ -1547,7 +1547,7 @@ Esta função `seq` tem um tipo peculiar, insinuando que ele não está jogando 
 
     ghci> 
 
-[?? comments](comment: add)
+
 
 Ele funciona da seguinte forma: quando uma expressão `seq` é avaliada seguintes, ele força o seu primeiro argumento a ser avaliada, em seguida, retorna seu segundo argumento. Na verdade, não fazer nada com o primeiro argumento: `seq` existe apenas como uma maneira de forçar que o valor a ser avaliada. Vamos caminhar através de uma aplicação breve para ver o que acontece.
 
