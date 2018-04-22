@@ -126,32 +126,28 @@ A primeira equação de `splitLines`indica que, se coincidir com uma seqüência
 
 Na segunda equação, aplicamos primeiro o `break` na nossa string de entrada. O prefixo é a substring antes de um terminador de linha, e sufixo é o restante da string. O sufixo incluirá o terminador de linha, caso esteja presente.
 
-A expressão “`prefixo :`” indica-nos que devemos adicionar o valor `prefixo`para a frente a lista das linhas. Em seguida, use uma expressão de `case`para inspecionar os sufixos, assim que nós podemos decidir o que fazer. O resultado da expressão `case`será utilizada como argumento segundo o construtor da lista `(:)`. 
+A expressão `pre :` indica-nos que devemos adicionar o valor `pre` na frente da lista das linhas. Em seguida, usamos uma expressão  `case` para inspecionar os sufixos, então podemos decidir o que fazer a partir do seu padão (casamento de padrões). O resultado da expressão `case`será utilizada como segundo argumento do construtor da lista `(:)`. 
 
-O primeiro padrão corresponde a uma seqüência que começa com um regresso transporte, seguido por uma linha nova. A variável de `resto`está ligado ao restante da cadeia. Os outros padrões são parecidos, então elas devem ser fácil de acompanhar. 
+O primeiro padrão corresponde a uma seqüência que começa com um "retorno de carro", seguido por uma "quebra de linha". A variável `rest`está amarrado ao restante da cadeia. Os outros padrões são parecidos, então elas devem ser faceis de acompanhar. 
 
-Uma descrição em prosa de uma função Haskell não necessariamente fáceis de seguir. Podemos obter uma melhor compreensão por parte entrando **ghci**, e observar o comportamento da função em circunstâncias diferentes. 
+Uma descrição de uma função Haskell não são necessariamente fáceis de seguir. Podemos obter uma melhor compreensão executando passo a passo no **ghci**, e observar o comportamento da função em circunstâncias diferentes. 
 
-Começamos a separação por uma seqüência que não contém qualquer separadores de linhas. 
+Começamos particionando por uma seqüência que não contém qualquer separador de linhas. 
 
     ghci> splitLines "foo"
     ["foo"]
 
 
-
-Aqui a nossa aplicação da `break`nunca encontra um terminador de linha, assim que o sufixo retorna vazio. 
+Aqui a nossa aplicação da `break`nunca encontra um terminador de linha, deste modo o sufixo retorna vazio. 
 
     ghci> break isLineTerminator "foo"
     ("foo","")
 
 
-
-A expressão `case`em `linhasSeparadas`como tal devem ser combinados no quarto ramo e estamos acabados. E quanto um caso um pouco mais interessante? 
+A expressão `case`em `splitLines`como tal devem casar no quarto padrão. Agora, que tal considerar um caso um pouco mais interessante? 
 
     ghci> splitLines "foo\r\nbar"
     ["foo","bar"]
-
-
 
 Nossa primeira aplicação de `break`nos oferece um sufixo não vazio. 
 
@@ -159,13 +155,10 @@ Nossa primeira aplicação de `break`nos oferece um sufixo não vazio.
     ("foo","\r\nbar")
 
 
-
-Devido o sufixo começa com um regresso transporte, seguido de uma nova linha, que correspondem a primeira sucursal de a expressão `case`. Isto dá-nos `prefixo`ligado a `"foo"`, e `sufixo`ligado a `"bar"`. Nós aplicar `linhasSeparadas`recursivamente, desta vez no `"bar"`sozinho. 
+Devido o sufixo começa com um "retorno de carro", seguido de uma "quebra de linha", que irá casar como o primeira padrão da expressão `case`. Isto dá-nos `prefixo` amarrado a `"foo"`, e `sufixo`amarrado a `"bar"`. Nós então aplicamos `splitLines`recursivamente, desta vez no `"bar"`sozinho. 
 
     ghci> splitLines "bar"
     ["bar"]
-
-
 
 O resultado é que vamos construir a lista cuja cabeça é `"foo"`e cuja cauda é `["bar"]`. 
 
@@ -174,13 +167,13 @@ O resultado é que vamos construir a lista cuja cabeça é `"foo"`e cuja cauda �
 
 
 
-Este tipo de experimentos com **ghci**Este tipo de experimentos com **ghci**, por isso tendem a gravação funciona mais pequenas. Esta pode ainda ajudar a legibilidade do código. 
+Este tipo de experimentos com **ghci** é uma maneira útil de entender e depurar o comportamento de um código. Tem um benefício ainda mais importante que é quase acidental por natureza. Dado que pode ser complicado testar códigos complicados no **ghci**, então tenderemos a escrever funções menores. Isso pode ajudar ainda mais a legibilidade do nosso código
 
-Este estilo de criar e de reutilização de partes pequenas, poderoso do código é uma parte fundamental da programação funcional. 
+Este estilo de criar e de reutilização de partes pequenas, e poderosas de código é uma parte fundamental da programação funcional. 
 
 #### Um programa de conversão de fim de linha
 
-Deixe de ligar a nossa função `linhasSeparadas`em âmbito pouco que escreveu anteriormente. Faça um cópia do arquivo de fonte `InteraçãoCom.hs`; vamos chamar o arquivo novo `LinhasAdaptadas.hs`. Adicione a função `linhasSeparadas`para o novo arquivo de origem. Desde a nossa função precisa elaborar um único String, temos que costurar a lista de linhas de volta. O Prelude fornece uma função `unlines`que concatena a lista das cadeias, acrescentando uma nova linha para o final de cada um. 
+Vamos conectar a nossa função `splitLines`ao framework que escrevemos anteriormente. Faça um cópia do arquivo de fonte `Interact.hs`; vamos chamar o arquivo novo de `FixLines.hs.hs`. Adicione a função `splitLines`para o novo arquivo fonte. Desde que a nossa função precisa produzir um único String, temos que concatenar a lista de linhas de volta. O Prelude fornece uma função `unlines`que concatena a lista das strings, acrescentando uma nova linha para o final de cada uma. 
 
 ```haskell
 -- file: ch04/SplitLines.hs
@@ -188,20 +181,15 @@ fixLines :: String -> String
 fixLines input = unlines (splitLines input)
 ```
 
-
-
-Se substitui a função `id`com `linhasAdaptadas`, podemos compilar um executável que irá converter um arquivo de texto para a linha materna nosso sistema termina. 
-
+Se substituirmos a função `id`com `fixLines`, podemos compilar um executável que irá converter um arquivo de texto para o sistema nativo de termino de linha do nosso sistema. 
 
     $ ghc --make FixLines
     [1 of 1] Compiling Main             ( FixLines.hs, FixLines.o )
     Linking FixLines ...
 
+Se você estiver em um sistema Windows, localize e baixe um arquivo de texto que foi criado em um sistema Unix (por exemplo, gpl-3.0.txt). Abra-o no editor de texto padrão do Bloco de Notas. Todas as linhas devem ser executadas juntas, tornando o arquivo quase ilegível. Processe o arquivo usando o comando **FixLines** que você acabou de criar e abra o arquivo de saída no Bloco de Notas. Os finais de linha agora devem ser corrigidos.
 
-
-Se você é em um sistema Windows, localizar e transferir um arquivo texto criado em um sistema Unix (por exemplo [gpl-3.0.txt](http://www.gnu.org/licenses/gpl-3.0.txt)). Abrir no editor texto padrão Notepad. As linhas devem correr tudo junto, fazendo o arquivo praticamente ilegível. Process o ficheiro utilizando o **LinhasAdaptadas**mando criado e abra o arquivo de saída no Bloco de notas. As terminações de linha agora deve ser fixada acima. 
-
-Em semelhantes os sistemas Unix, o padrão pagers e editores esconder terminações de linha de Windows. Isto faz mais difícil de verificar se **LinhasAdaptadas**é realmente eliminá-los. Aqui estão uns poucos comandos que deve ajudar. 
+Em sistemas do tipo Unix, os pagers e editores padrão ocultam os términos de linha do Windows. Isso torna mais difícil verificar se os **FixLines** estão realmente eliminando-os. Aqui estão alguns comandos que devem ajudar
 
     $ file gpl-3.0.txt
     gpl-3.0.txt: ASCII English text
@@ -214,12 +202,11 @@ Em semelhantes os sistemas Unix, o padrão pagers e editores esconder terminaç�
 
 ### Funções infixas
 
+Normalmente, quando definimos ou aplicamos uma função em Haskell, escrevemos o nome da função, seguido de seus argumentos. Essa notação é chamada de prefixo, porque o nome da função vem antes de seus argumentos.
 
-Normalmente, quando se define ou aplicar uma função em Haskell, nós escrevemos o nome da função, seguido por seus argumentos. Esta notação é chamada de _prefixo_, porque o nome da função vem perante seus argumentos. 
+Se uma função ou construtor usa dois ou mais argumentos, temos a opção de usá-lo no infix, onde o colocamos entre o primeiro e o segundo argumentos. Isso nos permite usar funções como operadores infixos.
 
-Caso uma função ou construtor necessários dois ou mais discussões, temos a opção de utilização em formulário _infixo_, onde colocar _entre_sua argumentos e segundo antes. O que nos permite usar funções como operador infixo. 
-
-Definir ou aplicar uma função de construtor ou o valor usando a notação infixo, nós coloque seu nome nos personagens backtick (também conhecido como backquotes). Aqui estão as definições infixo simples de uma função e um tipo. 
+Para definir ou aplicar um construtor de função ou valor usando a notação infixada, colocamos seu nome em caracteres backtick (às vezes conhecidos como backquotes). Aqui estão as definições simples de infix de uma função e um tipo.
 
 ```haskell
 -- file: ch04/Plus.hs
@@ -233,9 +220,7 @@ foo = Pair 1 2
 bar = True `Pair` "quux"
 ```
 
-
-
-Dado que a notação infixa é meramente uma conveniência sintático, não muda a função de comportamento um. 
+Dado que a notação infixa é meramente uma conveniência sintática, não muda o comportamento da função. 
 
     ghci> 1 `plus` 2
     3
@@ -246,63 +231,49 @@ Dado que a notação infixa é meramente uma conveniência sintático, não muda
     ghci> Pair True "something"
     True `Pair` "something"
 
-
-
-A notação Infix pode frequentemente ajudar legibilidade. De exemplo Prelude define uma função, `elem`, que indicam se há um valor presente em um de lista. Se usarmos `elem`com anotação de prefixo, é bastante fácil de ler. 
+A notação Infix pode frequentemente pode ajudar legibilidade. Por exemplo, Prelude define uma função, `elem`, que indicam se há um valor está presente em uma lista. Se usarmos `elem` na notaço prefixada, é bastante fácil de ler. 
 
     ghci> elem 'a' "camogie"
     True
 
-
-
-Se vamos mudar a infixo registo, o código fica até mais fácil de entender. É agora claro que estamos verificando se o valor à esquerda está presente na lista da certo. 
+Se mudarmos para a notação infixada, o código fica ainda mais fácil de entender. Agora está mais claro que estamos verificando se o valor à esquerda está presente na lista à direita
 
     ghci> 3 `elem` [1,2,4,8]
     False
 
-
-
-Vemos uma expressiva melhora mais com algumas funções úteis da módulo `Data.List`. A função `isPrefixOf`diz-nos se numa lista coincide com o começo de outra. 
+Nós vemos uma melhoria mais pronunciada com algumas funções úteis do módulo Data.List. A função isPrefixOf indica se uma lista corresponde ao início de outra.
 
     ghci> :module +Data.List
     ghci> "foo" `isPrefixOf` "foobar"
     True 
 
-
-
-As funções `isInfixOf`e `isSuffixOf`corresponder qualquer lugar em um lista e em seu final, respectivamente. 
+As funções `isInfixOf`e `isSuffixOf`correspondem em qualquer lugar em uma lista e em seu final, respectivamente. 
 
     ghci> "needle" `isInfixOf` "haystack full of needle thingies"
     True
     ghci> "end" `isSuffixOf` "the end"
     True
 
+Não existe uma regra rígida que determine quando você deve usar a notação infix versus prefix, embora a notação de prefixo seja muito mais comum. É melhor escolher o que tornar seu código mais legível em uma situação específica. 
 
+>![[Note]](support/figs/note.png)**Cuidados com anotação familia em uma linguagem desconhecida**
 
-Não há e rápida regra rígida que determina quando você deveria usar infixo versus notação de prefixo, apesar de notação de prefixo é muito mais comuns. É a mais melhor escolher o que faz o seu código mais legível em uma determinada situação. 
+>Algumas outras linguagens de programação usam backticks, mas apesar das semelhanças visuais, o propósito dos backticks em Haskell não remotamente lembra seu significado em, por exemplo, scripts shell Perl, Python ou Unix. Sem comentários
 
-![[Note]](support/figs/note.png)
-
->Cuidados com anotação familiar em um idioma desconhecido
-
->A algumas outras linguagens de programação utilizar backticks mas, apesar das semelhanças visual, a fim de backticks em Haskell não lembram remotamente o seu significado em, por exemplo: Perl, Python, shell scripts ou Unix. 
-
->A única coisa legal que podemos fazer com backticks em Haskell é envolver-los ao redor do nome da função. Não pode, por exemplo usá-las para incluir a expressão complexa cujo valor é uma função. Pode ser conveniente, se pudéssemos, mas que não é como a linguagem actual. 
+>A única coisa legal que podemos fazer com os backticks em Haskell é envolvê-los em torno do nome de uma função. Não podemos, por exemplo, usá-los para incluir uma expressão complexa cujo valor é uma função. Pode ser conveniente se pudéssemos, mas não é assim que a linguagem é hoje 
 
 ### Trabalhando com as listas
 
 
-Como o pão ea manteiga da programação funcional, listas de merecer alguma atenção. O prelúdio norma define dezenas de funções para lidar com listas. Muitos destes serão ferramentas indispensáveis, por isso é importante que eles aprendam desde cedo.
+Como o pão e a manteiga da programação funcional, as listas merecem alguma atenção séria. A biblioteca padrão Prelude define dezenas de funções para lidar com listas. Muitas dessas ferramentas serão indispensáveis, por isso é importante aprendê-las desde o início. 
 
-Para melhor ou pior, esta secção vai ler um pouco como uma “lista suja” de funções. Por apresentar muitas funções de modo ao mesmo tempo? Essas funções são fáceis de aprender e absolutamente ubíqua. Se não temos essa caixa de ferramentas em nossas mãos, vamos acabar perdendo tempo reinventando funções simples que já estão presentes nas bibliotecas padrão;. Então fique com a gente como nós atravessamos a lista o esforço que você vai economizar se ser enorme.
+Para melhor ou pior, esta seção vai parecer uma enxurrada de funções para listas. Por que apresentar tantas funções ao mesmo tempo? Essas funções são fáceis de aprender e absolutamente onipresentes. Se não tivermos essa caixa de ferramentas na ponta dos dedos, acabaremos perdendo tempo reinventando funções simples que já estão presentes nas bibliotecas padrão. Então, tenha paciência conosco enquanto passamos pela lista; o esforço que você vai economizar será enorme.
 
-O módulo `Data.List` e o casa lógica “real” de todas as funções da lista. O Prelude meramente re-exporta uma grande subconjunto das funções exportadas pela `Data.List`. Diversas funções úteis no `Data.List` _não_ são re-exportados pelo prelúdio padrão. Ao andarmos funções de lista nas seções que seguem, vamos mencionar explicitamente aqueles que estão apenas em `Data.List`.
+O módulo Data.List é o local lógico e “real” de todas as funções padrão de lista. O Prelude meramente re-exporta um grande subconjunto das funções exportadas pelo Data.List. Várias funções úteis em Data.List não são exportadas novamente pelo prelúdio padrão. À medida que percorremos as funções de lista nas seções a seguir, mencionaremos explicitamente aquelas que estão apenas em Data.List.
 
     ghci> :module +Data.List
 
-
-
-Como nenhuma dessas funções é complexo ou tem mais de cerca de três linhas de Haskell para escrever, vamos ser breves nas nossas descrições de cada um. De fato, uma aprendizagem útil e rápido exercício é escrever uma definição de cada função depois que você já leu sobre isso.
+Como nenhuma dessas funções são complexas ou levam mais de três linhas de Haskell para escrever, seremos breves em nossas descrições de cada uma. De fato, um exercício de aprendizado rápido e útil é escrever uma definição de cada função depois de ler sobre ela.
 
 #### Manipulação de listas básica
 
@@ -318,7 +289,6 @@ A função `length` nos informa quantos elementos estão em uma lista.
     22
 
 
-
 Se você precisa determinar se uma lista está vazia, use a função `null`.
 
     ghci> :type null
@@ -328,8 +298,6 @@ Se você precisa determinar se uma lista está vazia, use a função `null`.
     ghci> null "plugh"
     False
 
-
-
 Para acessar o primeiro elemento de uma lista, usamos a função `head`.
 
     ghci> :type head
@@ -337,16 +305,12 @@ Para acessar o primeiro elemento de uma lista, usamos a função `head`.
     ghci> head [1,2,3]
     1
 
-
-
-O inverso, `tail`, volta tudo, _mas_ a cabeça de uma lista.
+O inverso, `tail`, retorna tudo, exceto a cabeça de uma lista.
 
     ghci> :type tail
     tail :: [a] -> [a]
     ghci> tail "foo"
     "oo" 
-
-
 
 Outra função, `last`, retorna o último elemento de uma lista.
 
@@ -355,29 +319,23 @@ Outra função, `last`, retorna o último elemento de uma lista.
     ghci> last "bar"
     'r'
 
-
-
-O inverso da `last` é `init`, que retorna uma lista de todos mas o último elemento de sua entrada.
+O inverso da `last` é `init`, que retorna uma lista de todos exceto o último elemento.
 
     ghci> :type init
     init :: [a] -> [a]
     ghci> init "bar"
     "ba"
 
-
-
-Várias das funções acima se comportam mal em uma lista vazia, então tome cuidado se você não souber ou não uma lista está vazia. Como se dá sua má conduta tomar?
+Várias das funções acima se comportam mal em listas vazias, portanto tenha cuidado se você não souber se uma lista está vazia ou não. De que forma é que o mau comportamento delas?
 
     ghci> head []
     *** Exception: Prelude.head: empty list
 
+Tente cada uma das funções acima, no **ghci**. Quais delas falham dada uma lista vazia?
 
+#### Trabalhar de modo seguro e saudável com funções que causam crashy
 
-Tente cada uma das funções acima, no **ghci**. Quais falhar quando dada uma lista vazia?
-
-#### Trabalhar segura e saudavelmente a com funções crashy
-
-Quando queremos usar uma função como a `head`, onde sabemos que poderia explodir em nós se passar em uma lista vazia, a tentação pode inicialmente ser forte para verificar o comprimento da lista antes que chamamos de `head`. Vamos construir um exemplo artificial para ilustrar o nosso ponto.
+Quando queremos usar uma função como a `head`, onde sabemos que poderia explodir em nós se passar em uma lista vazia, a tentação pode inicialmente verificar o comprimento da lista antes de chamarmos `head`. Vamos construir um exemplo artificial para ilustrar o nosso ponto.
 
 ```haskell
 -- file: ch04/EfficientList.hs
@@ -385,16 +343,13 @@ myDumbExample xs = if length xs > 0
                    then head xs
                    else 'Z'
 ```
+Se nós estamos vindo de uma linguagem como Perl ou Python, isso pode parecer uma forma perfeitamente natural para escrever este teste. Nos bastidores, as listas de Python são arrays, Perl arrays são, bem arrays. Então eles necessariamente sabem quanto tempo eles estão, e chamar len (foo) ou escalar (@foo) é uma coisa perfeitamente natural de se fazer. Mas como com muitas outras coisas, não é uma boa ideia transplantar cegamente essa suposição em Haskell.
 
+Nós já vimos a definição algébrica do tipo de dados lista muitas vezes, e sabemos que a lista não armazena seu próprio comprimento explicitamente. Assim, a única maneira de `length` poder operar é percorrer toda a lista.
 
+Portanto, quando apenas nos importamos se uma lista está vazia ou não, a duração da chamada não é uma boa estratégia. Pode potencialmente fazer muito mais trabalho do que queremos, se a lista com a qual estamos trabalhando for finita. Como o Haskell nos permite criar facilmente listas infinitas, um uso descuidado do comprimento pode até resultar em um loop infinito.
 
-Se nós estamos vindo de uma linguagem como Perl ou Python, isso pode parecer uma forma perfeitamente natural para escrever este ensaio. Nos bastidores, as listas de Python são matrizes, matrizes e Perl são, assim, matrizes. Então, eles necessariamente saber quanto tempo eles estão, e chamando `len(foo)` ou `scalar(@foo)` é natural coisa perfeitamente fazer. Mas como acontece com muitas outras coisas, não é uma boa idéia cegamente transplante de tal pressuposto em Haskell.
-
-Nós já vimos a definição do tipo de dados algébrica lista muitas vezes, e sei que a lista não armazena seu próprio comprimento explicitamente. Assim, a única maneira de `length` pode operar é andar toda a lista.
-
-Portanto, quando só se preocupam ou não uma lista é vazia, chamada `length` não é uma boa estratégia. Ele pode, potencialmente, fazer um trabalho muito mais do que nós queremos, se a lista que estamos trabalhando é finito. Desde Haskell nos permite facilmente criar listas de infinito, uma utilização descuidada de `length` pode até resultar em um loop infinito.
-
-A função mais adequada para chamar aqui ao contrário é `null`, que é executado em tempo constante. Melhor ainda, usando `null` torna nosso código de indicar o imóvel da lista que realmente nos importa. Aqui estão duas maneiras de se expressar melhor `meuExemploEstúpido`. 
+Uma função mais apropriada para chamar aqui é null, que é executado em tempo constante. Melhor ainda, usando null faz nosso código indicar a propriedade da lista que realmente nos interessa. Aqui estão duas maneiras aprimoradas de expressar myDumbExample 
 
 ```haskell
 -- file: ch04/EfficientList.hs
@@ -406,17 +361,15 @@ myOtherExample (x:_) = x
 myOtherExample [] = 'Z'
 ```
 
+#### Funções parciais e totais
 
+Funções que só têm valores de retorno definido para um subconjunto de entradas válidas são chamadas de funções _parciais_ (chamar `error` não se qualifica como retornar um valor!). Nós chamamos funções que retornam resultados válidos para todos os valores de seu domínio de funções _totais_.
 
-#### Funções parcial e total
+É sempre uma boa ideia saber se uma função que você está usando é parcial ou total. Chamar uma função parcial com uma entrada que ela não pode manipular é provavelmente a maior fonte de bugs diretos e evitáveis nos programas Haskell. 12 comentários
 
-Funções que só têm valores de retorno definido para um subconjunto de entradas válidas são chamadas de funções _parciais_ (chamar `error` não se qualifica como retornar um valor!). Nós chamamos funções que retornam resultados válidos sobre os seus domínios de entrada inteira funções _totais_.
+Alguns programadores de Haskell chegam a dar nomes de funções parciais que começam com um prefixo, como unsafe, para que não possam se atirar no pé acidentalmente. 6 comentários
 
-É sempre uma boa idéia para saber se uma função que você está usando é parcial ou total. Chamar uma função parcial, com uma entrada que não pode suportar é provavelmente a maior fonte de simples, os erros evitáveis em programas Haskell.
-
-Alguns programadores Haskell ir tão longe para dar nomes de funções parciais que começam com um prefixo, como `unsafe`, para que eles não podem atirar no próprio pé acidentalmente.
-
-É indiscutivelmente uma deficiência do prelúdio padrão que define um bom número funções parciais “inseguros”, como a `head`, sem oferecer equivalentes totais “seguros”.
+É sem dúvida uma deficiência do Prelude que define algumas funções parciais “inseguras”, como head , sem também fornecer equivalentes totais “seguras”.
 
 #### Mais manipulações de listas simples
 
