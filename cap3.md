@@ -46,7 +46,7 @@ data MagazineInfo = Magazine Int String [String]
 
 Mesmo que este tipo InfoRevista tem a mesma estrutura que o nosso tipo InfoLivro, Haskell trata os tipos come distintos porque a sua natureza e construtores de valor têm nomes diferentes.
 
-![[Note]](support/figs/note.png)
+![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
 
 >Derivando o quê?
 
@@ -151,7 +151,7 @@ O nosso conhecido Bool é o mais comum e simples exemplo de uma categoria de tip
 
 O tipo Bool tem dois construtores, os valores `True` e `False`. Cada construtor de valor é separado na definição por um caracter `|`, que pode ler-se “ou”: nós podemos construir um Bool que tem o valor `True`, ou o valor `False`. Quando um tipo tem mais de um construtor de valor, são normalmente referido como _alternativas_ ou _casos_. Podemos usar qualquer uma das alternativas para criar um valor desse tipo.
 
-![[Note]](support/figs/note.png)
+![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
 
 >Uma nota sobre nomeação
 
@@ -253,7 +253,7 @@ As formas polares e cartesianas usam os mesmos tipos para seus dois elementos. N
 
 O operador `(==)` exige que os seus argumentos sejam do mesmo tipo.
 
-![[Tip]](support/figs/tip.png)
+![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)
 
 >Comparando-se a igualdade
 
@@ -394,7 +394,7 @@ A versão em Haskell deste código é tanto drasticamente mais curta e mais segu
 
 Se criarmos um valor Forma usando o construtor `Circulo`, o fato de que nós criamos um `Circulo` é armazenado. Quando mais tarde usar um `Circulo`, não podemos tratá-la acidentalmente, como um `Quadrado`. Vamos ver por que [o “Casamento de padrões”](defining-types-streamlining-functions.html#deftypes.pattern "Pattern matching").
 
-![[Tip]](support/figs/tip.png)
+![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)
 
 >Algumas notas
 
@@ -444,7 +444,7 @@ Estamos avaliando agora `1 + (2 + somaLista [])`. Nesta aplicação recursiva de
 
 O resultado da `somaLista [1,2]` é, portanto `1 + (2 + (0))`, ou `3`.
 
-![[Note]](support/figs/note.png)
+![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
 
 >A ordenação é importante
 
@@ -473,7 +473,7 @@ Vamos considerar o que acontece se o casamento de padrão `(Livro id nome autore
 
 Como o padrão combina age como o inverso da construção, é por vezes referido como _de_construção.
 
-![[Note]](support/figs/note.png)
+![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
 
 >A desconstrução não destrói nada
 
@@ -580,7 +580,7 @@ Se aplicarmos isso a um valor que não pode corresponder, vamos receber um erro 
 
 Neste exemplo, nenhuma equação na definição da função coincide com o valor `[]`.
 
-![[Tip]](support/figs/tip.png)
+![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)
 
 >Aviso sobre padrões incompletos
 
@@ -779,7 +779,7 @@ E porque `Cons 0 Nulo` tem o tipo Lista a, nós podemos usar isso como um parâm
 
 Poderíamos continuar dessa maneira indefinidamente, criando cada vez mais cadeias `Cons`, cada uma com um único `Nulo` no final.
 
-![[Tip]](support/figs/tip.png)
+![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)
 
 >**É Lista uma lista aceitável?**
 
@@ -945,7 +945,7 @@ lend amount balance = let reserve    = 100
 
 As palavras-chave a olhar aqui é a `let`, que inicia um bloco de declarações de variáveis, e `in`, que termina-o. Cada linha introduz uma nova variável. O nome está do lado esquerdo do `=`, e a expressão que ele está vinculada está à direita.
 
-![[Note]](support/figs/note.png)
+![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
 
 >**Notas especiais**
 
@@ -996,7 +996,7 @@ Porque o argumento da função `a` nunca é usado no corpo da função, devido a
 	ghci> :type quux
 	quux :: t -> [Char]
 
-![[Tip]](support/figs/tip.png)
+![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)
 
 >**Advertências do compilador são seus amigos**
 
@@ -1204,7 +1204,7 @@ equational orange = Orange
 
 Agora você pode ver o problema? Aqui, é mais óbvio `maçã` não se refere ao valor mais alto nível o nome `maçã`: é uma variável padrão local.
 
-![[Note]](support/figs/note.png)
+![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
 
 >IPadrões irrefutáveis
 
@@ -1330,8 +1330,6 @@ O separador deve aparecer entre os elementos da lista, mas não deve seguir o ú
 * * *
 
 \[[7](#id582956)\] Se você estiver familiarizado com C ou C++, é análogo a um `typedef`.
-
-![](support/figs/rss.png) Quer ficar atualizado? Assine o feed comentário para [este capítulo](/feeds/comments/), ou o [livro inteiro](/feeds/comments/).
 
 Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart e John Goerzen. Esta obra está licenciada sob uma [Creative Commons Attribution-Noncommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/). Ícones por [Paul Davey](mailto:mattahan@gmail.com) aka [Mattahan](http://mattahan.deviantart.com/).
 
