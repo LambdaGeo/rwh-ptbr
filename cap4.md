@@ -110,10 +110,9 @@ splitLines cs =
 
 isLineTerminator c = c == '\r' || c == '\n'
 ```
-Antes de nos aprofundarmos em detalhes, como primeira notícia que se organizaram nosso Código. Nós apresentamos as partes importantes de código em primeiro lugar, mantendo a definição de `éSeparadorDeLinhas`depois. Porque demos a função auxiliar um nome readable, que podemos adivinhar o que ele faz ainda antes temos lido, que facilita um “fluxo” suave de lendo de código. 
+Antes de nos aprofundarmos em detalhes, note primeiro como o código está organizado. Nós apresentamos as partes importantes de código em primeiro lugar, mantendo a definição de `isLineTerminator` para o final. Dado que demos a função auxiliar um nome legível, podemos inferir o que ela faz memso antes de termos lido, facilitando a leitura do código. 
 
-O Prelude define uma função chamada `break`que podemos usar para particionar um de lista em duas partes. É preciso uma função que seu primeiro parâmetro. Essa função deverá examinar elementos de lista, e retorna uma Boolindicar se deseja interromper a lista nesse momento. A função `break`retorna um par, que consiste no sublista consumidos antes do predicado retornado `True`(o _prefixo_), eo resto da lista (o _sufixo_). 
-
+O Prelude define uma função chamada `break`que podemos usar para particionar um de lista em duas partes. Ela toma uma função como seu primeiro parâmetro. Essa função deverá examinar elementos de lista, e retorna um valor Bool para indicar se deseja interromper a lista nesse momento. A função `break`retorna um par, que consiste na sublista consumida antes do predicado ter retornado `True`(o _prefixo_), eo resto da lista (o _sufixo_). 
 
     ghci> break odd [2,4,5,6,8]
     ([2,4],[5,6,8])
@@ -121,13 +120,11 @@ O Prelude define uma função chamada `break`que podemos usar para particionar u
     ghci> break isUpper "isUpper"
     ("is","Upper")
 
+Uma vez que só precisamos corresponder a um único "retorno de carro" ou "quebra de linha" por vez, analisar um elemento da lista por vés é o suficiente para as nossas necessidades. 
 
+A primeira equação de `splitLines`indica que, se coincidir com uma seqüência vazia, não precismaos fazer nada, apenas retornarmos uma sequencia também vazia. 
 
-Uma vez que só precisa corresponder a um único transporte de retorno ou nova linha de cada vez, analisar um elemento da lista ao mesmo tempo é bom o suficiente para as necessidades. 
-
-A equação primeira de `linhasSeparadas`indica que, se coincidir com uma seqüência vazia, não temos nenhum trabalho ainda a fazer. 
-
-Na equação do segundo, aplicar primeiro `break`a nossa string de entrada. O prefixo é a substring antes de um terminador de linha, e sufixo é o restante do fio. O sufixo incluirão o terminador linha é eventualmente presentes.
+Na segunda equação, aplicamos primeiro o `break` na nossa string de entrada. O prefixo é a substring antes de um terminador de linha, e sufixo é o restante da string. O sufixo incluirá o terminador de linha, caso esteja presente.
 
 A expressão “`prefixo :`” indica-nos que devemos adicionar o valor `prefixo`para a frente a lista das linhas. Em seguida, use uma expressão de `case`para inspecionar os sufixos, assim que nós podemos decidir o que fazer. O resultado da expressão `case`será utilizada como argumento segundo o construtor da lista `(:)`. 
 
