@@ -19,12 +19,11 @@ Nossa aprendizagem inicial em Haskell possui dois aspectos distintos. A primeira
 
 O nosso segundo desafio é aprender a nossa maneira de lidar com as bibliotecas basicas do Haskell. Como em qualquer linguagem, bibliotecas  funcionam como alavanca, habilitando-nos a multiplicar a nossa solução de problemas. Bibliotecas do Haskell tendem a operar em um nível maior de abstração do que aqueles em muitas outras linguagens. Precisaremos trabalhar um pouco mais para aprender usar as bibliotecas, mas na troca elas oferecem uma muito poder. 
 
-Neste capítulo, vamos introduzir uma série de técnicas de programação funcional. Nós vamos recorrer a exemplos de linguagens imperativas, destacando a mudança no pensamento que vamos precisar fazer. A medida que avançarmos, iremos cobrindo alguns dos fundamentos das bibliotecas padrão do Haskell. Nós também intermitentemente iremos cobrir um pouco mais os recursos da linguagem.
+Neste capítulo, vamos introduzir uma série de técnicas de programação funcional. Nós vamos recorrer a exemplos de linguagens imperativas, destacando a mudança no pensamento que vamos precisar fazer. A medida que avançarmos, iremos cobrindo alguns dos fundamentos das bibliotecas padrão do Haskell. Nós também iremos cobrir um pouco mais os recursos da linguagem.
 
 ### Um simple framework de linha de comando 
 
-
-Na maioria deste capítulo, que incidirá nos com o código que tem qualquer interacção com o mundo exterior. Manter o foco no código prático, vamos começar por desenvolver uma passagem entre o nosso código “puro” eo mundo lá fora. O nosso quadro simplesmente lê o conteúdo de um arquivo, aplicar uma função para o arquivo e escreve o resultado para outro arquivo. 
+Na maioria deste capítulo, iremos trabalhar com códigos sem interacção com o mundo exterior. Contudo, para manter o foco em códigos aplicados a problemas do mundo real, vamos começar desenvolvendo uma passagem entre o nosso código “puro” e o mundo lá fora. O nosso framework simplesmente lê o conteúdo de um arquivo, aplica uma função para o arquivo e escreve o resultado em outro arquivo. 
 
 ```haskell
 -- file: ch04/InteractWith.hs
@@ -47,32 +46,32 @@ main = mainWith myFunction
         myFunction = id
 ```
 
-Esta é a todos nós necessitamos de escrever simples, mas completa, de arquivo de programas de processamento. Esse é um programa completos. Nós podemos compilá-lo para um executável chamado `InteraçãoCom`como se segue. 
+Esta é tudo que nós necessitamos para escrever simples, mas completa, de arquivo de programas de processamento. Esse é um programa completos. Nós podemos compilá-lo para um executável chamado `InteractWith`como se segue. 
 
     $ ghc --make InteractWith
     [1 of 1] Compiling Main             ( InteractWith.hs, InteractWith.o )
     Linking InteractWith ...
 
 
-Se executar este programa desde o shell ou prompt de comando, que aceita dois nomes de arquivos: o nome da arquivo de ler, o nome e de um arquivo para escrever. 
+Se executar este programa a partir de um shell ou prompt de comando, que aceita dois nomes de arquivos: o nome da arquivo de leitura, o nome e de um arquivo para escrita. 
 
-    $ ./Interact
+    $ ./InteractWith
     error: exactly two arguments needed
-    $ ./Interact hello-in.txt hello-out.txt
+    $ ./InteractWith hello-in.txt hello-out.txt
     $ cat hello-in.txt
     hello world
     $ cat hello-out.txt
     hello world
 
 
-Algumas das notação no nosso arquivo fonte é nova. O que introduz uma palavra-chave bloco de ações que podem provocar efeitos no mundo real, tais como a leitura ou a escrita de um arquivo. O operador `<-`é o equivalente de uma atribuição dentro um bloco `do`. Esta é a explicação bastante começar nós começou. Falaremos em mais detalhe muito sobre esses detalhes do notação e de I/O em geral, em [Capítulo 7, _I/O_](io.html "Capítulo 7, I/O"). 
+Algumas das notação nesse arquivo fonte é nova. A palavra-chave `do` introduz um bloco de ações que podem provocar efeitos no mundo real, tais como a leitura ou a escrita em um arquivo. O operador `<-` pode ser compreendido como a uma atribuição dentro um bloco `do`. Esta explicação é o bastante para começarmos. Falaremos em muito mais detalhes sobre os detalhes da notação, e de I/O em geral, em [Capítulo 7, _I/O_](). 
 
-Quando se deseja testar uma função que não pode falar com o mundo lá fora, que simplesmente substitui o nome `id`ino código acima com o nome da função que queremos testar. Qualquer que seja nossa função faz, ele precisa ter o tipo de String->String: em outras palavras, ela deve aceitar uma string e retornam uma string. 
+Quando se deseja testar uma função que não pode falar com o mundo lá fora, nos simplesmente substituimos o nome `id` no código acima com o nome da função que queremos testar. Independente do que a nossa função faz, ela precisa ter o tipo de `String->String`: em outras palavras, ela deve aceitar uma string e retornar uma string. 
 
 ### Warming up: Separação das linhas de texto portavel
 
 
-Haskell provê uma função built-in de `lines`, que deixa nós dividir uma string de texto em linha de limites. Ele retorna um lista das cadeias de caracteres com terminação de linha omitida. 
+Haskell provê a função `lines`, que divide uma string de texto em linhas. Ela retorna uma lista das cadeias de caracteres com terminação de linha omitida. 
 
     ghci> :type lines
     lines :: String -> [String]
@@ -81,29 +80,22 @@ Haskell provê uma função built-in de `lines`, que deixa nós dividir uma stri
     ghci> lines "foo\n\nbar\n"
     ["foo","","bar"]
 
-
-
-Embora de `lines`parece úteis, se baseia em nós ler um arquivo de em “modo texto” para o trabalho. Modo texto é uma característica comum a muitas linguagens: proporciona um comportamento especial quando lêem e escrevem arquivos no Windows. Quando se lê um arquivo em modo de texto, o arquivo de biblioteca I/O traduz a fim de linha de seqüência `"\r\n"`(retorno do carro seguido por nova linha) à `"\n"`(nova linha sozinho), e faz o inverso quando Escrever um arquivo. Em semelhante sistemas do Unix, o modo de texto não exerce qualquer translação. Como resultado desta diferença, se ler um arquivo de uma plataforma que estava escrito em outro o final de linha devem se tornar uma bagunça. (Ambos `readFile`e `writeFile`operar em modo texto). 
+Embora `lines`pareça útil, ela assume que estamos lendo um arquivo em "modo texto" para funcionar. Modo texto é uma característica comum a muitas linguagens: proporciona um comportamento especial quando lêem e escrevem arquivos no Windows. Quando se lê um arquivo em modo de texto, o arquivo de biblioteca I/O traduz o fim de linha `"\r\n"`(retorno do carro seguido por nova linha) para `"\n"`(apenas nova linha ), e faz o inverso ao escrever um arquivo. Em sistemas Unix, o modo de texto não exerce qualquer traduçao. Como resultado desta diferença, se ler um arquivo em uma plataforma que estava escrito em outra, o final de linha devem se tornar uma bagunça. (Ambos `readFile`e `writeFile`operam em modo texto). 
 
     ghci> lines "a\r\nb"
     ["a\r","b"]
 
+A função `lines` só divide a partir do caracter "nova linha", deixando o caracter "retorno de carros" pendente nas extremidades das linhas. Se ler um arquivo de texto gerado no Windows em um sistema Unix nós vamos manter o caracter de "retorno de carro" no final da cada linha. 
 
+Nós temos confortavelmente usado “universal newline” do Python por anos: que trata isso de forma transparente as convenções de quebra de linha no Unix e Windows para nós. Gostaríamos de oferecer algo similar em Haskell. 
 
-A função `lines`só divide em caracteres de nova linha, deixando retorna carro balançando nas extremidades das linhas de. Se ler um arquivo de texto gerou-Windows em um sistema Linux ou caixa Unix nós vamos arrastando carro retorna no final da cada uma delas. 
-
-Nós confortavelmente usado o suporte “universal newline” do Python apoio a anos: trata isso de forma transparente Unix e Windows linha que termina as convenções para nós. Gostaríamos de oferecer algo similar em Haskell. 
-
-Uma vez que estamos ainda cedo em nossa carreira de leitura de código Haskell, vamos discutir nossa aplicação em Haskell bastante detalhe alguns. 
+Dado que estamos ainda aprendendo ler códigos em  Haskell, vamos discutir nossa aplicação em Haskell com bastante detalhe. 
 
 ```haskell
 -- file: ch04/SplitLines.hs
 splitLines :: String -> [String]
 ```
-
-
-
-A assinatura do tipo de nossa função indica que aceita uma única corda, o conteúdo de um arquivo com alguma linha que termina convenção desconhecido. Ele retorna a lista de seqüências de caracteres, que representa cada linha do processo. 
+A assinatura do tipo de nossa função indica que ela aceita uma única String, o conteúdo de um arquivo com alguma convençao de "quebra de linha" desconhecida. Então, ela retorna uma lista de String, que representa cada linha do arquivo. 
 
 ```haskell
 -- file: ch04/SplitLines.hs
@@ -118,9 +110,6 @@ splitLines cs =
 
 isLineTerminator c = c == '\r' || c == '\n'
 ```
-
-
-
 Antes de nos aprofundarmos em detalhes, como primeira notícia que se organizaram nosso Código. Nós apresentamos as partes importantes de código em primeiro lugar, mantendo a definição de `éSeparadorDeLinhas`depois. Porque demos a função auxiliar um nome readable, que podemos adivinhar o que ele faz ainda antes temos lido, que facilita um “fluxo” suave de lendo de código. 
 
 O Prelude define uma função chamada `break`que podemos usar para particionar um de lista em duas partes. É preciso uma função que seu primeiro parâmetro. Essa função deverá examinar elementos de lista, e retorna uma Boolindicar se deseja interromper a lista nesse momento. A função `break`retorna um par, que consiste no sublista consumidos antes do predicado retornado `True`(o _prefixo_), eo resto da lista (o _sufixo_). 
