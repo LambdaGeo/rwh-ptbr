@@ -384,15 +384,12 @@ O nome Haskell para a função “append” é `(++)`.
     ghci> [True] ++ []
     [True]
 
-
-
-A função `concat` recebe uma lista de listas, todas do mesmo tipo, e concatena-los em uma única lista.
+A função `concat` recebe uma lista de listas, todas do mesmo tipo, e concatena-os em uma única lista.
 
     ghci> :type concat
     concat :: [[a]] -> [a]
     ghci> concat [[1,2,3], [4,5,6]]
     [1,2,3,4,5,6]
-
 
 
 Ele remove um nível de aninhamento.
@@ -403,7 +400,6 @@ Ele remove um nível de aninhamento.
     [1,2,3,4,5,6]
 
 
-
 A função `reverse` retorna os elementos de uma lista em ordem inversa.
 
     ghci> :type reverse
@@ -412,8 +408,7 @@ A função `reverse` retorna os elementos de uma lista em ordem inversa.
     "oof"
 
 
-
-Para listas de Bool, as funções `and` e `or`, generalizar seus primos de dois argumentos`(&&)` e `(||)`, sobre as listas.
+Para listas do tipo Bool, as funções `and` e `or`, generalizam as funções de dois argumentos`(&&)` e `(||)`, sobre listas.
 
     ghci> :type and
     and :: [Bool] -> Bool
@@ -429,8 +424,7 @@ Para listas de Bool, as funções `and` e `or`, generalizar seus primos de dois 
     False
 
 
-
-Eles têm primos mais úteis, `all` e `any`, que operam em listas de qualquer tipo. Cada um leva um predicado como seu primeiro argumento, `all`retorna `True` se o predicado for bem-sucedido em cada elemento da lista, enquanto `any`retorna `True` se o predicado for bem-sucedido em pelo menos um elemento da lista.
+Existem ainda outras muito úteis, `all` e `any`, que operam em listas de qualquer tipo. Cada uma toma um predicado como seu primeiro argumento, `all`retorna `True` se o predicado for bem-sucedido em cada elemento da lista, enquanto `any`retorna `True` se o predicado for bem-sucedido em pelo menos um elemento da lista.
 
     ghci> :type all
     all :: (a -> Bool) -> [a] -> Bool
@@ -447,11 +441,9 @@ Eles têm primos mais úteis, `all` e `any`, que operam em listas de qualquer ti
     ghci> any even []
     False
 
+#### Trabalhando com sublistas
 
-
-#### Trabalhar com sublistas
-
-A função `take`, de que já reuniu em [“aplicação de função”](types-and-functions.html#funcstypes.calling "“aplicação de função”"), retorna uma sublista consistindo de primeiros _k_ elementos de uma lista. Seu inverso, `drop`, quedas de _k_ elementos, desde o início da lista.
+A função `take`, que conhecemos no [Cápitulo 2](cap2), retorna uma sublista consistindo dos primeiros _k_ elementos de uma lista. Seu inverso, `drop`, descarta _k_ elementos, desde o início da lista.
 
     ghci> :type take
     take :: Int -> [a] -> [a]
@@ -466,9 +458,7 @@ A função `take`, de que já reuniu em [“aplicação de função”](types-an
     ghci> drop 1 []
     []
 
-
-
-A função `splitAt` combina as funções de `take` e `drop`, voltando um par da lista de entrada, dividido o índice determinado.
+A função `splitAt` combina as funções de `take` e `drop`, retorna um par da lista de entrada, dividido em um dado índice.
 
     ghci> :type splitAt
     splitAt :: Int -> [a] -> ([a], [a])
@@ -476,8 +466,7 @@ A função `splitAt` combina as funções de `take` e `drop`, voltando um par da
     ("foo","bar")
 
 
-
-As funções `takeWhile` e `dropWhile`levar predicados: `takeWhile` toma elementos a partir do início de uma lista tão longa quanto o predicado retornar `True`, enquanto `dropWhile` gotas elementos da lista, enquanto o predicado retornar `True`.
+As funções `takeWhile` e `dropWhile`tomam predicados: `takeWhile` toma elementos a partir do início de uma lista até o predicado retornar `True`, enquanto `dropWhile` descarta elementos da lista, enquanto o predicado retornar `True`.
 
     ghci> :type takeWhile
     takeWhile :: (a -> Bool) -> [a] -> [a]
@@ -489,10 +478,9 @@ As funções `takeWhile` e `dropWhile`levar predicados: `takeWhile` toma element
     [7,9,10,12]
 
 
+Assim como `splitAt`“tuplas” os resultados de `take` e `drop`, as funções `break` (que já vimos na [seção chamada “Warming up: Separação das linhas de texto portavel”](#fp.splitlines "seção chamada “Warming up: Separação das linhas de texto portavel”")) e `span` tupla os resultados de `takeWhile` e `dropWhile`.
 
-Assim como `splitAt`“tuplas” os resultados de `take` e `drop`, as funções `break` (que já vimos na [seção chamada “Warming up: Separação das linhas de texto portavel”](#fp.splitlines "seção chamada “Warming up: Separação das linhas de texto portavel”")) e `span` até tupla os resultados de `takeWhile` e `dropWhile`.
-
-Cada função tem um predicado; `break` consome a sua entrada enquanto o predicado falha, enquanto `span` consome enquanto seu predicado êxito.
+Cada função tem um predicado; `break` consome a sua entrada enquanto o predicado falha, enquanto `span` consome enquanto seu predicado tem êxito.
 
     ghci> :type span
     span :: (a -> Bool) -> [a] -> ([a], [a])
@@ -504,10 +492,9 @@ Cada função tem um predicado; `break` consome a sua entrada enquanto o predica
     ([1,3,5],[6,8,9,10])
 
 
-
 #### Buscando listas
 
-Como já vimos, a função `elem`indica se um valor está presente em uma lista. Ele tem uma função complementar, `notElem`.
+Como já vimos, a função `elem` indica se um valor está presente em uma lista. Ela tem uma função complementar, `notElem`.
 
     ghci> :type elem
     elem :: (Eq a) => a -> [a] -> Bool
@@ -517,8 +504,7 @@ Como já vimos, a função `elem`indica se um valor está presente em uma lista.
     False
 
 
-
-Para uma pesquisa mais geral, `filter` tem um predicado, e retorna todos os elementos da lista em que o predicado for bem-sucedido.
+Para uma pesquisa mais geral, `filter` toma um predicado, e retorna todos os elementos da lista em que o predicado for bem-sucedido.
 
     ghci> :type filter
     filter :: (a -> Bool) -> [a] -> [a]
@@ -526,10 +512,9 @@ Para uma pesquisa mais geral, `filter` tem um predicado, e retorna todos os elem
     [1,3,5,7]
 
 
+Em `Data.List`, três predicados, `isPrefixOf`, `isInfixOf` e `isSuffixOf`, nos deixar testar a presença de sublistas dentro de uma dada lista. A maneira mais fácil de usá-los é usando a notação infixa.
 
-Em `Data.List`, três predicados, `isPrefixOf`, `isInfixOf` e `isSuffixOf`, vamos testar a presença de sublistas dentro de uma grande lista. A maneira mais fácil de usá-los é usando a notação infixa.
-
-A função `isPrefixOf` nos diz se o seu argumento deixou coincide com o início da sua tese direita.
+A função isPrefixOf informa se seu argumento esquerdo corresponde ao início de seu argumento correto.
 
     ghci> :module +Data.List
     ghci> :type isPrefixOf
@@ -540,16 +525,13 @@ A função `isPrefixOf` nos diz se o seu argumento deixou coincide com o início
     False 
 
 
-
-A função `isInfixOf` indica se o seu argumento de esquerda é uma sublista de seu direito.
+A função `isInfixOf` indica se o seu argumento esquerdo é uma sub-lista do seu direito.
 
     ghci> :module +Data.List
     ghci> [2,6] `isInfixOf` [3,1,4,1,5,9,2,6,5,3,5,8,9,7,9]
     True
     ghci> "funk" `isInfixOf` "sonic youth"
     False
-
-
 
 A operação de `isSuffixOf` não deve precisar de qualquer explicação.
 
@@ -558,10 +540,9 @@ A operação de `isSuffixOf` não deve precisar de qualquer explicação.
     True
 
 
-
 #### Trabalhando com muitas listas ao mesmo tempo
 
-A função `zip`recebe duas listas e “fecha-los” em uma única lista de pares. A lista resultante é o mesmo comprimento que o mais curto dos dois insumos.
+A função `zip`recebe duas listas e “fecha-os” em uma única lista de pares. A lista resultante é o mesmo comprimento que o mais curto das duas entradas.
 
     ghci> :type zip
     zip :: [a] -> [b] -> [(a, b)]
