@@ -46,9 +46,8 @@ data MagazineInfo = Magazine Int String [String]
 
 Mesmo que este tipo InfoRevista tem a mesma estrutura que o nosso tipo InfoLivro, Haskell trata os tipos come distintos porque a sua natureza e construtores de valor têm nomes diferentes.
 
-![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
 
->Derivando o quê?
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**Derivando o quê?**
 
 >Nós vamos explicar o significado completo de `deriving Show` depois, em [seção denominada “Show”](using-typeclasses.html#typeclasses.wellknown.show "Show"). Por enquanto, é o suficiente saber que precisamos disso em uma declaração deste tipo para que o **ghci** automaticamente saiba como imprimir um valor deste tipo.
 
@@ -117,8 +116,7 @@ Esta definição diz que o tipo chamado RevisãoLivro tem um construtor de valor
 
 Não só é _legal_ para um construtor de valor para ter o mesmo nome de seu construtor de tipo, como é _normal_: você vai ver isso o tempo todo em código Haskell.
 
-###Sinónimos
-
+### Sinónimos
 
 Podemos introduzir um _sinônimo_ para um tipo existente em qualquer momento, para dar um tipo de nome mais descritivo. Por exemplo, o tipo String no nosso tipo RevisãoLivro não nos diz para que a string é usada, mas podemos esclarecer isso.
 
@@ -151,9 +149,8 @@ O nosso conhecido Bool é o mais comum e simples exemplo de uma categoria de tip
 
 O tipo Bool tem dois construtores, os valores `True` e `False`. Cada construtor de valor é separado na definição por um caracter `|`, que pode ler-se “ou”: nós podemos construir um Bool que tem o valor `True`, ou o valor `False`. Quando um tipo tem mais de um construtor de valor, são normalmente referido como _alternativas_ ou _casos_. Podemos usar qualquer uma das alternativas para criar um valor desse tipo.
 
-![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
 
->Uma nota sobre nomeação
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**Uma nota sobre nomeação**
 
 >Embora a expressão “tipo de dado algébrico” seja longa, nós estamos tendo o cuidado de evitar o uso da sigla “TAD”. Essa sigla já é amplamente entendida como suporte para o “tipo _abstrato_ de dado”. Desde que Haskell suporte ambos, tipos de dados algébricos e tipos de dados abstratos, vamos ser explícito e evitar a sigla inteiramente.
 
@@ -253,9 +250,8 @@ As formas polares e cartesianas usam os mesmos tipos para seus dois elementos. N
 
 O operador `(==)` exige que os seus argumentos sejam do mesmo tipo.
 
-![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)
 
->Comparando-se a igualdade
+>![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)**Comparando-se a igualdade**
 
 >Observe que no cláusule `deriving` de vector tipos nossa, nós adicionamos uma outra palavra, `Eq`. Isso faz com que a aplicação Haskell para gerar o código que nos permite comparar os valores de igualdade.
 
@@ -394,9 +390,8 @@ A versão em Haskell deste código é tanto drasticamente mais curta e mais segu
 
 Se criarmos um valor Forma usando o construtor `Circulo`, o fato de que nós criamos um `Circulo` é armazenado. Quando mais tarde usar um `Circulo`, não podemos tratá-la acidentalmente, como um `Quadrado`. Vamos ver por que [o “Casamento de padrões”](defining-types-streamlining-functions.html#deftypes.pattern "Pattern matching").
 
-![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)
 
->Algumas notas
+>![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)**Algumas notas**
 
 >Da leitura dos capítulos anteriores, que agora deve ficar claro que _todos_ os tipos de dados que define a palavra-chave `data` são os tipos de dados algébricos. Alguns podem ter apenas uma alternativa, enquanto outros têm vários, mas eles estão todos usando as mesmas máquinas.
 
@@ -444,9 +439,7 @@ Estamos avaliando agora `1 + (2 + somaLista [])`. Nesta aplicação recursiva de
 
 O resultado da `somaLista [1,2]` é, portanto `1 + (2 + (0))`, ou `3`.
 
-![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
-
->A ordenação é importante
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**A ordenação é importante**
 
 >Como já mencionado, a implementação Haskell checa o padrão para casar na  mesma ordem em que especificá-mos em nossas funções. Procedimento de "casamento" é de cima para baixo, e termina no primeiro sucesso.
 
@@ -473,16 +466,13 @@ Vamos considerar o que acontece se o casamento de padrão `(Livro id nome autore
 
 Como o padrão combina age como o inverso da construção, é por vezes referido como _de_construção.
 
-![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
-
->A desconstrução não destrói nada
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**A desconstrução não destrói nada**
 
 >Se você está mergulhada em programação orientada a objeto jargão, não confunda a desconstrução com destruição! Correspondência de um padrão não tem nenhum efeito sobre o valor que estamos examinando: só nos permite “olhar para dentro” dele.
 
 #### Outras aventuras
 
 A sintaxe de casamento de padrões em uma tupla é similar à sintaxe para a construção de uma tupla. Aqui está uma função que retorna o último elemento de uma 3-tuplo.
-
 
 ```
 -- arquivo: ca03/Tupla.hs
@@ -580,9 +570,7 @@ Se aplicarmos isso a um valor que não pode corresponder, vamos receber um erro 
 
 Neste exemplo, nenhuma equação na definição da função coincide com o valor `[]`.
 
-![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)
-
->Aviso sobre padrões incompletos
+>![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)**Aviso sobre padrões incompletos**
 
 >GHC oferece uma opção de compilação útil `-fwarn-incomplete-patterns`, que fará com que ele imprime um aviso durante a compilação se uma seqüência de padrões não correspondem a todos tipo de valor de um construtor.
 
@@ -779,9 +767,7 @@ E porque `Cons 0 Nulo` tem o tipo Lista a, nós podemos usar isso como um parâm
 
 Poderíamos continuar dessa maneira indefinidamente, criando cada vez mais cadeias `Cons`, cada uma com um único `Nulo` no final.
 
-![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)
-
->**É Lista uma lista aceitável?**
+>![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)**É Lista uma lista aceitável?**
 
 >Nós podemos facilmente provar a nós mesmos que o nosso tipo List a tem a mesma forma que o tipo lista \[a\] existente no ghc. Para fazer isso, nós escrevemos uma função que recebe um valor do tipo \[a\], e produzimos um valor de um tipo Lista a.
 
@@ -996,9 +982,7 @@ Porque o argumento da função `a` nunca é usado no corpo da função, devido a
 	ghci> :type quux
 	quux :: t -> [Char]
 
-![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)
-
->**Advertências do compilador são seus amigos**
+>![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)**Advertências do compilador são seus amigos**
 
 >Ocultamento pode, obviamente, levar à confusão e bugs, assim GHC tem um opção útil `-fwarn-name-shadowing`. Quando ativado, GHC irá imprimir uma mensagem de aviso toda vez que ocultarmos um nome.
 
@@ -1204,9 +1188,7 @@ equational orange = Orange
 
 Agora você pode ver o problema? Aqui, é mais óbvio `maçã` não se refere ao valor mais alto nível o nome `maçã`: é uma variável padrão local.
 
-![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)
-
->IPadrões irrefutáveis
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**IPadrões irrefutáveis**
 
 >Referimo-nos a um padrão que sempre sucede como _irrefutável_. Nomes de variáveis simples e um curinga `_` são exemplos de padrões irrefutáveis.
 
