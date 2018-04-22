@@ -46,7 +46,7 @@ main = mainWith myFunction
         myFunction = id
 ```
 
-Isto é tudo que nós necessitamos para escrever simples, mas completa, de arquivo de programas de processamento. Esse é um programa completos. Nós podemos compilá-lo para um executável chamado `InteractWith`como se segue. 
+Isto é tudo que nós necessitamos para escrever um simples, mas completo, programa para processamento de arquivos. Esse é um programa completo. Nós podemos compilá-lo para um executável chamado `InteractWith`como se segue. 
 
     $ ghc --make InteractWith
     [1 of 1] Compiling Main             ( InteractWith.hs, InteractWith.o )
