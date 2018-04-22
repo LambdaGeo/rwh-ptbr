@@ -765,14 +765,15 @@ Cada vez que a função `loop` chama a si mesmo, tem um novo valor para o acumul
 
 Como isso funciona bem a função? Para inteiros positivos, é perfeitamente cromulent.
 
-    ghci> 
+    ghci> asInt "33"
+    33
 
+But because we were focusing on how to traverse lists, not error handling, our poor function misbehaves if we try to feed it nonsense.
 
-
-Como isso funciona bem a função? Para inteiros positivos, é perfeitamente cromulent.
-
-    ghci> 
-
+    ghci> asInt ""
+    0
+    ghci> asInt "potato"
+    *** Exception: Char.digitToInt: not a digit 'p'
 
 
 Vamos adiar a fixação função nossas deficiências para [Q: 1](#fp.asInt.fix "Q: 1").
@@ -785,30 +786,36 @@ Como uma técnica útil, recursão estrutural não está confinada a lista, pode
 
 ![[Note]](support/figs/note.png)
 
-Qual é a grande coisa sobre recursão de cauda?
+>Qual é a grande coisa sobre recursão de cauda?
 
-Em uma linguagem imperativa, um loop é executado no espaço constante. Sem laços, nós usamos cauda funções recursivas em Haskell vez. Normalmente, uma função recursiva aloca um espaço cada vez que aplica-se, por isso sabe para onde voltar.
+>Em uma linguagem imperativa, um loop é executado no espaço constante. Sem laços, nós usamos cauda funções recursivas em Haskell vez. Normalmente, uma função recursiva aloca um espaço cada vez que aplica-se, por isso sabe para onde voltar.
 
-Claramente, uma função recursiva estaria em uma enorme desvantagem em relação a um loop se memória alocada para cada aplicação recursiva: isso exigiria espaço linear em vez de espaço constante. No entanto, as implementações de linguagem funcional detectar usos de recursão de cauda, e transformar a cauda chamadas recursivas para executar no espaço constante, isso é chamado de _tail call optimisation_, abreviado TCO. 
+>Claramente, uma função recursiva estaria em uma enorme desvantagem em relação a um loop se memória alocada para cada aplicação recursiva: isso exigiria espaço linear em vez de espaço constante. No entanto, as implementações de linguagem funcional detectar usos de recursão de cauda, e transformar a cauda chamadas recursivas para executar no espaço constante, isso é chamado de _tail call optimisation_, abreviado TCO. 
 
-Poucas implementações linguagem imperativa realizar o TCO, que é por isso que usar qualquer tipo de estilo ambiciosa funcional em uma linguagem imperativa, muitas vezes leva à perda de memória e baixo desempenho.
+>Poucas implementações linguagem imperativa realizar o TCO, que é por isso que usar qualquer tipo de estilo ambiciosa funcional em uma linguagem imperativa, muitas vezes leva à perda de memória e baixo desempenho.
 
-### Transformando cada peça de input
+#### Transformando cada entrada
 
 Considere uma outra função C, `quadrado`, que quadrados cada elemento em um array.
 
+```c
 void quadrado(double \*resultado, const double \*entrada, size_t comprimento){
     for(size_t no= 0; no < comprimento; no++)
         resultado\[no\]= entrada\[no\] * entrada\[no\];
 }
-
+```
 
 
 Este contém um tipo simples e comum de loop, que faz exatamente a mesma coisa a cada elemento da sua matriz de entrada. Como podemos escrever este circuito em Haskell?
 
-    -- arquivo: ca04/Map.hs
 
+```haskell
+-- file: ch04/Map.hs
+square :: [Double] -> [Double]
 
+square (x:xs) = x*x : square xs
+square []     = []
+```
 
 Nossa função `quadrado` consiste de duas equações a correspondência de padrão. O primeiro “desconstrói” o início de uma lista não-vazia, para obter a sua cabeça ea cauda. É praças o primeiro elemento, em seguida, coloca que na frente de uma nova lista, que é construída chamando `quadrado` no restante da lista vazio. A segunda equação garante que `quadrado` pára quando ela atinge o final da lista de entrada.
 
@@ -816,24 +823,34 @@ O efeito de `quadrado` é a construção de uma nova lista que é do mesmo taman
 
 Aqui está um outro ciclo C tal, aquele que garante que cada letra em uma string é convertida em maiúsculas.
 
+```c
 #include <ctype.h>
 
-char \*maiuscula(const char \*entrada){
-    char *resultado= strdup(entrada);
+char *uppercase(const char *in)
+{
+    char *out = strdup(in);
     
-    if(resultado != NULL)
-        for(size_t no= 0; resultado\[no\] != '\\0'; no++)
-            resultado\[no\]= toupper(resultado\[no\]);
-    return resultado;
+    if (out != NULL) {
+	for (size_t i = 0; out[i] != '\0'; i++) {
+	    out[i] = toupper(out[i]);
+	}
+    }
+
+    return out;
 }
-
-
+```
 
 Vamos olhar um equivalente Haskell.
 
-    -- arquivo: ca04/Map.hs
+```haskell
+-- file: ch04/Map.hs
+import Data.Char (toUpper)
 
+upperCase :: String -> String
 
+upperCase (x:xs) = toUpper x : upperCase xs
+upperCase []     = []
+```
 
 Aqui, nós estamos importando a função `toUpper` do módulo padrão `Data.Char`, que contém grande quantidade de funções úteis para trabalhar com dados Char.
 
@@ -841,21 +858,27 @@ Nossa função `maiuscula` segue um padrão semelhante à nossa função anterio
 
 Estes exemplos seguem um padrão comum para escrever funções recursivas sobre listas em Haskell. O _caso base_ lida com a situação onde a nossa entrada lista está vazia. O _caso recursivo_ trata de uma lista não-vazia, que faz algo com a cabeça da lista, e se chama recursivamente na cauda.
 
-### Mapeando sobre uma lista
+#### Mapeando sobre uma lista
 
 As funções `quadrado` e `maiuscula` que nós definimos produzir novas listas, que são os mesmos comprimentos de suas listas de entrada, e não apenas uma peça de trabalho por elemento. Esse é um padrão comum que prelúdio Haskell define uma função, `map`, para torná-lo mais fácil. `map` tem uma função, e aplica a cada elemento de uma lista, retornando uma nova lista construída a partir dos resultados dessas aplicações.
 
 Aqui estão as nossas funções `square` e `maiuscula` reescrito para usar `map`.
 
-    -- arquivo: ca04/Map.hs
+```haskell
+-- file: ch04/Map.hs
+square2 xs = map squareOne xs
+    where squareOne x = x * x
 
+upperCase2 xs = map toUpper xs
+```
 
 
 Este é o nosso primeiro olhar de perto uma função que recebe outra função como argumento. Podemos aprender muito sobre o `map` simplesmente inspecionando seu tipo.
 
-    ghci> 
-
-
+```haskell
+    ghci> :type map
+    map :: (a -> b) -> [a] -> [b]
+```
 
 A assinatura nos diz que `map` tem dois argumentos. A primeira é uma função que assume um valor de um tipo, `a`, e retorna um valor de outro tipo, `b`.
 
@@ -863,82 +886,113 @@ Desde `map` tem uma função como argumento, nós nos referimos a ela como uma f
 
 Desde `map` resumos o padrão comum para as nossas funções `square` e `maiuscula` para que possamos reutilizá-lo com menos clichê, podemos olhar para o que essas funções têm em comum e descobrir como implementá-lo nós mesmos.
 
-    -- arquivo: ca04/Map.hs
+```haskell
+-- file: ch04/Map.hs
+myMap :: (a -> b) -> [a] -> [b]
 
-
+myMap f (x:xs) = f x : myMap f xs
+myMap _ _      = []
+```
 
 ![[Note]](support/figs/note.png)
 
-Quais são esses wild cards que fazem lá?
+>Quais são esses wild cards que fazem lá?
 
-Se você é novo em programação funcional, as razões para os padrões de correspondência de certas maneiras, nem sempre são óbvias. Por exemplo, na definição de `meuMap` acima, a primeira equação liga a função que está mapeando a variável `f`, mas o segundo usa cartões selvagens para ambos os parâmetros. O acontecendo estabele que?
+>Se você é novo em programação funcional, as razões para os padrões de correspondência de certas maneiras, nem sempre são óbvias. Por exemplo, na definição de `meuMap` acima, a primeira equação liga a função que está mapeando a variável `f`, mas o segundo usa cartões selvagens para ambos os parâmetros. O acontecendo estabele que?
 
-Nós usamos um wild card no lugar de `f` para indicar que não estamos chamando a função `f` no lado direito da equação. E sobre a lista de parâmetros? O tipo de lista tem dois construtores. Nós já encontrados no construtor não vazia na primeira equação que define `myMap`. Por eliminação, o construtor da segunda equação é necessariamente o construtor lista vazia, então não há necessidade de realizar um jogo para ver o que realmente é o seu valor.
+>Nós usamos um wild card no lugar de `f` para indicar que não estamos chamando a função `f` no lado direito da equação. E sobre a lista de parâmetros? O tipo de lista tem dois construtores. Nós já encontrados no construtor não vazia na primeira equação que define `myMap`. Por eliminação, o construtor da segunda equação é necessariamente o construtor lista vazia, então não há necessidade de realizar um jogo para ver o que realmente é o seu valor.
 
-Por uma questão de estilo, é bom para usar wild cards para o bem conhecido tipos simples, como listas e Maybe. Para obter mais ou menos complicados tipos familiares, pode ser mais seguro e mais legível o nome construtores explicitamente.
+>Por uma questão de estilo, é bom para usar wild cards para o bem conhecido tipos simples, como listas e Maybe. Para obter mais ou menos complicados tipos familiares, pode ser mais seguro e mais legível o nome construtores explicitamente.
 
 Procuramos a nossa função `meuMap` para nos dar alguma garantia de que ele se comporta de forma semelhante ao `map`padrão.
 
-    ghci> 
 
-
+    ghci> :module +Data.Char
+    ghci> map toLower "SHOUTING"
+    "shouting"
+    ghci> myMap toUpper "whispering"
+    "WHISPERING"
+    ghci> map negate [1,2,3]
+    [-1,-2,-3]
 
 Este padrão de manchas um idioma repetida, então abstraí-lo para que possamos reutilizar (e escrever menos!) De código, é um aspecto comum de programação Haskell. Enquanto a abstração não é exclusivo para Haskell, funções de ordem superior tornam extremamente fácil.
 
-### Seleção de peças de entrada
+### Seleção de entrada
 
 Outra operação comum em uma seqüência de dados é um pente fino nele para os elementos que satisfaçam algum critério. Aqui está uma função que percorre uma lista de números e retorna aqueles que são estranhos. O nosso código tem um caso recursivo que é um pouco mais complexo do que nossas funções anteriores: ele só coloca um número na lista, ele retorna se o número for ímpar. Usando um guarda expressa muito bem isso.
 
-    -- arquivo: ca04/Filter.hs
+```haskell
+    -- file: ch04/Filter.hs
+    oddList :: [Int] -> [Int]
 
-
+    oddList (x:xs) | odd x     = x : oddList xs
+                   | otherwise = oddList xs
+    oddList _                  = []
+```
 
 Vamos ver isso em ação.
 
-    ghci> 
-
-
+    ghci> oddList [1,1,2,3,5,8,13,21,34]
+    [1,1,3,5,13,21]
 
 Mais uma vez, essa expressão é tão comum que o Prelude define uma função, `filter`, que já introduziu. Ele elimina a necessidade de código clichê para recurse sobre a lista.
 
-    ghci> 
-
-
+    ghci> :type filter
+    filter :: (a -> Bool) -> [a] -> [a]
+    ghci> filter odd [3,1,4,1,5,9,2,6,5]
+    [3,1,1,5,9,5]
 
 A função `filter` tem um predicado e aplica a cada elemento em sua lista de entrada, retornando uma lista de apenas aqueles para os quais o predicado avaliar para `True`. Nós iremos rever `filter` novamente em breve, na [seção chamada “Folding da direita”](#fp.foldr.filter "seção chamada “Folding da direita”").
 
-### Computing uma resposta sobre um conjunto
+#### Computing uma resposta sobre um conjunto
 
 Outra coisa comum de se fazer com uma coleção é reduzi-lo a um único valor. Um exemplo simples disso é somar os valores de uma lista.
-
-    -- arquivo: ca04/Soma.hs
-
-
+```haskell
+-- file: ch04/Sum.hs
+mySum xs = helper 0 xs
+    where helper acc (x:xs) = helper (acc + x) xs
+          helper acc _      = acc
+```
 
 Nossa função `ajudante` é cauda recursiva, e usa um parâmetro acumulador, `acc`, para segurar a soma das correntes parciais da lista. Como já vimos com `asInt`, esta é uma forma “natural” para representar um loop em uma linguagem puramente funcional.
 
 Para algo um pouco mais complicado, vamos dar uma olhada na soma de verificação Adler-32. Este é um algoritmo de soma de verificação popular, que concatena duas somas de 16 bits em um soma de verificação de 32 bits único. A primeira verificação é a soma de todos os bytes de entrada, mais um. A segunda é a soma de todos os valores intermediários da soma primeiro. Em cada caso, as somas são calculadas modulo 65521. Aqui está uma simples, a aplicação Java unoptimised. (É seguro ignorar isso se você não ler Java.)
 
-public class Adler32 {
-    private static final int base= 65521;
+```java
+public class Adler32 
+{
+    private static final int base = 65521;
 
-    public static int compute(byte\[\] data, int offset, int length) {
-    int a= 1, b= 0;
-    for (int i= offset; i < offset+length; i++) {
-        a= (a+ (data\[i\] & 0xff)) % base;
-        b= (a+b) % base;
-    }
-    return (b << 16) | a;
+    public static int compute(byte[] data, int offset, int length)
+    {
+	int a = 1, b = 0;
+
+	for (int i = offset; i < offset + length; i++) {
+	    a = (a + (data[i] & 0xff)) % base;
+	    b = (a + b) % base;
+	}
+
+	return (b << 16) | a;
     }
 }
-
+```
 
 
 Apesar de Adler-32 é uma soma simples, esse código não é muito fácil de ler por conta do bit girando envolvidos. Podemos fazer melhor com uma implementação de Haskell?
 
-    -- arquivo: ca04/Adler32.hs
+```haskell
+-- file: ch04/Adler32.hs
+import Data.Char (ord)
+import Data.Bits (shiftL, (.&.), (.|.))
 
+base = 65521
 
+adler32 xs = helper 1 0 xs
+    where helper a b (x:xs) = let a' = (a + (ord x .&. 0xff)) `mod` base
+                                  b' = (a' + b) `mod` base
+                              in helper a' b' xs
+          helper a b _     = (b `shiftL` 16) .|. a
+```
 
 Este código não é exatamente fácil de seguir do que o código Java, mas vamos olhar o que está acontecendo. Primeiro de tudo, nós introduzimos algumas novas funções. A função `shiftL` implementa um deslocamento lógico à esquerda; `(.&.)` fornece bit a bit “e”; e prevê `(.|.)` bit a bit “ou”.
 
@@ -946,21 +1000,31 @@ Mais uma vez, a nossa função `ajudante` é recursiva cauda. Nós viramos as du
 
 Se dermos um passo para trás, podemos reestruturar nossas Haskell adler32 para ser mais semelhante a nossa função `meuSoma` anterior. Em vez de dois parâmetros acumulador, pode-se usar um par como o acumulador.
 
-    -- arquivo: ca04/Adler32.hs
-
-
+```haskell
+-- file: ch04/Adler32.hs
+adler32_try2 xs = helper (1,0) xs
+    where helper (a,b) (x:xs) =
+              let a' = (a + (ord x .&. 0xff)) `mod` base
+                  b' = (a' + b) `mod` base
+              in helper (a',b') xs
+          helper (a,b) _     = (b `shiftL` 16) .|. a
+```
 
 Por que nós queremos fazer essa mudança, aparentemente sem sentido estrutural? Porque, como já vimos com `map` e `filter`, podemos extrair o comportamento comum compartilhado por `meuSoma` e `adler32_2` em uma função de ordem superior. Podemos descrever esse comportamento como “fazer alguma coisa para cada elemento de uma lista, atualizando um acumulador em que estamos, e retornando o acumulador quando nós somos feitos”.
 
 Este tipo de função é chamado de _fold_, porque ela “dobra” de uma lista. Existem dois tipos de fold sobre listas, `foldl` para dobrar à esquerda (no início) e `foldr` para dobrar a partir da direita (o fim).
 
-### A fold esquerda
+#### A fold esquerda
 
 Aqui está a definição de `foldl`.
 
-    -- arquivo: ca04/Fold.hs
+```haskell
+-- file: ch04/Fold.hs
+foldl :: (a -> b -> a) -> a -> [b] -> a
 
-
+foldl step zero (x:xs) = foldl step (step zero x) xs
+foldl _    zero []     = zero
+```
 
 A função `foldl` leva um função de “passo”, um valor inicial para o acumulador e uma lista. O “passo” leva um acumulador e um elemento da lista, e retorna um valor acumulador novo. Todo `foldl` é chamar o “passo” no acumulador atual e um elemento da lista, e passa o valor do acumulador novo para si mesmo recursivamente para consumir o restante da lista.
 
@@ -968,33 +1032,47 @@ Referimo-nos a `foldl` como a “fold esquerda” porque consome a lista da esqu
 
 Aqui está uma regravação de `meuSoma` usando `foldl`.
 
-    -- arquivo: ca04/Soma.hs
-
-
+```haskell
+-- file: ch04/Sum.hs
+foldlSum xs = foldl step 0 xs
+    where step acc x = acc + x
+```
 
 Essa função local `passo` apenas soma dois números, então vamos simplesmente usar o operador de adição ao invés, e eliminar a cláusula desnecessária `where`clause. 
 
-    -- arquivo: ca04/Soma.hs
-
-
+```haskell
+-- file: ch04/Sum.hs
+niceSum :: [Integer] -> Integer
+niceSum xs = foldl (+) 0 xs
+```
 
 Observe como muito mais simples deste código é que o nosso `meuSoma` original? Não estamos mais usando recursão explícita, porque `foldl` cuida disso para nós. Nós simplificamos o nosso problema para baixo a duas coisas: que o valor inicial do acumulador deve ser (o segundo parâmetro para `foldl`), e como atualizar o acumulador (a função `(+)`). Como um bônus adicional, o nosso código é agora mais curto, também, o que torna mais fácil de entender.
 
 Vamos ter um olhar mais profundo que `foldl` está fazendo aqui, manualmente, escrevendo cada etapa em sua avaliação, quando chamamos `somaFina [1,2,3]`. 
 
-    -- arquivo: ca04/Fold.hs
-
+```haskell
+-- file: ch04/Fold.hs
+foldl (+) 0 (1:2:3:[])
+          == foldl (+) (0 + 1)             (2:3:[])
+          == foldl (+) ((0 + 1) + 2)       (3:[])
+          == foldl (+) (((0 + 1) + 2) + 3) []
+          ==           (((0 + 1) + 2) + 3)
+```
 
 
 Podemos reescrever `adler32_2` usando `foldl` deixar-nos concentrar nos detalhes que são importantes.
 
-    -- arquivo: ca04/Adler32.hs
-
-
+```haskell
+-- file: ch04/Adler32.hs
+adler32_foldl xs = let (a, b) = foldl step (1, 0) xs
+                   in (b `shiftL` 16) .|. a
+    where step (a, b) x = let a' = a + (ord x .&. 0xff)
+                          in (a' `mod` base, (a' + b) `mod` base)
+```
 
 Aqui, o nosso acumulador é um par, assim que o resultado de `foldl` será, também. Puxamos o acumulador final distante quando retorna `foldl` e-bit mexer-lo em uma soma de verificação “apropriada”.
 
-### Por dobras usar folds, maps e filters?
+#### Por que usar folds, maps e filters?
 
 Uma rápida olhada revela que `adler32_foldl` não é realmente menor do que qualquer `adler32_2`. Por que devemos usar uma dobra neste caso? A vantagem reside no fato de que as dobras são extremamente comuns em Haskell, e eles têm um comportamento regular e previsível.
 
@@ -1002,39 +1080,58 @@ Isso significa que um leitor com um pouco de experiência terão um tempo mais f
 
 Esta linha de raciocínio se aplica a outras funções de biblioteca de ordem superior, incluindo aqueles que já vimos, `map` e `filter`. Porque eles são bibliotecas de funções com comportamentos bem definidos, só precisamos saber o que eles fazem uma vez, e nós vamos ter uma vantagem quando nós precisamos de compreender qualquer código que usa-los. Estas melhorias na legibilidade também transitar para escrever código. Assim que começar a pensar com funções de ordem superior em mente, vamos produzir um código conciso mais rapidamente.
 
-### Folding da direita
+##### Folding da direita
 
 A contrapartida `foldl` é `foldr`, a que dobra a partir da direita de uma lista.
 
-    -- arquivo: ca04/Fold.hs
+```haskell
+ -- file: ch04/Fold.hs
+foldr :: (a -> b -> b) -> b -> [a] -> b
 
-
+foldr step zero (x:xs) = step x (foldr step zero xs)
+foldr _    zero []     = zero
+```
 
 Vamos seguir o mesmo processo de avaliação manual com `foldr (+) 0 [1,2,3]` como fizemos com `somaFina` na [seção chamada “A fold esquerda”](#fp.foldl "seção chamada “A fold esquerda”"). 
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+foldr (+) 0 (1:2:3:[])
+          == 1 +           foldr (+) 0 (2:3:[])
+          == 1 + (2 +      foldr (+) 0 (3:[])
+          == 1 + (2 + (3 + foldr (+) 0 []))
+          == 1 + (2 + (3 + 0))
+```
 
 A diferença entre `foldl` e `foldr`deve ser claro de olhar para onde os parênteses e os “lista vazia” elementos aparecem. Com `foldl`, o elemento da lista é vazia à esquerda, e todo o grupo parênteses à esquerda. Com `foldr`, o valor `zero` é à direita, eo grupo de parênteses para a direita.
 
-Há uma explicação intuitiva linda `foldr` de obras como: ele substitui a lista vazia com o valor `zero`, e cada construtor na lista com uma aplicação da função de passo.
+Há uma explicação intuitiva linda de como `foldr` funciona: ele substitui a lista vazia com o valor `zero`, e cada construtor na lista com uma aplicação da função de passo.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+1 : (2 : (3 : []))
+1 + (2 + (3 + 0 ))
+```
 
 À primeira vista, `foldr` pode parecer menos úteis do que `foldl`: o uso que é uma função que se dobra a partir da direita? Mas considere a função `filter` do Prelude, que a última vez que encontrou na [seção chamada “Seleção de peças de entrada”](#fp.filter "seção chamada “Seleção de peças de entrada”"). Se escrevermos `filter` usando recursão explícita, será algo parecido com isso.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+filter :: (a -> Bool) -> [a] -> [a]
+filter p []   = []
+filter p (x:xs)
+    | p x       = x : filter p xs
+    | otherwise = filter p xs
+```    
 
 Talvez de forma surpreendente, no entanto, pode-se escrever `filter` como um fold, usando `foldr`.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+myFilter p xs = foldr step [] xs
+    where step x ys | p x       = x : ys
+                    | otherwise = ys
+```
 
 Este é o tipo de definição que poderia nos causar uma dor de cabeça, por isso vamos examiná-lo em um pouco de profundidade. Como `foldl`, `foldr` tem uma função e um caso-base (o que fazer quando a lista de entrada está vazia) como argumentos. Da leitura do tipo de `filter`, nós sabemos que a nossa função `meuFilter` deve retornar uma lista do mesmo tipo que ele consome, então o caso de base deve ser uma lista desse tipo e, a função de auxiliar `passo` deve retornar uma lista.
 
@@ -1042,83 +1139,97 @@ Como sabemos que `foldr` calls `passo` convida um elemento da lista de entrada d
 
 A classe de funções que podemos expressar utilizando `foldr` é chamada _recursiva primitiva_. Um número surpreendentemente grande de funções de manipulação de lista são recursivas primitivas. Por exemplo, aqui está a `map` escrita em termos de `foldr`.
 
-    -- arquivo: ca04/Fold.hs
+```haskell
+-- file: ch04/Fold.hs
+myMap :: (a -> b) -> [a] -> [b]
 
-
+myMap f xs = foldr step [] xs
+    where step x ys = f x : ys
+```
 
 Na verdade, podemos até escrever `foldl` usando `foldr`!
 
-    -- arquivo: ca04/Fold.hs
+```haskell
+-- file: ch04/Fold.hs
+myFoldl :: (a -> b -> a) -> a -> [b] -> a
 
+myFoldl f z xs = foldr step id xs z
+    where step x g a = g (f a x)
+```
 
 
 ![[Tip]](support/figs/tip.png)
 
-Compreender foldl em termos de foldr
+>Compreender foldl em termos de foldr
 
-Se você quiser definir-se um desafio contínuo, tente seguir a definição acima de `foldl` usando `foldr`. Esteja avisado: esta não é trivial! Você pode querer ter as seguintes ferramentas na mão: algumas pílulas de dor de cabeça e um copo de água, **ghci**(para que você possa descobrir o que faz a função `id`), e um lápis e papel.
+>Se você quiser definir-se um desafio contínuo, tente seguir a definição acima de `foldl` usando `foldr`. Esteja avisado: esta não é trivial! Você pode querer ter as seguintes ferramentas na mão: algumas pílulas de dor de cabeça e um copo de água, **ghci**(para que você possa descobrir o que faz a função `id`), e um lápis e papel.
 
-Você vai querer seguir o mesmo processo de avaliação manual como descrito acima para ver o que `foldl` e `foldr` estavam realmente fazendo. Se você ficar preso, você pode encontrar a tarefa mais fácil, depois de ler a [seção chamada “Aplicação da função parcial e currying”](#fp.partialapp "seção chamada “Aplicação da função parcial e currying”").
+>Você vai querer seguir o mesmo processo de avaliação manual como descrito acima para ver o que `foldl` e `foldr` estavam realmente fazendo. Se você ficar preso, você pode encontrar a tarefa mais fácil, depois de ler a [seção chamada “Aplicação da função parcial e currying”](#fp.partialapp "seção chamada “Aplicação da função parcial e currying”").
 
 Voltando à nossa explicação anterior `foldr` intuitiva do que faz, uma outra maneira útil de pensar sobre isso é que ele _transforma_ sua entrada de lista. Os dois primeiros argumentos são “o que fazer com cada elemento da cauda da cabeça / da lista”, e “o que para substituir o final da lista”.
 
 A “identidade” transformação com `foldr`assim substitui a lista vazia com ela mesma, e aplica-se o construtor de lista para cada cabeça / cauda par:x
 
-    -- arquivo: ca04/Fold.hs
-
-
-
+```haskell
+-- file: ch04/Fold.hs
+identity :: [a] -> [a]
+identity xs = foldr (:) [] xs
+```
 Ela transforma uma lista em uma cópia de si mesmo.
 
-    ghci> 
 
-
+    ghci> identity [1,2,3]
+    [1,2,3]
 
 Se `foldr` substitui o fim de uma lista com algum outro valor, isto dá-nos uma outra maneira de olhar para afunção Haskell de acréscimo das listas, `(++)`.
 
-    ghci> 
-
+    ghci> [1,2,3] ++ [4,5,6]
+    [1,2,3,4,5,6]
 
 
 Tudo o que temos de fazer para anexar uma lista para outra é substituir essa lista segundo para o fim da nossa primeira lista.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+append :: [a] -> [a] -> [a]
+append xs ys = foldr (:) ys xs
+```
 
 Vamos tentar fazer isso.
 
-    ghci> 
-
-
+    ghci> append [1,2,3] [4,5,6]
+    [1,2,3,4,5,6]
 
 Aqui, podemos substituir cada construtor lista com outro construtor da lista, mas substituir a lista vazia com a lista que deseja acrescentar sobre o fim da nossa primeira lista.
 
 Como o nosso tratamento prolongado das pregas devem indicar, a função `foldr` é quase tão importante membro da nossa caixa de ferramentas de programação lista das funções mais básicas lista vimos na [seção chamada “Trabalhar com as listas”](#fp.lists "seção chamada “Trabalhar com as listas”"). Pode consumir e produzir uma lista de forma incremental, o que o torna útil para a gravação de dados preguiçoso código de processamento.
 
-### Folds esquerdos, preguiça e space leaks
+#### Folds a esquerda, avalaiação preguiça e space leaks
 
 Para manter o nosso simples discussão inicial, usamos `foldl` durante a maior parte desta seção. Isso é conveniente para o teste, mas nunca iremos usar `foldl` na prática.
 
 A razão tem a ver com a avaliação não-estrita Haskell. Se aplicarmos `foldl (+) [1,2,3]`, que avalia a expressão `(((0 + 1) + 2) + 3)`. Podemos ver isso acontecer se rever a forma como a função é expandida.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+foldl (+) 0 (1:2:3:[])
+          == foldl (+) (0 + 1)             (2:3:[])
+          == foldl (+) ((0 + 1) + 2)       (3:[])
+          == foldl (+) (((0 + 1) + 2) + 3) []
+          ==           (((0 + 1) + 2) + 3)
+```
 
 A expressão final não será avaliada a `6` até que seu valor é exigido. Antes que seja avaliada, ele deve ser armazenado como uma conversão. Não surpreendentemente, uma conversão é mais caro do que guardar um número único, e os mais complexos a expressão thunked, o espaço mais precisa. Para algo mais barata, como aritmética, thunking um expressão é computacionalmente mais caro do que avaliá-lo imediatamente. Temos, assim, acabam pagando tanto no espaço quanto no tempo.
 
 Quando GHC está avaliando uma expressão thunked, ele usa uma pilha interna para isso. Como uma expressão thunked poderia ser infinitamente grande, o GHC coloca um limite fixo sobre o tamanho máximo da pilha. Graças a esse limite, podemos tentar uma expressão de grande thunked em **ghci** sem precisar se preocupar que ele possa consumir toda a memória.
 
-    ghci> 
-
-
+    ghci> foldl (+) 0 [1..1000]
+    500500
 
 De olhar para a expansão acima, podemos supor que este cria uma conversão que consiste em 1.000 inteiros e 999 pedidos de `(+)`. Isso é um monte de memória e esforço para representar um único número! Com uma expressão maior, embora o tamanho ainda é modesta, os resultados são mais dramáticos.
 
-    ghci> 
-
-
+    ghci> foldl (+) 0 [1..1000000]
+    *** Exception: stack overflow
 
 Em expressões pequenas, `foldl` irá funcionar corretamente, mas lentamente, devido à sobrecarga thunking em que incorre. Nós nos referimos a este thunking invisível como um _space leak_(vazamento de espaço), porque o nosso código está funcionando normalmente, mas com muito mais memória do que deveria.
 
@@ -1126,73 +1237,81 @@ Em expressões maiores, código com um vazamento de espaço simplesmente falham,
 
 O módulo `Data.List` define uma função chamada `foldl'` que é semelhante ao `foldl`, mas não construir thunks. A diferença de comportamento entre os dois é óbvia.
 
-    ghci> 
-
-
+    ghci> foldl  (+) 0 [1..1000000]
+    *** Exception: stack overflow
+    ghci> :module +Data.List
+    ghci> foldl' (+) 0 [1..1000000]
+    500000500000
 
 Devido ao comportamento de thunking de `foldl`, é prudente evitar essa função em programas reais: mesmo que não falham completamente, será desnecessariamente ineficiente. Em vez disso, importa `Data.List` e utilisa `foldl'`.
 
 ### Exercícios
 
-**1.**
+**1.** Use uma fold (escolhendo o fold adequada fará seu código muito mais simples) para reescrever e melhorar a função `asInt` da [secção chamada “Recursão explícita”](#fp.tailrecursion "secção chamada “Recursão explícita”").
 
-Use uma dobra (escolhendo a tampa adequada fará seu código muito mais simples) para reescrever e melhorar a função `asInt` da [secção chamada “Recursão explícita”](#fp.tailrecursion "secção chamada “Recursão explícita”").
-
-    -- arquivo: ca04/ch04.exercises.hs
-
-
+```haskell
+-- file: ch04/ch04.exercises.hs
+asInt_fold :: String -> Int
+```
 
 Sua função deve se comportar como se segue.
 
-    ghci> 
-
-
+    ghci> asInt_fold "101"
+    101
+    ghci> asInt_fold "-31337"
+    -31337
+    ghci> asInt_fold "1798"
+    1798
 
 Estenda a sua função para tratar os seguintes tipos de condições excepcionais chamando `error`.
 
-    ghci> 
+    ghci> asInt_fold ""
+    0
+    ghci> asInt_fold "-"
+    0
+    ghci> asInt_fold "-3"
+    -3
+    ghci> asInt_fold "2.7"
+    *** Exception: Char.digitToInt: not a digit '.'
+    ghci> asInt_fold "314159265358979323846"
+    564616105916946374
+
+**2.** A função `asInt_fold` usa `error`, por isso seus chamadores não pode manipular erros. Reescrevê-lo para corrigir esse problema.
+
+```haskell
+-- file: ch04/ch04.exercises.hs
+type ErrorMessage = String
+asInt_either :: String -> Either ErrorMessage Int
+```
+
+    ghci> asInt_either "33"
+    Right 33
+    ghci> asInt_either "foo"
+    Left "non-digit 'o'"
 
 
 
-**2.**
+**3.** A função Prelude `concat`concatena uma lista de listas em uma única lista, e digite o seguinte.
 
-A função `asInt_fold` usa `error`, por isso seus chamadores não pode manipular erros. Reescrevê-lo para corrigir esse problema.
-
-    -- arquivo: ca04/ch04.exercises.hs
-
-
-
-    ghci> 
-
-
-
-**3.**
-
-A função Prelude `concat`concatena uma lista de listas em uma única lista, e digite o seguinte.
-
-    -- arquivo: ca04/ch04.exercises.hs
-
-
+```haskell
+-- file: ch04/ch04.exercises.hs
+concat :: [[a]] -> [a]
+```
 
 Escreva a sua própria definição de `concat` usando `foldr`. 
 
-**4.**
+**4.** Escreva a sua própria definição da função padrão `takeWhile`, primeiro usando recursão explícita, então `foldr`.
 
-Escreva a sua própria definição da função padrão `takeWhile`, primeiro usando recursão explícita, então `foldr`.
+**5.** O módulo `Data.List` define uma função, `groupBy`, que tem o seguinte tipo.
 
-**5.**
-
-O módulo `Data.List` define uma função, `groupBy`, que tem o seguinte tipo.
-
-    -- arquivo: ca04/ch04.exercises.hs
-
-
+```haskell
+-- file: ch04/ch04.exercises.hs
+groupBy :: (a -> a -> Bool) -> [a] -> [[a]]
+```
 
 Use **ghci** para carregar o módulo `Data.List` e descobrir o que `groupBy` faz, em seguida, escrever sua própria implementação usando uma fold.
 
-**6.**
-
-Quantas das seguintes funções Prelude pode-se reescrever usando dobras lista?
+**6.** Quantas das seguintes funções Prelude pode-se reescrever usando dobras lista?
 
 *   `any`
     
@@ -1202,29 +1321,30 @@ Quantas das seguintes funções Prelude pode-se reescrever usando dobras lista?
     
 *   `unlines`
     
-
 Para essas funções, onde você pode usar tanto `foldl'` ou `foldr`, que é mais adequado em cada caso?
 
-### Leitura complementar
+##### Leitura complementar
 
 O artigo \[[Hutton99](bibliography.html#bib.hutton99 "[Hutton99]")\] é um excelente e profundo tutorial pregas cobertura. Ele inclui muitos exemplos de como usar técnicas simples e sistemática de cálculo para transformar funções que usam recursão explícita em folds.
 
-Funções (lambda) anónimos
--------------------------
+### Funções anónimas (lambda)
 
 Em muitas das definições de funções que vimos até agora, nós escrevemos funções de auxiliar de curta duração.
 
-    -- arquivo: ca04/Parcial.hs
-
-
+```haskell
+-- file: ch04/Partial.hs
+isInAny needle haystack = any inSequence haystack
+    where inSequence s = needle `isInfixOf` s
+```
 
 Haskell lets us write completely anonymous functions, which we can use to avoid the need to give names to our helper functions. Anonymous functions are often called “lambda” functions, in a nod to their heritage in the lambda calculus. We introduce an anonymous function with a backslash character, `\`, pronounced _lambda_\[[9](#ftn.id594951)\]. This is followed by the function's arguments (which can include patterns), then an arrow `->`to introduce the function's body. 
 
 Lambdas are most easily illustrated by example. Here's a rewrite of `isInAny`using an anonymous function. 
 
-    -- arquivo: ca04/Parcial.hs
-
-
+```haskell
+-- file: ch04/Partial.hs
+isInAny2 needle haystack = any (\s -> needle `isInfixOf` s) haystack
+```
 
 Nós colocaremos o lambda parênteses aqui para que Haskell pode dizer onde o corpo da função termina.
 
@@ -1232,21 +1352,27 @@ Funções anónimos se comportar de forma idêntica em todos os aspectos das fun
 
 A limitação a uma única cláusula restringe como podemos usar os padrões na definição de uma lambda. Vamos escrever uma função geralmente normal, com várias cláusulas para cobrir possibilidades diferentes padrões de correspondência.
 
-    -- arquivo: ca04/Lambda.hs
-
-
+```haskell
+-- file: ch04/Lambda.hs
+safeHead (x:_) = Just x
+safeHead _ = Nothing
+```
 
 Mas como não podemos escrever várias cláusulas para definir uma lambda, devemos estar certos de que qualquer padrão que usamos fósforo.
 
-    -- arquivo: ca04/Lambda.hs
-
-
+```haskell
+-- file: ch04/Lambda.hs
+unsafeHead = \(x:_) -> x
+```
 
 Esta definição de `headInseguro` vai explodir em nossas faces se chamá-lo com um valor em que a correspondência de padrão falhar.
 
-    ghci> 
-
-
+    ghci> :type unsafeHead
+    unsafeHead :: [t] -> t
+    ghci> unsafeHead [1]
+    1
+    ghci> unsafeHead []
+    *** Exception: Lambda.hs:7:13-23: Non-exhaustive patterns in lambda
 
 A definição typechecks, assim ele vai compilar, então o erro irá ocorrer durante a execução. A moral desta história é que ter cuidado em como usar padrões para definir uma função anônima: certifique-se de seus padrões não pode falhar!
 
@@ -1256,40 +1382,47 @@ Em contraste, quando corremos em um lambda no meio de um corpo da função, temo
 
 Nós não pretendemos estas advertências para sugerir que lambdas são inúteis, mas apenas que devemos estar atentos às possíveis armadilhas quando estamos pensando em utilizá-los. Nos capítulos seguintes, veremos que são muitas vezes de valor inestimável como “cola”.
 
-Aplicação da função parcial e currying
---------------------------------------
+### Aplicação parcial da função e currying
 
 Você pode se perguntar por que a seta `->` é usado para o que parece ser a dois propósitos na assinatura de um tipo de função.
 
-    ghci> 
-
-
+    ghci> :type dropWhile
+    dropWhile :: (a -> Bool) -> [a] -> [a]
 
 Parece que o `->` é separar os argumentos para `dropWhile` umas das outras, mas que também separa os argumentos do tipo de retorno. Mas, na verdade `->` tem apenas um significado: ele denota uma função que recebe um argumento do tipo à esquerda, e retorna um valor do tipo do lado direito.
 
 A implicação aqui é muito importante: em Haskell, _todas as funções de tomar apenas um argumento_. Quando `dropWhile` _parece_ como uma função que recebe dois argumentos, é realmente uma função de um argumento, que retorna uma função que recebe um argumento. Aqui está uma expressão perfeitamente válida Haskell.
 
-    ghci> 
-
-
+    ghci> :module +Data.Char
+    ghci> :type dropWhile isSpace
+    dropWhile isSpace :: [Char] -> [Char]
 
 Bem, _isso_ parece útil. O valor `dropWhile isSpace` é uma função que retira líder espaço em branco de uma string. Como isso é útil? Como exemplo, podemos usá-lo como um argumento para uma função de ordem superior.
 
-    ghci> 
-
-
+    ghci> map (dropWhile isSpace) [" a","f","   e"]
+    ["a","f","e"]
 
 Toda vez que nós fornecemos um argumento para uma função, nós podemos “cortar” um elemento fora da parte dianteira de sua assinatura tipo. Vamos tomar como exemplo `zip3` para ver o que queremos dizer, esta é uma função que fecha três listas em uma lista de três tuplas.
 
-    ghci> 
-
+    ghci> :type zip3
+    zip3 :: [a] -> [b] -> [c] -> [(a, b, c)]
+    ghci> zip3 "foo" "bar" "quux"
+    [('f','b','q'),('o','a','u'),('o','r','u')]
 
 
 Se aplicarmos `zip3` com apenas um argumento, temos uma função que aceita dois argumentos. Não importa o que nós fornecemos argumentos para esta função compostos, seu primeiro argumento será sempre o valor fixo que especificamos.
 
-    ghci> 
-
-
+    ghci> :type zip3 "foo"
+    zip3 "foo" :: [b] -> [c] -> [(Char, b, c)]
+    ghci> let zip3foo = zip3 "foo"
+    ghci> :type zip3foo
+    zip3foo :: [b] -> [c] -> [(Char, b, c)]
+    ghci> (zip3 "foo") "aaa" "bbb"
+    [('f','a','b'),('o','a','b'),('o','a','b')]
+    ghci> zip3foo "aaa" "bbb"
+    [('f','a','b'),('o','a','b'),('o','a','b')]
+    ghci> zip3foo [1,2,3] [True,False,True]
+    [('f',1,True),('o',2,False),('o',3,True)]
 
 Quando passamos menos argumentos para uma função que a função pode aceitar, nós chamamos isso de _aplicação parcial_ da função: estamos aplicando a função a que apenas alguns de seus argumentos.
 
@@ -1297,15 +1430,20 @@ No exemplo acima, temos uma função aplicada parcialmente, `zip3 "foo"`, e uma 
 
 Isto aplica-se tão bem se fixar dois argumentos, dando-nos uma função de apenas um argumento.
 
-    ghci> 
-
-
+    ghci> let zip3foobar = zip3 "foo" "bar"
+    ghci> :type zip3foobar
+    zip3foobar :: [c] -> [(Char, Char, c)]
+    ghci> zip3foobar "quux"
+    [('f','b','q'),('o','a','u'),('o','r','u')]
+    ghci> zip3foobar [1,2]
+    [('f','b',1),('o','a',2)]
 
 Aplicação parcial de função nos permite evitar a criação de funções descartáveis cansativo. Muitas vezes é mais útil para este propósito que as funções anônimas que introduzimos na [seção chamada “Funções (lambda) anónimos”](#fp.anonymous "seção chamada “Funções (lambda) anónimos”"). Olhando para trás, a função `isInAny` nós definimos lá, aqui está como nós usaríamos uma função parcialmente aplicado em vez de uma função auxiliar chamada ou uma lambda.
 
-    -- arquivo: ca04/Parcial.hs
-
-
+```haskell
+-- file: ch04/Partial.hs
+isInAny3 needle haystack = any (isInfixOf needle) haystack
+```
 
 Aqui, a expressão `isInfixOf needle` é a função aplicada parcialmente. Nós estamos tomando a função `isInfixOf`, e “consertar” seu primeiro argumento a ser a variável de `needle` de nossa lista de parâmetros. Isso nos dá uma função parcialmente aplicada que tem exatamente o mesmo tipo de comportamento e como o ajudante e lambda em nossas definições anteriores.
 
@@ -1313,186 +1451,222 @@ Aplicação de função parcial é chamado _currying_, após o lógico Haskell C
 
 Como outro exemplo de currying em uso, vamos voltar para a função lista-resumo que escrevi na [seção chamada “A fold esquerda”](#fp.foldl "seção chamada “A fold esquerda”").
 
-    -- arquivo: ca04/Soma.hs
-
-
+```haskell
+-- file: ch04/Sum.hs
+niceSum :: [Integer] -> Integer
+niceSum xs = foldl (+) 0 xs
+```
 
 Nós não precisamos de aplicar plenamente `foldl`, podemos omitir a lista de `xs` tanto a lista de parâmetros e os parâmetros para `foldl`, e nós vamos acabar com uma função mais compacto que tem o mesmo tipo.
 
-    -- arquivo: ca04/Soma.hs
+```haskell
+-- file: ch04/Sum.hs
+nicerSum :: [Integer] -> Integer
+nicerSum = foldl (+) 0
+```
 
-
-
-### Secções
+#### Secções
 
 Haskell fornece um atalho útil para notação vamos escrever uma função parcialmente aplicadas em estilo infixo. Se colocar um operador em parênteses, nós podemos fornecer o seu argumento a esquerda ou direita dentro dos parênteses para obter uma função aplicada parcialmente. Este tipo de aplicação parcial é chamado de _section_.
 
-    ghci> 
-
+    ghci> (1+) 2
+    3
+    ghci> map (*3) [24,36]
+    [72,108]
+    ghci> map (2^) [3,5,7,9]
+    [8,32,128,512]
 
 
 Se nos fornecer o argumento à esquerda dentro da seção, chamando a função resultante com um material argumento argumento do lado direito do operador. E vice-versa.
 
 Lembre-se que nós podemos envolver um nome de função em backquotes usá-lo como um operador infixo. Isto nos permite usar seções com funções.
 
-    ghci> 
-
+    ghci> :type (`elem` ['a'..'z'])
+    (`elem` ['a'..'z']) :: Char -> Bool
 
 
 A definição acima fixa o segundo argumento de `elem` dando-nos uma função que verifica se seu argumento for uma letra minúscula.
 
-    ghci> 
-
-
+    ghci> (`elem` ['a'..'z']) 'f'
+    True
 
 Usando isso como um argumento para `all`, temos uma função que verifica uma seqüência inteira para ver se está tudo em minúsculas.
 
-    ghci> 
-
-
+    ghci> all (`elem` ['a'..'z']) "Frobozz"
+    False
 
 Se usarmos esse estilo, podemos melhorar ainda mais a leitura de nossa função `isInAny3` anterior.
 
-    -- arquivo: ca04/Parcial.hs
+```haskell
+-- file: ch04/Partial.hs
+isInAny4 needle haystack = any (needle `isInfixOf`) haystack
+```
 
+### As-patterns
 
-
-Padrões As
-----------
 
 A função Haskell `tails`, no módulo `Data.List`, generaliza a função `tail` foi introduzida recentemente. Em vez de retornar uma “cauda” da lista, ele retorna _todos_ eles.
 
-    ghci> 
-
-
+    ghci> :m +Data.List
+    ghci> tail "foobar"
+    "oobar"
+    ghci> tail (tail "foobar")
+    "obar"
+    ghci> tails "foobar"
+    ["foobar","oobar","obar","bar","ar","r",""]
 
 Cada uma dessas cadeias é um _sufixo_ de String inicial, para `tails` produz uma lista de todos os sufixos, além de uma lista vazia extra no final. Ela produz sempre que a lista extra vazio, mesmo quando sua lista de entrada está vazia.
 
-    ghci> 
-
-
+    ghci> tails []
+    [[]]
 
 E se queremos uma função que se comporta como `tails`, mas que retorna _apenas_ os sufixos não vazios? Uma possibilidade seria para nós a escrever a nossa própria versão a mão. Vamos usar uma nova peça de notação, o símbolo `@`.
 
-    -- arquivo: ca04/ArvorDeSufixos.hs
-
-
+```haskell
+-- file: ch04/SuffixTree.hs
+suffixes :: [a] -> [[a]]
+suffixes xs@(_:xs') = xs : suffixes xs'
+suffixes _ = []
+```
 
 O padrão `xs@(_:xs')` é chamado um _padrão as_, e significa “ligar o variável `xs` para o valor que corresponda ao lado direito do símbolo `@`”.
 
 No nosso exemplo, se o padrão depois do “@” corresponde, `xs` será obrigado a toda a lista que combinava e `xs'` para todos, mas o cabeça da lista (usamos o padrão wild card `_` para indicar que estamos não está interessado no valor do cabeça de lista).
 
-    ghci> 
-
-
+    ghci> tails "foo"
+    ["foo","oo","o",""]
+    ghci> suffixes "foo"
+    ["foo","oo","o"]
 
 O padrão as torna o código nosso mais legível. Para ver como isso ajuda, vamos comparar uma definição que não tenha um padrão as.
 
-    -- arquivo: ca04/ArvorDeSufixos.hs
-
-
+    -- file: ch04/SuffixTree.hs
+    noAsPattern :: [a] -> [[a]]
+    noAsPattern (x:xs) = (x:xs) : noAsPattern xs
+    noAsPattern _ = []
 
 Aqui, a lista que nós desconstruído no padrão de jogo só fica colocada de volta em conjunto no corpo da função.
 
 Padrões as ter um uso mais prático do que a leitura simples: eles podem nos ajudar a compartilhar dados, em vez de copiá-lo. Em nossa definição de `semPadrãoAs`, quando jogo `(x:xs)`, vamos construir uma nova cópia dele no corpo da nossa função. Isso nos leva a atribuir um nó nova lista em tempo de execução. Isso pode ser barato, mas não é livre. Em contraste, quando nós definimos `sufixos`, reutilizadas o valor `xs` que nós combinamos com o nosso como padrão. Desde que reutilizar um valor existente, evitamos uma atribuição pouco.
 
-Reutilização de código através da composição
---------------------------------------------
+### Reutilização de código através da composição
+
 
 Parece uma vergonha para introduzir uma nova função, `sufixos`, que faz quase a mesma coisa que a função existente `tails`. Certamente nós podemos fazer melhor?
 
 Lembre-se da função `init` introduzimos na [seção chamada “Trabalhar com as listas”](#fp.lists "seção chamada “Trabalhar com as listas”"): retorna todos, mas o último elemento de uma lista.
 
-    -- arquivo: ca04/ArvorDeSufixos.hs
-
-
+```haskell
+-- file: ch04/SuffixTree.hs
+suffixes2 xs = init (tails xs)
+```
 
 Esta função `sufixos2` funciona igualmente a `sufixos`, mas é um única linha de código.
 
-    ghci> 
 
-
+    ghci> suffixes2 "foo"
+    ["foo","oo","o"]
 
 Se tomarmos um passo para trás, vemos o reflexo de um padrão aqui: nós estamos aplicando uma função, em seguida, aplicar uma outra função para o seu resultado. Vamos transformar esse padrão em uma definição de função.
 
-    -- arquivo: ca04/ArvorDeSufixos.hs
-
+```haskell
+-- file: ch04/SuffixTree.hs
+compose :: (b -> c) -> (a -> b) -> a -> c
+compose f g x = f (g x)
+```
 
 
 Agora temos uma função, `compor`, que podemos usar para “cola” outras duas funções em conjunto.
 
-    -- arquivo: ca04/ArvorDeSufixos.hs
-    sufixos3 xs = compor init tails xs
-
-
+```haskell
+-- file: ch04/SuffixTree.hs
+suffixes3 xs = compose init tails xs
+```
 
 O currying automático do Haskell nos deixa cair a variável `xs`para que possamos fazer a nossa definição ainda mais curtos.
 
-    -- arquivo: ca04/ArvorDeSufixos.hs
-    sufixos4 = compor init tails
-
-
+```haskell
+-- file: ch04/SuffixTree.hs
+suffixes4 = compose init tails
+```
 
 Felizmente, não precisamos de escrever a nossa própria função `compor`. Ligar funções em cada um, como isto é tão comum que a Prelude fornece composição das funções através do operador `(.)`.
 
-    -- arquivo: ca04/ArvorDeSufixos.hs
-    sufixos5 = init . tails
-
-
+```haskell
+-- file: ch04/SuffixTree.hs
+suffixes5 = init . tails
+```
 
 O operador `(.)` não é uma parte especial da sintaxe da linguagem, é apenas um operador normal.
 
-    ghci> 
-
-
+    ghci> :type (.)
+    (.) :: (b -> c) -> (a -> b) -> a -> c
+    ghci> :type suffixes
+    suffixes :: [a] -> [[a]]
+    ghci> :type suffixes5
+    suffixes5 :: [a] -> [[a]]
+    ghci> suffixes5 "foo"
+    ["foo","oo","o"]
 
 Podemos criar novas funções a qualquer momento por escrito cadeias de funções compostas, costurado com `(.)`, tanto tempo (é claro) como o tipo de resultado da função no lado direito de cada um `(.)` corresponde ao tipo de parâmetro que o função na esquerda pode aceitar.
 
 Como exemplo, vamos resolver um enigma muito simples: a contagem do número de palavras em uma seqüência que começa com uma letra maiúscula.
 
-    ghci> 
-
+    ghci> :module +Data.Char
+    ghci> let capCount = length . filter (isUpper . head) . words
+    ghci> capCount "Hello there, Mom!"
+    2
 
 
 Podemos entender que esta função é composta pela análise das suas peças. A função `(.)` é associativa direito, por isso vamos prosseguir da direita para a esquerda.
 
-    ghci> 
-
-
+    ghci> :module +Data.Char
+    ghci> let capCount = length . filter (isUpper . head) . words
+    ghci> capCount "Hello there, Mom!"
+    2
 
 A função `words` tem um tipo de resultado de \[String\], para o que está no lado esquerdo de `(.)` deve aceitar um argumento compatível.
 
-    ghci> 
-
+    ghci> :type isUpper . head
+    isUpper . head :: [Char] -> Bool
 
 
 Essa função retorna `True` se uma palavra começa com uma letra maiúscula (testá-lo em **ghci**), os `filter (isUpper . head)` retorna uma lista de Strings contendo apenas palavras que começam com letras maiúsculas.
 
-    ghci> 
-
-
+    ghci> :type filter (isUpper . head)
+    filter (isUpper . head) :: [[Char]] -> [[Char]]
 
 Uma vez que esta expressão retorna uma lista, tudo o que resta é calcular o comprimento da lista, o que fazemos com outra composição.
 
 Aqui está outro exemplo, retirado de uma aplicação real. Queremos extrair uma lista de nomes de macro de um arquivo de cabeçalho C acompanha `libpcap`, uma biblioteca popular pacote de filtragem de rede. O arquivo de cabeçalho contém um grande número de definições da seguinte forma.
 
+```c
 #define DLT_EN10MB      1       /* Ethernet (10Mb) */
 #define DLT_EN3MB       2       /* Experimental Ethernet (3Mb) */
 #define DLT_AX25        3       /* Amateur Radio AX.25 */
-
+```
 
 
 Nosso objetivo é extrair nomes como `DLT_EN10MB` e `DLT_AX25`.
 
-    -- arquivo: ca04/dlts.hs
+```haskell
+-- file: ch04/dlts.hs
+import Data.List (isPrefixOf)
 
+dlts :: String -> [String]
 
+dlts = foldr step [] . lines
+```
 
 Nós tratamos todo um arquivo como uma String, dividi-lo com `lines`, em seguida, aplicar `foldr passo []` para a lista resultante de linhas. A função de auxiliar `passo` opera em uma única linha.
 
-    -- arquivo: ca04/dlts.hs
-
-
+```haskell
+-- file: ch04/dlts.hs
+  where step l ds
+          | "#define DLT_" `isPrefixOf` l = secondWord l : ds
+          | otherwise                     = ds
+        secondWord = head . tail . words
+```
 
 Se coincidir com uma definição de macro com a nossa expressão guarda, podemos contras o nome da macro para a cabeça da lista que está retornando, caso contrário, deixamos a lista intocada.
 
@@ -1500,23 +1674,30 @@ Enquanto as funções individuais do corpo de `palavra2` estão agora familiar p
 
 Mais uma vez, procede da direita para a esquerda. A primeira função é `words`. 
 
-    ghci> 
-
-
+    ghci> :type words
+    words :: String -> [String]
+    ghci> words "#define DLT_CHAOS    5"
+    ["#define","DLT_CHAOS","5"]
 
 Em seguida, aplicamos `tail` para o resultado de `words`.
 
-    ghci> 
-
-
+    ghci> :type tail
+    tail :: [a] -> [a]
+    ghci> tail ["#define","DLT_CHAOS","5"]
+    ["DLT_CHAOS","5"]
+    ghci> :type tail . words
+    tail . words :: String -> [String]
+    ghci> (tail . words) "#define DLT_CHAOS    5"
+    ["DLT_CHAOS","5"]
 
 Finalmente, aplicando `head` para o resultado de `drop 1 . words` nos dará o nome de nossa macro.
 
-    ghci> 
+    ghci> :type head . tail . words
+    head . tail . words :: String -> String
+    ghci> (head . tail . words) "#define DLT_CHAOS    5"
+    "DLT_CHAOS"
 
-
-
-### Use a cabeça sabiamente
+#### Use "head" sabiamente
 
 Depois da advertência contra lista de funções inseguras na [seção chamada “Trabalhar segura e saudavelmente a com funções crashy”](#fp.lists.safe "seção chamada “Trabalhar segura e saudavelmente a com funções crashy”"), aqui estamos chamando tanto a `head` e a `tail`, duas dessas funções de lista inseguro. O Que Dá?
 
@@ -1524,8 +1705,8 @@ Neste caso, podemos nos assegurar de inspeção que estamos seguros de uma falha
 
 Este tipo de raciocínio que devemos fazer para nos convencermos de que nosso código não vai explodir quando chamamos funções parciais. Não se esqueça nossa admoestação anterior: chamar funções inseguro como este requer cuidados, e muitas vezes pode tornar o código mais frágil de maneira sutil. Se por algum motivo, modificou o padrão de proteção para conter apenas uma palavra, poderíamos nos expor à possibilidade de um acidente, como o corpo da função assume que receberá duas palavras.
 
-Dicas para escrever código legível
-----------------------------------
+### Dicas para escrever código legível
+
 
 Até agora, neste capítulo, me deparei com duas características tentador olhar de Haskell: recursão de cauda e funções anônimas. Tão agradável como estes são, muitas vezes não se deseja usá-los.
 
@@ -1537,80 +1718,104 @@ No meio do caminho entre a cauda funções recursivas (com a generalidade comple
 
 Para as funções anônimas, eles tendem a interromper o “fluxo” de ler um pedaço de código. É muitas vezes tão fácil de escrever uma definição de função local em um cláusula `let` ou `where`, e usar isso, como é para colocar uma função anônima em seu lugar. As vantagens relativas de uma função chamada são dois: não precisamos entender a definição da função quando estamos lendo o código que usa-lo, e um nome de função bem escolhido age como um pequeno pedaço de documentação local.
 
-Space leaks e avaliação rigorosa
---------------------------------
-
+### Space leaks e avaliação rigorosa
+-
 A função `foldl` que discutimos anteriormente não é o único lugar onde podem ocorrer vazamentos espaço no código Haskell. Vamos usá-lo para ilustrar como a avaliação não-estrita às vezes pode ser problemático, e como resolver as dificuldades que podem surgir.
 
 ![[Tip]](support/figs/tip.png)
 
-Você precisa saber de tudo isso agora?
+>Você precisa saber de tudo isso agora?
 
-É perfeitamente razoável para pular esta seção até que você encontrar um space leak “in the wild”. Desde que você usa `foldr` se você estiver gerando uma lista, e `foldl'` em vez de `foldl` contrário, vazamentos de espaço não são susceptíveis de incomodá-lo na prática por um tempo.
+>É perfeitamente razoável para pular esta seção até que você encontrar um space leak “in the wild”. Desde que você usa `foldr` se você estiver gerando uma lista, e `foldl'` em vez de `foldl` contrário, vazamentos de espaço não são susceptíveis de incomodá-lo na prática por um tempo.
 
-### Evitar space leaks com seq
+#### Evitar space leaks com seq
 
 Nós nos referimos a uma expressão que não é avaliada preguiçosamente tão _rigorosa_, tão `foldl'` é uma rigorosa deixou desistir. Ele ignora avaliação usual Haskell não-estrita através da utilização de uma função chamada `seq`.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+foldl' _    zero []     = zero
+foldl' step zero (x:xs) =
+    let new = step zero x
+    in  new `seq` foldl' step new xs
+```
 
 Esta função `seq` tem um tipo peculiar, insinuando que ele não está jogando com as regras habituais.
 
-    ghci> 
-
-
+    ghci> :type seq
+    seq :: a -> t -> t
 
 Ele funciona da seguinte forma: quando uma expressão `seq` é avaliada seguintes, ele força o seu primeiro argumento a ser avaliada, em seguida, retorna seu segundo argumento. Na verdade, não fazer nada com o primeiro argumento: `seq` existe apenas como uma maneira de forçar que o valor a ser avaliada. Vamos caminhar através de uma aplicação breve para ver o que acontece.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+foldl' (+) 1 (2:[])
+```
 
 Isso expande o seguinte.
 
-    -- arquivo: ca04/Fold.hs
-
+```haskell
+-- file: ch04/Fold.hs
+let new = 1 + 2
+in new `seq` foldl' (+) new []
+```
 
 
 O uso de `seq` avalia forçada `novo` a `3`, e retorna seu segundo argumento.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+foldl' (+) 3 []
+```
 
 Acabamos com o resultado seguinte.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+3
+```
 
 Graças a `seq`, não há thunks à vista.
 
-### Aprender a usar o seq
+#### Aprender a usar o seq
 
 Sem algum sentido, existe um elemento de mistério para usar efetivamente seguintes. Aqui estão algumas regras úteis para usá-lo bem.
 
 Para ter algum efeito, uma expressão `seq` devem ser a primeira coisa avaliada em uma expressão.
 
-    -- arquivo: ca04/Fold.hs
-    -- incorreta: seq é escondida pela aplicação de alguma_funcao desde 
-    -- algumaFuncao será avaliada primeiro, seq pode ocorrer muito tarde
+```haskell
+-- file: ch04/Fold.hs
+-- incorrect: seq is hidden by the application of someFunc
+-- since someFunc will be evaluated first, seq may occur too late
+hiddenInside x y = someFunc (x `seq` y)
+```
 
+```haskell
+-- incorrect: a variation of the above mistake
+hiddenByLet x y z = let a = x `seq` someFunc y
+                    in anotherFunc a z
+```
 
+```haskell
+-- correct: seq will be evaluated first, forcing evaluation of x
+onTheOutside x y = x `seq` someFunc y
+```
 
 Para estritamente avaliar vários valores, aplicações da cadeia de `seq` juntos.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+chained x y z = x `seq` y `seq` someFunc z
+```
 
 Um erro comum é tentar utilizar `seq` com duas expressões independentes.
 
-    -- arquivo: ca04/Fold.hs
-
-
+```haskell
+-- file: ch04/Fold.hs
+badExpression step zero (x:xs) =
+    seq (step zero x)
+        (badExpression step (step zero x) xs)
+```
 
 Aqui, a intenção aparente é o de avaliar estrita `step zero x`. Uma vez que a expressão é repetido no corpo da função, estritamente avaliar a primeira instância de que não terá nenhum efeito sobre o segundo. A utilização de `let` partir da definição de acima `foldl'` mostra como conseguir este efeito corretamente.
 
@@ -1618,9 +1823,13 @@ Ao avaliar uma expressão, `seq` pára logo que se chega a um construtor. Para o
 
 Se necessário, podemos utilizar técnicas habituais de programação funcional para contornar essas limitações.
 
-    -- arquivo: ca04/Fold.hs
+```haskell
+-- file: ch04/Fold.hs
+strictPair (a,b) = a `seq` b `seq` (a,b)
 
-
+strictList (x:xs) = x `seq` x : strictList xs
+strictList []     = []
+```
 
 É importante compreender que a `seq` não é livre: ele tem que executar uma verificação em tempo de execução para ver se uma expressão foi avaliada. Use com moderação. Por exemplo, enquanto a nossa função `parEstrito` avalia o conteúdo de um par até o primeiro construtor, ele adiciona as despesas gerais da correspondência padrão, duas aplicações de `seq`, e da construção de uma nova tupla. Se fôssemos medir o seu desempenho no circuito interno de um referência, podemos encontrá-lo para tornar o programa lento.
 
