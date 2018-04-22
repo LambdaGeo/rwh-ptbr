@@ -15,9 +15,9 @@ de Bryan O'Sullivan, Don Stewart, and John Goerzen
 
 ### Pensando no Haskell
 
-Nossa aprendizagem precoce de Haskell possui dois aspectos distintos. A primeira é chegar a um acordo com a mudança de mentalidade da programação imperativa de funcionamento: temos de substituir a programação de nossos hábitos de outras línguas. Fazemos isso não porque as técnicas imperativos são ruins, mas porque, em uma linguagem funcional de outras técnicas de trabalho melhor. 
+Nossa aprendizagem inicial em Haskell possui dois aspectos distintos. A primeira é a mudança de mentalidade da programação imperativa para funcional: temos de substituir nossos hábitos de programação em outras linguagens. Fazemos isso não porque as técnicas imperativas são ruins, mas porque, em uma linguagem funcional outras técnicas funcionam melhor. 
 
-O nosso segundo desafio é aprender a nossa maneira de contornar o Haskell bibliotecas padrão. Como em qualquer linguagem, bibliotecas de funcionar como alavanca, habilitando-nos a multiplicar a nossa solução de problemas de energia. Bibliotecas Haskell tendem a operar em um nível maior de abstração do que aqueles em muitas outras línguas. Precisaremos trabalhar um pouco difícil aprender usar a bibliotecas, mas na troca eles oferecem uma grande quantidade de poder. 
+O nosso segundo desafio é aprender a nossa maneira de lidar com as bibliotecas basicas do Haskell. Como em qualquer linguagem, bibliotecas  funcionam como alavanca, habilitando-nos a multiplicar a nossa solução de problemas. Bibliotecas do Haskell tendem a operar em um nível maior de abstração do que aqueles em muitas outras linguagens. Precisaremos trabalhar um pouco mais para aprender usar as bibliotecas, mas na troca elas oferecem uma grande quantidade de poder. 
 
 Neste capítulo, vamos introduzir uma série de técnicas de programação funcionais. Nós vamos recorrer a exemplos de linguagens imperativas destacar a mudança no pensamento que vamos precisar fazer. Como o fazemos, nós vamos caminhar por alguns dos fundamentos da norma de bibliotecas Haskell. Nós também intermitentemente cobrir algumas línguas mais recursos no caminho. 
 
