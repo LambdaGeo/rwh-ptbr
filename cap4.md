@@ -922,9 +922,9 @@ adler32_try2 xs = helper (1,0) xs
           helper (a,b) _     = (b `shiftL` 16) .|. a
 ```
 
-Por que nós queremos fazer essa mudança, aparentemente sem sentido estrutural? Porque, como já vimos com `map` e `filter`, podemos extrair o comportamento comum compartilhado por `meuSoma` e `adler32_2` em uma função de ordem superior. Podemos descrever esse comportamento como “fazer alguma coisa para cada elemento de uma lista, atualizando um acumulador em que estamos, e retornando o acumulador quando nós somos feitos”.
+Por que nós queremos fazer essa mudança, aparentemente sem sentido estrutural? Porque, como já vimos com `map` e `filter`, podemos extrair o comportamento comum compartilhado por `mySoma` e `adler32_2` em uma função de ordem superior. Podemos descrever esse comportamento como “fazer alguma coisa para cada elemento de uma lista, atualizando um acumulador em que estamos, e retornando o acumulador quando finalizado”.
 
-Este tipo de função é chamado de _fold_, porque ela “dobra” de uma lista. Existem dois tipos de fold sobre listas, `foldl` para dobrar à esquerda (no início) e `foldr` para dobrar a partir da direita (o fim).
+Este tipo de função é chamado de _fold_, porque ela “dobra” uma lista. Existem dois tipos de fold sobre listas, `foldl` para dobrar à esquerda (no início) e `foldr` para dobrar a partir da direita (o fim).
 
 #### A fold esquerda
 
@@ -938,11 +938,11 @@ foldl step zero (x:xs) = foldl step (step zero x) xs
 foldl _    zero []     = zero
 ```
 
-A função `foldl` leva um função de “passo”, um valor inicial para o acumulador e uma lista. O “passo” leva um acumulador e um elemento da lista, e retorna um valor acumulador novo. Todo `foldl` é chamar o “passo” no acumulador atual e um elemento da lista, e passa o valor do acumulador novo para si mesmo recursivamente para consumir o restante da lista.
+A função foldl assume uma função “step”, um valor inicial para o seu acumulador e uma lista. A funcão “step” pega um acumulador e um elemento da lista e retorna um novo valor de acumulador. Tudo o que o foldl faz é chamar o “step” no atual acumulador e um elemento da lista, e passa o novo valor do acumulador para si mesmo recursivamente para consumir o resto da lista.
 
 Referimo-nos a `foldl` como a “fold esquerda” porque consome a lista da esquerda (a cabeça) para a direita.
 
-Aqui está uma regravação de `meuSoma` usando `foldl`.
+Aqui está uma reescrita de `mySum` usando `foldl`.
 
 ```haskell
 -- file: ch04/Sum.hs
@@ -950,7 +950,7 @@ foldlSum xs = foldl step 0 xs
     where step acc x = acc + x
 ```
 
-Essa função local `passo` apenas soma dois números, então vamos simplesmente usar o operador de adição ao invés, e eliminar a cláusula desnecessária `where`clause. 
+Essa função local `step` apenas soma dois números, então vamos simplesmente usar o operador de adição ao invés, e eliminar a cláusula desnecessária `where`clause. 
 
 ```haskell
 -- file: ch04/Sum.hs
@@ -958,9 +958,9 @@ niceSum :: [Integer] -> Integer
 niceSum xs = foldl (+) 0 xs
 ```
 
-Observe como muito mais simples deste código é que o nosso `meuSoma` original? Não estamos mais usando recursão explícita, porque `foldl` cuida disso para nós. Nós simplificamos o nosso problema para baixo a duas coisas: que o valor inicial do acumulador deve ser (o segundo parâmetro para `foldl`), e como atualizar o acumulador (a função `(+)`). Como um bônus adicional, o nosso código é agora mais curto, também, o que torna mais fácil de entender.
+Observe o quanto este código é mais simples do que o nosso mySum original? Não estamos mais usando a recursão explícita, porque o foldl cuida disso para nós. Nós simplificamos nosso problema em duas coisas: qual deveria ser o valor inicial do acumulador (o segundo parâmetro a ser dobrado) e como atualizar o acumulador (a função (+)). Como um bônus adicional, nosso código agora é mais curto, o que facilita a compreensão.
 
-Vamos ter um olhar mais profundo que `foldl` está fazendo aqui, manualmente, escrevendo cada etapa em sua avaliação, quando chamamos `somaFina [1,2,3]`. 
+Vamos dar uma olhada mais profunda no que o foldl está fazendo aqui, escrevendo manualmente cada passo em sua avaliação quando chamamos `niceSum [1,2,3]`. 
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -982,15 +982,15 @@ adler32_foldl xs = let (a, b) = foldl step (1, 0) xs
                           in (a' `mod` base, (a' + b) `mod` base)
 ```
 
-Aqui, o nosso acumulador é um par, assim que o resultado de `foldl` será, também. Puxamos o acumulador final distante quando retorna `foldl` e-bit mexer-lo em uma soma de verificação “apropriada”.
+Aqui, nosso acumulador é um par, então o resultado do fold também será. Desmontamos o acumulador final quando o foldl retorna, e o transformamos em um checksum “correto”.
 
 #### Por que usar folds, maps e filters?
 
-Uma rápida olhada revela que `adler32_foldl` não é realmente menor do que qualquer `adler32_2`. Por que devemos usar uma dobra neste caso? A vantagem reside no fato de que as dobras são extremamente comuns em Haskell, e eles têm um comportamento regular e previsível.
+Uma rápida olhada revela que adler32_foldl não é realmente mais curto que adler32_try2. Por que devemos usar um `fold` neste caso? A vantagem aqui reside no fato de que os `folds` são extremamente comuns em Haskell e têm um comportamento regular e previsível. 
 
-Isso significa que um leitor com um pouco de experiência terão um tempo mais fácil o entendimento a utilização de uma prega que o código que usa recursão explícita. A dobra não vai produzir nenhuma surpresa, mas o comportamento de uma função que recursivamente explicitamente não é imediatamente óbvio. recursão explícita nos obriga a ler atentamente para entender exatamente o que está acontecendo.
+Isso significa que um leitor com pouca experiência terá mais facilidade em entender o uso de um `fold` do que o código que usa recursão explícita. Um `fold` não produzirá surpresas, mas o comportamento de uma função que recorre explicitamente não é imediatamente óbvio. A recursão explícita exige que leiamos de perto para entender exatamente o que está acontecendo. 
 
-Esta linha de raciocínio se aplica a outras funções de biblioteca de ordem superior, incluindo aqueles que já vimos, `map` e `filter`. Porque eles são bibliotecas de funções com comportamentos bem definidos, só precisamos saber o que eles fazem uma vez, e nós vamos ter uma vantagem quando nós precisamos de compreender qualquer código que usa-los. Estas melhorias na legibilidade também transitar para escrever código. Assim que começar a pensar com funções de ordem superior em mente, vamos produzir um código conciso mais rapidamente.
+Essa linha de raciocínio se aplica a outras funções de ordem superior presentes na biblioteca , incluindo aquelas que já vimos, `map` e `filter`. Como são funções de biblioteca com comportamento bem definido, só precisamos aprender o que fazem uma vez e teremos uma vantagem quando precisarmos entender qualquer código que as use. Essas melhorias na legibilidade também são transferidas para o código de escrita. Quando começarmos a pensar com funções de ordem superior em mente, produziremos código conciso mais rapidamente.
 
 ##### Folding da direita
 
@@ -1004,7 +1004,7 @@ foldr step zero (x:xs) = step x (foldr step zero xs)
 foldr _    zero []     = zero
 ```
 
-Vamos seguir o mesmo processo de avaliação manual com `foldr (+) 0 [1,2,3]` como fizemos com `somaFina` na [seção chamada “A fold esquerda”](#fp.foldl "seção chamada “A fold esquerda”"). 
+Vamos seguir o mesmo processo de avaliação manual com `foldr (+) 0 [1,2,3]` como fizemos com `niceSum` na [seção chamada “A fold esquerda”](#fp.foldl "seção chamada “A fold esquerda”"). 
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1017,7 +1017,7 @@ foldr (+) 0 (1:2:3:[])
 
 A diferença entre `foldl` e `foldr`deve ser claro de olhar para onde os parênteses e os “lista vazia” elementos aparecem. Com `foldl`, o elemento da lista é vazia à esquerda, e todo o grupo parênteses à esquerda. Com `foldr`, o valor `zero` é à direita, eo grupo de parênteses para a direita.
 
-Há uma explicação intuitiva linda de como `foldr` funciona: ele substitui a lista vazia com o valor `zero`, e cada construtor na lista com uma aplicação da função de passo.
+Há uma explicação intuitiva linda de como `foldr` funciona: ele substitui a lista vazia com o valor `zero`, e cada construtor na lista com uma aplicação da função step.
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1025,7 +1025,7 @@ Há uma explicação intuitiva linda de como `foldr` funciona: ele substitui a l
 1 + (2 + (3 + 0 ))
 ```
 
-À primeira vista, `foldr` pode parecer menos úteis do que `foldl`: o uso que é uma função que se dobra a partir da direita? Mas considere a função `filter` do Prelude, que a última vez que encontrou na [seção chamada “Seleção de peças de entrada”](#fp.filter "seção chamada “Seleção de peças de entrada”"). Se escrevermos `filter` usando recursão explícita, será algo parecido com isso.
+À primeira vista, `foldr` pode parecer menos úteis do que `foldl`: qual o uso tem uma função que se dobra a partir da direita? Mas considere a função `filter` do Prelude, que a última vez vimos pela ultima vez na [seção chamada “Seleção de peças de entrada”](#fp.filter "seção chamada “Seleção de peças de entrada”"). Se escrevermos `filter` usando recursão explícita, será algo parecido com isso.
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1045,11 +1045,12 @@ myFilter p xs = foldr step [] xs
                     | otherwise = ys
 ```
 
-Este é o tipo de definição que poderia nos causar uma dor de cabeça, por isso vamos examiná-lo em um pouco de profundidade. Como `foldl`, `foldr` tem uma função e um caso-base (o que fazer quando a lista de entrada está vazia) como argumentos. Da leitura do tipo de `filter`, nós sabemos que a nossa função `meuFilter` deve retornar uma lista do mesmo tipo que ele consome, então o caso de base deve ser uma lista desse tipo e, a função de auxiliar `passo` deve retornar uma lista.
+Este é o tipo de definição que pode nos causar dor de cabeça, então vamos examiná-lo em profundidade. Como o foldl, o foldr usa uma função e um caso base (o que fazer quando a lista de entrada está vazia) como argumentos. A partir da leitura do tipo de `filter`, sabemos que nossa função myFilter deve retornar uma lista do mesmo tipo que consome, portanto, o caso base deve ser uma lista desse tipo e a função auxiliar step deve retornar uma lista.
 
-Como sabemos que `foldr` calls `passo` convida um elemento da lista de entrada de cada vez, com o acumulador como seu segundo argumento, o `passo` deve ser muito simples. Se o predicado retorna `True`, ele empurra esse elemento para a lista acumulados, caso contrário, ele sai da lista intocada.
+Como sabemos que o foldr chama step de um elemento da lista de entrada de cada vez, com o acumulador como segundo argumento, qual passo deve ser bem simples. Se o predicado retornar True, ele empurrará esse elemento para a lista acumulada; caso contrário, deixa a lista intocada.
 
-A classe de funções que podemos expressar utilizando `foldr` é chamada _recursiva primitiva_. Um número surpreendentemente grande de funções de manipulação de lista são recursivas primitivas. Por exemplo, aqui está a `map` escrita em termos de `foldr`.
+A classe de funções que podemos expressar usando o foldr é chamada primitiva recursiva. Um número surpreendentemente grande de funções de manipulação de listas são recursivo primitivo. Por exemplo, aqui está o mapa escrito em termos de foldr.
+
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1074,13 +1075,13 @@ myFoldl f z xs = foldr step id xs z
 
 >Compreender foldl em termos de foldr
 
->Se você quiser definir-se um desafio contínuo, tente seguir a definição acima de `foldl` usando `foldr`. Esteja avisado: esta não é trivial! Você pode querer ter as seguintes ferramentas na mão: algumas pílulas de dor de cabeça e um copo de água, **ghci**(para que você possa descobrir o que faz a função `id`), e um lápis e papel.
+>Se você quiser definir-se um desafio contínuo, tente seguir a definição acima de `foldl` usando `foldr`. Esteja avisado: isto não é trivial! Você pode querer ter as seguintes ferramentas na mão: algumas pílulas de dor de cabeça e um copo de água, **ghci**(para que você possa descobrir o que faz a função `id`), e um lápis e papel.
 
 >Você vai querer seguir o mesmo processo de avaliação manual como descrito acima para ver o que `foldl` e `foldr` estavam realmente fazendo. Se você ficar preso, você pode encontrar a tarefa mais fácil, depois de ler a [seção chamada “Aplicação da função parcial e currying”](#fp.partialapp "seção chamada “Aplicação da função parcial e currying”").
 
-Voltando à nossa explicação anterior `foldr` intuitiva do que faz, uma outra maneira útil de pensar sobre isso é que ele _transforma_ sua entrada de lista. Os dois primeiros argumentos são “o que fazer com cada elemento da cauda da cabeça / da lista”, e “o que para substituir o final da lista”.
+Voltando à nossa explicação intuitiva anterior sobre o que o foldr faz, outra maneira útil de pensar nisso é que ele transforma sua lista de entrada. Seus dois primeiros argumentos são “o que fazer com cada elemento cabeça / cauda da lista” e “o que substituir o final da lista”. 
 
-A “identidade” transformação com `foldr`assim substitui a lista vazia com ela mesma, e aplica-se o construtor de lista para cada cabeça / cauda par:x
+A transformação “identity” com o foldr, portanto, substitui a lista vazia por si mesma e aplica o construtor de lista a cada par cabeça / cauda:
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1089,17 +1090,16 @@ identity xs = foldr (:) [] xs
 ```
 Ela transforma uma lista em uma cópia de si mesmo.
 
-
     ghci> identity [1,2,3]
     [1,2,3]
 
-Se `foldr` substitui o fim de uma lista com algum outro valor, isto dá-nos uma outra maneira de olhar para afunção Haskell de acréscimo das listas, `(++)`.
+Se `foldr` substitui o fim de uma lista com algum outro valor, isto dá-nos uma outra maneira de olhar para a função Haskell de concatenar listas, `(++)`.
 
     ghci> [1,2,3] ++ [4,5,6]
     [1,2,3,4,5,6]
 
 
-Tudo o que temos de fazer para anexar uma lista para outra é substituir essa lista segundo para o fim da nossa primeira lista.
+Tudo o que temos de fazer para anexar uma lista para outra é substituir essa segunda lista para o fim da nossa primeira lista.
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1112,15 +1112,15 @@ Vamos tentar fazer isso.
     ghci> append [1,2,3] [4,5,6]
     [1,2,3,4,5,6]
 
-Aqui, podemos substituir cada construtor lista com outro construtor da lista, mas substituir a lista vazia com a lista que deseja acrescentar sobre o fim da nossa primeira lista.
+Aqui, nos substituimos cada construtor lista com outro construtor da lista, e substituimos a lista vazia com a lista que desejamos acrescentar sobre o fim da nossa primeira lista.
 
-Como o nosso tratamento prolongado das pregas devem indicar, a função `foldr` é quase tão importante membro da nossa caixa de ferramentas de programação lista das funções mais básicas lista vimos na [seção chamada “Trabalhar com as listas”](#fp.lists "seção chamada “Trabalhar com as listas”"). Pode consumir e produzir uma lista de forma incremental, o que o torna útil para a gravação de dados preguiçoso código de processamento.
+Como nosso tratamento estendido de fold devo indicar, que a função foldr é quase tão importante como um membro da nossa caixa de ferramentas de programação de listas quanto as funções de lista mais básicas que vimos na seção “Trabalhando com listas”. Ela pode consumir e produzir uma lista incrementalmente, o que a torna útil para escrever código de processamento de dados preguiçoso.
 
-#### Folds a esquerda, avalaiação preguiça e space leaks
+#### Folds a esquerda, avaliação preguiça e space leaks
 
-Para manter o nosso simples discussão inicial, usamos `foldl` durante a maior parte desta seção. Isso é conveniente para o teste, mas nunca iremos usar `foldl` na prática.
+Para manter o nossa discussão inicial simples, usamos `foldl` durante a maior parte desta seção. Isso é conveniente para o teste, mas nunca iremos usar `foldl` na prática.
 
-A razão tem a ver com a avaliação não-estrita Haskell. Se aplicarmos `foldl (+) [1,2,3]`, que avalia a expressão `(((0 + 1) + 2) + 3)`. Podemos ver isso acontecer se rever a forma como a função é expandida.
+A razão tem a ver com a avaliação não-estrita em Haskell. Se aplicarmos `foldl (+) [1,2,3]`, que avalia a expressão `(((0 + 1) + 2) + 3)`. Podemos ver isso acontecer se rever a forma como a função é expandida.
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1131,14 +1131,14 @@ foldl (+) 0 (1:2:3:[])
           ==           (((0 + 1) + 2) + 3)
 ```
 
-A expressão final não será avaliada a `6` até que seu valor é exigido. Antes que seja avaliada, ele deve ser armazenado como uma conversão. Não surpreendentemente, uma conversão é mais caro do que guardar um número único, e os mais complexos a expressão thunked, o espaço mais precisa. Para algo mais barata, como aritmética, thunking um expressão é computacionalmente mais caro do que avaliá-lo imediatamente. Temos, assim, acabam pagando tanto no espaço quanto no tempo.
+A expressão final não será avaliada como 6 até que seu valor seja exigido. Antes de ser avaliado, ele deve ser armazenado como uma `thunk`. Não é de surpreender que um thunk seja mais caro para armazenar do que um único número, e quanto mais complexa a expressão thunked, mais espaço ele precisa. Para algo barato como a aritmética, thunking uma expressão é mais computacionalmente caro do que avaliá-la imediatamente. Assim, acabamos pagando tanto no espaço quanto no tempo. 
 
-Quando GHC está avaliando uma expressão thunked, ele usa uma pilha interna para isso. Como uma expressão thunked poderia ser infinitamente grande, o GHC coloca um limite fixo sobre o tamanho máximo da pilha. Graças a esse limite, podemos tentar uma expressão de grande thunked em **ghci** sem precisar se preocupar que ele possa consumir toda a memória.
+Quando o GHC está avaliando uma expressão thunked, ele usa uma pilha interna para fazer isso. Como uma expressão thunked poderia ser infinitamente grande, o GHC coloca um limite fixo no tamanho máximo dessa pilha. Graças a este limite, podemos tentar uma grande expressão thunked no ghci sem precisar se preocupar que possa consumir toda a memória.
 
     ghci> foldl (+) 0 [1..1000]
     500500
 
-De olhar para a expansão acima, podemos supor que este cria uma conversão que consiste em 1.000 inteiros e 999 pedidos de `(+)`. Isso é um monte de memória e esforço para representar um único número! Com uma expressão maior, embora o tamanho ainda é modesta, os resultados são mais dramáticos.
+Olhando para a expansão acima, podemos supor que isso cria um `thunk` que consiste em 1000 inteiros e 999 aplicações de (+). Isso é muita memória e esforço para representar um único número! Com uma expressão maior, embora o tamanho ainda seja modesto, os resultados são mais dramáticos.
 
     ghci> foldl (+) 0 [1..1000000]
     *** Exception: stack overflow
@@ -1147,7 +1147,7 @@ Em expressões pequenas, `foldl` irá funcionar corretamente, mas lentamente, de
 
 Em expressões maiores, código com um vazamento de espaço simplesmente falham, como acima. Um space leak com `foldl` é um obstáculo clássico para novos programadores Haskell. Felizmente, isso é fácil de evitar.
 
-O módulo `Data.List` define uma função chamada `foldl'` que é semelhante ao `foldl`, mas não construir thunks. A diferença de comportamento entre os dois é óbvia.
+O módulo `Data.List` define uma função chamada `foldl'` que é semelhante ao `foldl`, mas não constrõe thunks. A diferença de comportamento entre os dois é óbvia.
 
     ghci> foldl  (+) 0 [1..1000000]
     *** Exception: stack overflow
@@ -1159,7 +1159,7 @@ Devido ao comportamento de thunking de `foldl`, é prudente evitar essa função
 
 ### Exercícios
 
-**1.** Use uma fold (escolhendo o fold adequada fará seu código muito mais simples) para reescrever e melhorar a função `asInt` da [secção chamada “Recursão explícita”](#fp.tailrecursion "secção chamada “Recursão explícita”").
+**1.** Use uma fold (escolhendo o fold adequado fará seu código muito mais simples) para reescrever e melhorar a função `asInt` da [secção chamada “Recursão explícita”](#fp.tailrecursion "secção chamada “Recursão explícita”").
 
 ```haskell
 -- file: ch04/ch04.exercises.hs
@@ -1233,11 +1233,11 @@ Use **ghci** para carregar o módulo `Data.List` e descobrir o que `groupBy` faz
     
 *   `unlines`
     
-Para essas funções, onde você pode usar tanto `foldl'` ou `foldr`, que é mais adequado em cada caso?
+Para essas funções, onde você pode usar tanto `foldl'` ou `foldr`, qual é mais adequado em cada caso?
 
 ##### Leitura complementar
 
-O artigo \[[Hutton99](bibliography.html#bib.hutton99 "[Hutton99]")\] é um excelente e profundo tutorial pregas cobertura. Ele inclui muitos exemplos de como usar técnicas simples e sistemática de cálculo para transformar funções que usam recursão explícita em folds.
+O artigo \[[Hutton99](bibliography.html#bib.hutton99 "[Hutton99]")\] é um excelente e profundo tutorial que cobre os `folds`. Ele inclui muitos exemplos de como usar técnicas simples e sistemática de cálculo para transformar funções que usam recursão explícita em folds.
 
 ### Funções anónimas (lambda)
 
