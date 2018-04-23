@@ -1,7 +1,4 @@
 ---
-# You don't need to edit this file, it's empty on purpose.
-# Edit theme's home layout instead if you wanna make some changes
-# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 layout: page
 ---
 Uma tradução não oficial do livro Real World Haskell 
@@ -542,7 +539,7 @@ A operação de `isSuffixOf` não deve precisar de qualquer explicação.
 
 #### Trabalhando com muitas listas ao mesmo tempo
 
-A função `zip`recebe duas listas e “fecha-os” em uma única lista de pares. A lista resultante é o mesmo comprimento que o mais curto das duas entradas.
+A função `zip`recebe duas listas e “combiná-los” em uma única lista de pares. A lista resultante é o mesmo comprimento que o mais curto das duas entradas.
 
     ghci> :type zip
     zip :: [a] -> [b] -> [(a, b)]
@@ -558,13 +555,11 @@ Mais útil é `zipWith`, que pega duas listas e aplica uma função para cada pa
     ghci> zipWith (+) [1,2,3] [4,5,6]
     [5,7,9]
 
-
-
-O sistema de tipo de Haskell torna um desafio interessante para escrever funções que recebem número variável de argumentos\[[8](#ftn.id591518)\]. Portanto, se queremos zip três listas em conjunto, chamamos `zip3` ou `zipWith3`, e assim por diante até `zip7` e `zipWith7`.
+O sistema de tipos de Haskell faz com que seja um desafio interessante escrever funções que recebam números variáveis de argumentos [8]. Então, se quisermos juntar três listas, chamamos zip3 ou zipWith3 e assim por diante até zip7 e zipWith7
 
 #### Funções especiais de manipulação de string
 
-Nós já encontramos a função padrão `lines` em [a seção chamada “Warming up: Separação das linhas de texto portavel”](#fp.splitlines "a seção chamada “Warming up: Separação das linhas de texto portavel”"), eo seu homólogo padrão, `unlines`. Observe que `unlines` sempre coloca uma nova linha no final do seu resultado.
+Nós já conhecemos a função padrão `lines` em [a seção chamada “Warming up: Separação das linhas de texto portavel”](#fp.splitlines "a seção chamada “Warming up: Separação das linhas de texto portavel”"), e o seu homólogo padrão, `unlines`. Observe que `unlines` sempre coloca uma nova linha no final do seu resultado.
 
     ghci> lines "foo\nbar"
     ["foo","bar"]
@@ -572,8 +567,7 @@ Nós já encontramos a função padrão `lines` em [a seção chamada “Warming
     "foo\nbar\n"
 
 
-
-A função `words` divide uma seqüência de entrada em qualquer espaço em branco. Sua contraparte, `unwords`, usa um único espaço para participar de uma lista de palavras.
+A função `words` divide uma seqüência de entrada em qualquer espaço em branco. Sua contraparte, `unwords`, usa um único espaço para juntar  uma lista de palavras.
 
     ghci> words "the  \r  quick \t  brown\n\n\nfox"
     ["the","quick","brown","fox"]
@@ -584,7 +578,7 @@ A função `words` divide uma seqüência de entrada em qualquer espaço em bran
 
 ### Exercícios
 
-**1.** Escreva seus próprios definições “seguras” das funções de lista parcial normal, mas certifique-se que o seu nunca falham. Como dica, você pode querer considerar usando os seguintes tipos.
+**1.** Escreva suas próprios definições “seguras” das funções de lista parciais, mas certifique-se que a sua nunca falha. Como dica, você pode querer considerar usando os seguintes tipos.
 
 ```haskell
 -- file: ch04/ch04.exercises.hs
@@ -594,8 +588,6 @@ safeLast :: [a] -> Maybe a
 safeInit :: [a] -> Maybe [a]
 ```
 
-
-
 **2.** Escreva uma função `splitWith` que atua de forma semelhante a `words`, mas leva um predicado e uma lista de qualquer tipo, e divide sua lista de entrada em cada elemento para o qual o predicado retornar `False`.
 
 ```haskell
@@ -603,33 +595,34 @@ safeInit :: [a] -> Maybe [a]
 splitWith :: (a -> Bool) -> [a] -> [[a]]
 ```
 
-
 **3.** Usando a estrutura de comando da [seção chamada “Um framework de linha de comando simples”](#fp.framework "seção chamada “Um framework de linha de comando simples”"), escreva um programa que imprime a primeira palavra de cada linha de sua entrada.
 
 **4.** Escreva um programa que transpõe o texto em um arquivo. Por exemplo, ele deve converter `"hello\nworld\n"` para `"hw\neo\nlr\nll\nod\n"`.
 
 ### Como pensar a respeito de loops
 
-
-Diferentemente das linguagens tradicionais, Haskell não tem nem um `for` loop nem `while` loop. Se nós temos um monte de dados para processar, o que queremos usar no lugar? Existem várias respostas possíveis a esta pergunta.
+Diferentemente das linguagens tradicionais, Haskell não tem nem um `for` loop nem `while` loop. Se nós temos um monte de dados para processar, o que iremos usar no lugar? Existem várias respostas possíveis a esta pergunta.
 
 #### Recursão explícita
 
-Uma maneira simples de fazer o salto a partir de uma linguagem que tem laços com uma que não é executado através de alguns exemplos, olhando para as diferenças. Aqui está uma função C que recebe uma string de dígitos decimais e os transforma em um inteiro.
+Uma maneira simples de fazer o salto de uma linguagem que tem loops para uma que não não tem é através de alguns exemplos, olhando para as diferenças. Aqui está uma função C que pega uma string de dígitos decimais e os transforma em um inteiro.
 
 ```c
-int as_int(char *string){
-    int acc; `/* accumulate the partial result */`
-    for(acc= 0; isdigit(*string); string++)
-        acc= acc\*10 + (\*string - '0');
+int as_int(char *str)
+{
+    int acc; /* accumulate the partial result */
+
+    for (acc = 0; isdigit(*str); str++) {
+	acc = acc * 10 + (*str - '0');
+    }
+
     return acc;
 }
 ```
 
+Dado que o Haskell não tem nenhuma construção de loop, como deveríamos pensar em representar um pedaço de código bastante simples como este?
 
-Dado que Haskell não possui construções de repetição, como devemos pensar sobre o que representa um simples pedaço bastante de código como este?
-
-Nós não temos de começar por escrever um tipo de assinatura, mas ajuda a nos lembrar que estamos trabalhando.
+Nós não temos de começar por escrever uma assinatura de tipos, mas ajuda a nos lembrar em que estamos trabalhando.
 
 ```haskell
 -- file: ch04/IntParse.hs
@@ -637,9 +630,7 @@ import Data.Char (digitToInt) -- we'll need ord shortly
 
 asInt :: String -> Int
 ```
-
-
-O código C calcula o resultado de forma incremental, uma vez que percorre a string, o código Haskell pode fazer a mesma função. No entanto, Haskell, podemos expressar o equivalente a um ciclo como um arquivo. Vamos chamar o nosso `loop` só para manter as coisas agradáveis e explícita.
+O código C calcula o resultado de forma incremental, a medida que percorre a string; o código Haskell pode fazer o mesma processo. No entanto, em Haskell, podemos expressar o equivalente a um loop como uma funcão. Vamos chamar o nosso `loop` só para manter as coisas agradáveis e explícita.
 
 ```haskell
 -- file: ch04/IntParse.hs
@@ -647,23 +638,20 @@ loop :: Int -> String -> Int
 
 asInt xs = loop 0 xs
 ```
+Esse primeiro parâmetro para `loop` é a variável acumulador que estaremos usando. Passando em zero é equivalente a inicialização do `acc` variável em C, no início do loop.
 
+Ao invés de pular em código chamas, vamos pensar sobre os dados que temos para trabalhar. Nossa String familiar é apenas um sinônimo para \[Char\], uma lista de caracteres. A maneira mais fácil de obtermos a travessia correta é pensar na estrutura de uma lista: ela está vazia ou um único elemento é seguido pelo restante da lista. 
 
-Esse primeiro parâmetro para `loop` é a variável acumulador estaremos usando. Passando em zero é equivalente a inicialização do `acc` variável em C, no início do loop.
-
-Ao invés de pular em código chamas, vamos pensar sobre os dados que temos para trabalhar. Nossa String familiar é apenas um sinônimo para \[Char\], uma lista de caracteres. A maneira mais fácil para nós para obter o direito de passagem é para pensar sobre a estrutura de uma lista: é vazia ou um único elemento seguido pelo resto da lista.
-
-Podemos expressar este pensamento estrutural directamente pelo padrão correspondente na lista de construtores do tipo. Muitas vezes é útil pensar sobre os casos fáceis primeiro: aqui, o que significa que vamos considerar o caso de lista vazia.
+Podemos expressar esse pensamento estrutural diretamente por correspondência de padrões nos construtores do tipo de lista. É sempre útil pensar nos casos fáceis primeiro: aqui, isso significa que consideraremos o caso da lista vazia. 
 
 ```haskell
 -- file: ch04/IntParse.hs
 loop acc [] = acc
 ```
 
+Uma lista vazia não significa apenas “o String de entrada está vazia”; é também o caso, vamos encontrar quando percorremos todo o caminho até o fim de uma lista não-vazia. Então, nós não queremos que seja tratado como “erro” quando recebemos uma lista vazia. Em vez disso, devemos fazer algo mais coerente. Aqui, a única coisa coerente é terminar o ciclo, e voltar o nosso valor acumulado.
 
-Uma lista vazia não significa apenas “o String de entrada está vazia”; é também o caso, vamos encontrar quando percorremos todo o caminho até o fim de uma lista não-vazia para fora. Então, nós não queremos “erro” se vemos uma lista vazia. Em vez disso, devemos fazer algo sensato. Aqui, a única coisa sensata é a de terminar o ciclo, e voltar o nosso valor acumulado.
-
-O outro caso temos que considerar surge quando a lista de entrada não estiver vazia. Precisamos fazer alguma coisa com o elemento atual da lista, e algo com o resto da lista.
+O outro caso que temos que considerar surge quando a lista de entrada não estiver vazia. Precisamos fazer alguma coisa com o elemento atual da lista, e algo com o resto da lista.
 
 ```haskell
 -- file: ch04/IntParse.hs
@@ -671,24 +659,24 @@ loop acc (x:xs) = let acc' = acc * 10 + digitToInt x
                   in loop acc' xs
 ```
 
-Calculamos um novo valor para o acumulador, e dar-lhe o nome de `acc'`. Em seguida, chamamos a função `words` divide uma seqüência de entrada em qualquer espaço em branco. Sua contraparte, `unwords`, usa um único espaço para participar de uma lista de palavras.
+Nós calculamos um novo valor para o acumulador e damos o nome acc '. Em seguida, chamamos a função loop novamente, passando o valor atualizado acc 'e o resto da lista de entrada; isso é equivalente ao loop escrito em C.
 
 ![[Note]](support/figs/note.png)
 
 >**As aspas simples em nomes de variáveis**
 
->Lembre-se, uma única citação é um personagem legal para usar em um nome de variável Haskell, e é pronunciado como “prime”. Há uma expressão comum em programas Haskell envolvendo uma variável, digamos `foo` e outra variável, por exemplo `foo'`. Normalmente podemos assumir que `foo'` é de alguma forma relacionada com `foo`. É muitas vezes um novo valor para `foo`, como no nosso código acima.
+>Lembre-se, uma aspa simples é um caractere legal para ser usado em um nome de variável do Haskell e é pronunciado como “primo”. Há um idioma comum em programas do Haskell envolvendo uma variável, digamos foo, e outra variável, digamos foo '. Normalmente podemos supor que foo 'é de alguma forma relacionado a foo. Geralmente é um novo valor para foo, como em nosso código acima. 15 comentários
 
->Às vezes, vamos ver essa expressão alargado, como `foo''`. Como manter o controle do número de aspas simples tacheada no final de um nome rapidamente se torna enfadonho, o uso de mais de dois em uma fileira, felizmente, é rara. Na verdade, mesmo uma única citação pode ser fácil de se perder, o que pode levar a confusão por parte dos leitores. Talvez seja melhor pensar no uso de aspas simples como uma convenção de codificação que você deve ser capaz de reconhecer, e menos como um que você deve realmente seguir.
+>Às vezes, vemos esse idioma estendido, como foo ''. Como o rastreamento do número de aspas simples no final de um nome rapidamente se torna tedioso, o uso de mais de duas seguidas é felizmente raro. De fato, até mesmo uma simples citação pode ser fácil de perder, o que pode levar a confusão por parte dos leitores. Pode ser melhor pensar no uso de citações simples como uma convenção de codificação que você deve ser capaz de reconhecer e menos como uma que você realmente deveria seguir.
 
-Cada vez que a função `loop` chama a si mesmo, tem um novo valor para o acumulador, e consome um elemento da lista de entrada. Eventualmente, ele vai acertar o final da lista, em que o tempo `[]` padrão irá corresponder, e as chamadas recursivas cessará.
+Cada vez que a função `loop` chama a si mesmo, tem um novo valor para o acumulador, e consome um elemento da lista de entrada. Eventualmente, ela vai chegar ao final da lista, nesse momento o padrão `[]` irá casar, e as chamadas recursivas cessarão.
 
-Como isso funciona bem a função? Para inteiros positivos, é perfeitamente cromulent.
+Quão bem esta função funciona? Para inteiros positivos, é perfeitamente cromulento. 
 
     ghci> asInt "33"
     33
 
-But because we were focusing on how to traverse lists, not error handling, our poor function misbehaves if we try to feed it nonsense.
+Mas como estávamos nos concentrando em como atravessar as listas, e não no tratamento de erros, nossa má função se comportaria mal se tentássemos alimentá-la com bobagens.
 
     ghci> asInt ""
     0
@@ -696,11 +684,11 @@ But because we were focusing on how to traverse lists, not error handling, our p
     *** Exception: Char.digitToInt: not a digit 'p'
 
 
-Vamos adiar a fixação função nossas deficiências para [Q: 1](#fp.asInt.fix "Q: 1").
+Vamos adiar a correção das deficiências da nossa função para Q: 1. 
 
-Porque a última coisa que `loop` faz é simplesmente chamar a si mesma, é um exemplo de uma função recursiva cauda. Há um outro idioma comum neste código, também. Pensando sobre a estrutura da lista, e manuseio e não vazio casos vazios separadamente, é um tipo de abordagem chamada de _recursão estrutural_.
+Porque a última coisa que `loop` faz é simplesmente chamar a si mesma, é um exemplo de uma função recursiva de cauda. Há um outro idioma comum neste código, também. Pensando sobre a estrutura da lista, e o manuseio dos casos de vazio e não vazio separadamente, é um tipo de abordagem chamada de _recursão estrutural_.
 
-Chamamos o caso não-recursiva (quando a lista estiver vazia) o _caso de base_(por vezes o _caso de terminação_). Vamos ver as pessoas se referem ao caso em que a função chama a si mesmo como o caso recursivo (surpresa!), Ou eles podem dar um aceno para a indução matemática e chamá-lo _caso indutivo_.
+Chamamos o caso não-recursivo (quando a lista estiver vazia) e de o _caso de base_(por vezes o _caso de terminação_). Vamos ver as pessoas se referirem ao caso em que a função chama a si mesmo como o caso recursivo (surpresa!), Ou eles podem dar um aceno para a indução matemática e chamá-lo _caso indutivo_.
 
 Como uma técnica útil, recursão estrutural não está confinada a lista, podemos usá-lo em outros tipos de dados algébricos, também. Teremos mais a dizer sobre isso mais tarde.
 
@@ -708,25 +696,27 @@ Como uma técnica útil, recursão estrutural não está confinada a lista, pode
 
 >Qual é a grande coisa sobre recursão de cauda?
 
->Em uma linguagem imperativa, um loop é executado no espaço constante. Sem laços, nós usamos cauda funções recursivas em Haskell vez. Normalmente, uma função recursiva aloca um espaço cada vez que aplica-se, por isso sabe para onde voltar.
+Em uma linguagem imperativa, um loop é executado em espaço constante. Faltando loops, usamos funções recursivas de cauda em Haskell. Normalmente, uma função recursiva aloca algum espaço cada vez que se aplica, portanto, sabe para onde retornar.
 
->Claramente, uma função recursiva estaria em uma enorme desvantagem em relação a um loop se memória alocada para cada aplicação recursiva: isso exigiria espaço linear em vez de espaço constante. No entanto, as implementações de linguagem funcional detectar usos de recursão de cauda, e transformar a cauda chamadas recursivas para executar no espaço constante, isso é chamado de _tail call optimisation_, abreviado TCO. 
+Claramente, uma função recursiva estaria em grande desvantagem em relação a um loop se alocasse memória para cada aplicativo recursivo: isso exigiria espaço linear em vez de espaço constante. No entanto, as implementações de linguagem funcional detectam os usos da recursão de cauda e transformam as chamadas recursivas de cauda a serem executadas em espaço constante; isso é chamado de "tail call optimisation", TCO abreviado. 
 
->Poucas implementações linguagem imperativa realizar o TCO, que é por isso que usar qualquer tipo de estilo ambiciosa funcional em uma linguagem imperativa, muitas vezes leva à perda de memória e baixo desempenho.
+Poucas implementações de linguagem imperativa executam o TCO; É por isso que usar qualquer tipo de estilo ambiciosamente funcional em uma linguagem imperativa geralmente leva a vazamentos de memória e baixo desempenho.
 
 #### Transformando cada entrada
 
-Considere uma outra função C, `quadrado`, que quadrados cada elemento em um array.
+Considere uma outra função C, `square`, que eleva ao quadrado cada elemento de um array.
 
 ```c
-void quadrado(double \*resultado, const double \*entrada, size_t comprimento){
-    for(size_t no= 0; no < comprimento; no++)
-        resultado\[no\]= entrada\[no\] * entrada\[no\];
+void square(double *out, const double *in, size_t length)
+{
+    for (size_t i = 0; i < length; i++) {
+	out[i] = in[i] * in[i];
+    }
 }
 ```
 
 
-Este contém um tipo simples e comum de loop, que faz exatamente a mesma coisa a cada elemento da sua matriz de entrada. Como podemos escrever este circuito em Haskell?
+Este contém um tipo simples e comum de loop, que faz exatamente a mesma coisa a cada elemento do seu array de entrada. Como podemos escrever este loop em Haskell?
 
 
 ```haskell
@@ -737,11 +727,12 @@ square (x:xs) = x*x : square xs
 square []     = []
 ```
 
-Nossa função `quadrado` consiste de duas equações a correspondência de padrão. O primeiro “desconstrói” o início de uma lista não-vazia, para obter a sua cabeça ea cauda. É praças o primeiro elemento, em seguida, coloca que na frente de uma nova lista, que é construída chamando `quadrado` no restante da lista vazio. A segunda equação garante que `quadrado` pára quando ela atinge o final da lista de entrada.
+Nossa função `square` consiste em duas equações com casamento de padrões. A primeira "desconstrói" o começo de uma lista não vazia, para obter sua cabeça e cauda. Ela eleva ao quadrado o primeiro elemento, depois coloca isso na frente de uma nova lista, que é construída chamando square para o restante da lista. A segunda equação assegura que `square` seja interrompido quando atingir o final da lista de entrada.
 
-O efeito de `quadrado` é a construção de uma nova lista que é do mesmo tamanho que a sua lista de entrada, com cada elemento da lista de entrada com a sua praça substituído na lista de saída.
+O efeito de `square` é construir uma nova lista com o mesmo tamanho de sua lista de entrada, com cada elemento na lista de entrada substituído por seu quadrado na lista de saída. 
 
-Aqui está um outro ciclo C tal, aquele que garante que cada letra em uma string é convertida em maiúsculas.
+Aqui está outro loop C, que assegura que cada letra em uma string seja convertida em maiúscula.
+
 
 ```c
 #include <ctype.h>
@@ -772,9 +763,9 @@ upperCase (x:xs) = toUpper x : upperCase xs
 upperCase []     = []
 ```
 
-Aqui, nós estamos importando a função `toUpper` do módulo padrão `Data.Char`, que contém grande quantidade de funções úteis para trabalhar com dados Char.
+Aqui, nós estamos importando a função `toUpper` do módulo padrão `Data.Char`, que contém uma grande quantidade de funções úteis para trabalhar com dados Char.
 
-Nossa função `maiuscula` segue um padrão semelhante à nossa função anterior `quadrado`. Ele termina com uma lista vazia quando a lista de entrada está vazia, e quando a entrada não estiver vazia, ela chama `toUpper` no primeiro elemento, em seguida, constrói uma nova lista de células e que o resultado de chamar-se sobre o resto da entrada lista.
+Nossa função `upperCase` segue um padrão semelhante à nossa função anterior `square`. Ela termina com uma lista vazia quando a lista de entrada está vazia, e quando a entrada não estiver vazia, ela chama `toUpper` no primeiro elemento, em seguida, constrói uma nova lista de com o resultado de chamar-se sobre o resto da entrada da lista.
 
 Estes exemplos seguem um padrão comum para escrever funções recursivas sobre listas em Haskell. O _caso base_ lida com a situação onde a nossa entrada lista está vazia. O _caso recursivo_ trata de uma lista não-vazia, que faz algo com a cabeça da lista, e se chama recursivamente na cauda.
 
