@@ -1241,7 +1241,7 @@ O artigo \[[Hutton99](bibliography.html#bib.hutton99 "[Hutton99]")\] é um excel
 
 ### Funções anónimas (lambda)
 
-Em muitas das definições de funções que vimos até agora, nós escrevemos funções de auxiliar de curta duração.
+Em muitas das definições de funções que vimos até agora, nós escrevemos pequenas funções de auxiliares.
 
 ```haskell
 -- file: ch04/Partial.hs
@@ -1249,20 +1249,21 @@ isInAny needle haystack = any inSequence haystack
     where inSequence s = needle `isInfixOf` s
 ```
 
-Haskell lets us write completely anonymous functions, which we can use to avoid the need to give names to our helper functions. Anonymous functions are often called “lambda” functions, in a nod to their heritage in the lambda calculus. We introduce an anonymous function with a backslash character, `\`, pronounced _lambda_\[[9](#ftn.id594951)\]. This is followed by the function's arguments (which can include patterns), then an arrow `->`to introduce the function's body. 
 
-Lambdas are most easily illustrated by example. Here's a rewrite of `isInAny`using an anonymous function. 
+Haskell nos permite escrever funções completamente anônimas, que podemos usar para evitar a necessidade de dar nomes às nossas funções auxiliares. Funções anônimas são freqüentemente chamadas de funções “lambda”, em concordância com sua herança no cálculo lambda. Nós introduzimos uma função anônima com um caractere de barra invertida, `\`, pronunciado lambda . Isto é seguido pelos argumentos da função (que podem incluir padrões), então uma seta `->` para introduzir o corpo da função.
+
+Os lambdas são mais facilmente ilustrados pelo exemplo. Aqui está uma reescrita de `isInAny` usando uma função anônima.
 
 ```haskell
 -- file: ch04/Partial.hs
 isInAny2 needle haystack = any (\s -> needle `isInfixOf` s) haystack
 ```
 
-Nós colocaremos o lambda parênteses aqui para que Haskell pode dizer onde o corpo da função termina.
+Nós colocamos o lambda entre parênteses aqui para que o Haskell possa identntificar onde o corpo da função termina.
 
-Funções anónimos se comportar de forma idêntica em todos os aspectos das funções que têm nomes, mas Haskell coloca algumas restrições importantes sobre como podemos defini-los. O mais importante, enquanto nós podemos escrever uma função normal usando várias cláusulas contendo diferentes modelos e os guardas, um lambda pode ter apenas uma única cláusula na sua definição.
+Funções anónimos se comportam de forma idêntica em todos os aspectos as funções que têm nomes, mas Haskell coloca algumas restrições importantes sobre como podemos defini-las. O mais importante, enquanto nós podemos escrever uma função normal usando várias cláusulas contendo diferentes patterns e guards, um lambda pode ter apenas uma única cláusula na sua definição.
 
-A limitação a uma única cláusula restringe como podemos usar os padrões na definição de uma lambda. Vamos escrever uma função geralmente normal, com várias cláusulas para cobrir possibilidades diferentes padrões de correspondência.
+A limitação a uma única cláusula restringe como podemos usar os patterns na definição de um lambda. Nos usualmente vamos escrever uma função geralmente normal, com várias cláusulas para cobrir possibilidades diferentes patterns.
 
 ```haskell
 -- file: ch04/Lambda.hs
@@ -1270,14 +1271,14 @@ safeHead (x:_) = Just x
 safeHead _ = Nothing
 ```
 
-Mas como não podemos escrever várias cláusulas para definir uma lambda, devemos estar certos de que qualquer padrão que usamos fósforo.
+Mas como não podemos escrever várias cláusulas para definir um lambda, devemos estar certos de que qualquer padrão que usamos case.
 
 ```haskell
 -- file: ch04/Lambda.hs
 unsafeHead = \(x:_) -> x
 ```
 
-Esta definição de `headInseguro` vai explodir em nossas faces se chamá-lo com um valor em que a correspondência de padrão falhar.
+Esta definição de `unsafeHead` vai explodir em nossas faces se chamá-lo com um valor em que a correspondência de padrão falhar.
 
     ghci> :type unsafeHead
     unsafeHead :: [t] -> t
@@ -1286,13 +1287,14 @@ Esta definição de `headInseguro` vai explodir em nossas faces se chamá-lo com
     ghci> unsafeHead []
     *** Exception: Lambda.hs:7:13-23: Non-exhaustive patterns in lambda
 
-A definição typechecks, assim ele vai compilar, então o erro irá ocorrer durante a execução. A moral desta história é que ter cuidado em como usar padrões para definir uma função anônima: certifique-se de seus padrões não pode falhar!
 
-Outra coisa a notar sobre as funções `isInAny` e `isInAny2` que mostrei acima é que a primeira versão, usando uma função auxiliar que tem um nome, é um pouco mais fácil de ler que a versão que se estatela uma função anônima para o meio. A função de auxiliar nomeado não perturbar o “fluxo” de a função na qual ele é usado, eo nome escolhido criteriosamente nos dá um pouco de informação sobre o que a função é esperado.
+A definição tipechecks, portanto, ele será compilado, portanto, o erro ocorrerá no tempo de execução. A moral dessa história é ter cuidado ao usar padrões ao definir uma função anônima: certifique-se de que seus padrões não podem falhar!
 
-Em contraste, quando corremos em um lambda no meio de um corpo da função, temos de trocar as marchas e ler a sua definição bastante cuidado para entender o que ele faz. Para ajudar com a legibilidade e facilidade de manutenção, então, tendemos a evitar lambdas em muitas situações onde poderíamos utilizá-los para cortar alguns personagens de uma definição de função. Muitas vezes, nós vamos usar uma função parcialmente aplicado em vez disso, resultando em um código mais claro e legível do que qualquer um lambda ou uma função explícita. Não sei o que uma função parcialmente aplicado é ainda? Leia mais!
+Outra coisa a notar sobre as funções isInAny e isInAny2 que mostramos acima é que a primeira versão, usando uma função auxiliar que possui um nome, é um pouco mais fácil de ler do que a versão que coloca uma função anônima no meio. A função auxiliar nomeada não interrompe o "fluxo" da função na qual é usada, e o nome criteriosamente escolhido nos fornece um pouco de informação sobre o que se espera que a função faça. 
 
-Nós não pretendemos estas advertências para sugerir que lambdas são inúteis, mas apenas que devemos estar atentos às possíveis armadilhas quando estamos pensando em utilizá-los. Nos capítulos seguintes, veremos que são muitas vezes de valor inestimável como “cola”.
+Em contraste, quando nos deparamos com um lambda no meio de um corpo de função, temos que mudar de marcha e ler sua definição com bastante cuidado para entender o que ela faz. Para ajudar na legibilidade e manutenção, tendemos a evitar lambdas em muitas situações em que podemos usá-los para aparar alguns caracteres de uma definição de função. Muitas vezes, usaremos uma função parcialmente aplicada, resultando em um código mais claro e legível do que uma função lambda ou explícita. Não sabe o que é uma função parcialmente aplicada ainda? Leia!
+
+Não pretendemos que essas advertências sugiram que os lambdas sejam inúteis, meramente que devemos estar conscientes das potenciais armadilhas quando estamos pensando em usá-las. Nos próximos capítulos, veremos que eles são frequentemente inestimáveis como “cola”.
 
 ### Aplicação parcial da função e currying
 
@@ -1303,18 +1305,18 @@ Você pode se perguntar por que a seta `->` é usado para o que parece ser a doi
 
 Parece que o `->` é separar os argumentos para `dropWhile` umas das outras, mas que também separa os argumentos do tipo de retorno. Mas, na verdade `->` tem apenas um significado: ele denota uma função que recebe um argumento do tipo à esquerda, e retorna um valor do tipo do lado direito.
 
-A implicação aqui é muito importante: em Haskell, _todas as funções de tomar apenas um argumento_. Quando `dropWhile` _parece_ como uma função que recebe dois argumentos, é realmente uma função de um argumento, que retorna uma função que recebe um argumento. Aqui está uma expressão perfeitamente válida Haskell.
+A implicação aqui é muito importante: em Haskell, _todas as funções tomam apenas um argumento_. Quando `dropWhile` _parece_ como uma função que recebe dois argumentos, é realmente uma função de um argumento, que retorna uma função que recebe um argumento. Aqui está uma expressão perfeitamente válida Haskell.
 
     ghci> :module +Data.Char
     ghci> :type dropWhile isSpace
     dropWhile isSpace :: [Char] -> [Char]
 
-Bem, _isso_ parece útil. O valor `dropWhile isSpace` é uma função que retira líder espaço em branco de uma string. Como isso é útil? Como exemplo, podemos usá-lo como um argumento para uma função de ordem superior.
+Bem, _isso_ parece útil. O valor `dropWhile isSpace` é uma função que retira espaço em branco de uma string. Como isso é útil? Como exemplo, podemos usá-lo como um argumento para uma função de ordem superior.
 
     ghci> map (dropWhile isSpace) [" a","f","   e"]
     ["a","f","e"]
 
-Toda vez que nós fornecemos um argumento para uma função, nós podemos “cortar” um elemento fora da parte dianteira de sua assinatura tipo. Vamos tomar como exemplo `zip3` para ver o que queremos dizer, esta é uma função que fecha três listas em uma lista de três tuplas.
+Toda vez que nós fornecemos um argumento para uma função, nós podemos “cortar” um elemento do inicio de sua assinatura. Vamos tomar como exemplo `zip3` para ver o que queremos dizer, esta é uma função que `zip` três listas em uma lista de três tuplas.
 
     ghci> :type zip3
     zip3 :: [a] -> [b] -> [c] -> [(a, b, c)]
@@ -1336,7 +1338,7 @@ Se aplicarmos `zip3` com apenas um argumento, temos uma função que aceita dois
     ghci> zip3foo [1,2,3] [True,False,True]
     [('f',1,True),('o',2,False),('o',3,True)]
 
-Quando passamos menos argumentos para uma função que a função pode aceitar, nós chamamos isso de _aplicação parcial_ da função: estamos aplicando a função a que apenas alguns de seus argumentos.
+Quando passamos menos argumentos para uma função que a função pode aceitar, nós chamamos isso de _aplicação parcial_ da função: estamos aplicando a função a apenas alguns de seus argumentos.
 
 No exemplo acima, temos uma função aplicada parcialmente, `zip3 "foo"`, e uma nova função, `zip3foo`. Podemos ver que as assinaturas do tipo dois e seu comportamento são idênticos.
 
@@ -1350,18 +1352,17 @@ Isto aplica-se tão bem se fixar dois argumentos, dando-nos uma função de apen
     ghci> zip3foobar [1,2]
     [('f','b',1),('o','a',2)]
 
-Aplicação parcial de função nos permite evitar a criação de funções descartáveis cansativo. Muitas vezes é mais útil para este propósito que as funções anônimas que introduzimos na [seção chamada “Funções (lambda) anónimos”](#fp.anonymous "seção chamada “Funções (lambda) anónimos”"). Olhando para trás, a função `isInAny` nós definimos lá, aqui está como nós usaríamos uma função parcialmente aplicado em vez de uma função auxiliar chamada ou uma lambda.
+Aplicação parcial de função nos permite evitar a criação cansativa de funções descartáveis. Muitas vezes é mais útil para este propósito que as funções anônimas que introduzimos na [seção chamada “Funções (lambda) anónimos”](#fp.anonymous "seção chamada “Funções (lambda) anónimos”"). Olhando para trás, a função `isInAny` nós definimos lá, aqui está como nós usaríamos uma função parcialmente aplicado em vez de uma função auxiliar chamada ou uma lambda.
 
 ```haskell
 -- file: ch04/Partial.hs
 isInAny3 needle haystack = any (isInfixOf needle) haystack
 ```
+Aqui, a expressão `isInfixOf needle` é a função aplicada parcialmente. Nós estamos tomando a função `isInfixOf`, e “corrigindo” seu primeiro argumento a ser a variável de `needle` de nossa lista de parâmetros. Isso nos dá uma função parcialmente aplicada que tem exatamente o mesmo tipo de comportamento e como o `helper` e lambda em nossas definições anteriores.
 
-Aqui, a expressão `isInfixOf needle` é a função aplicada parcialmente. Nós estamos tomando a função `isInfixOf`, e “consertar” seu primeiro argumento a ser a variável de `needle` de nossa lista de parâmetros. Isso nos dá uma função parcialmente aplicada que tem exatamente o mesmo tipo de comportamento e como o ajudante e lambda em nossas definições anteriores.
+Aplicação de função parcial é chamado _currying_, após o lógico Haskell Curry (para quem a linguagem Haskell foi nomeada).
 
-Aplicação de função parcial é chamado _currying_, após o lógico Haskell Curry (para quem a linguagem Haskell é chamado).
-
-Como outro exemplo de currying em uso, vamos voltar para a função lista-resumo que escrevi na [seção chamada “A fold esquerda”](#fp.foldl "seção chamada “A fold esquerda”").
+Como outro exemplo de currying em uso, vamos voltar para a função lista-soma que escrevi na [seção chamada “A fold esquerda”](#fp.foldl "seção chamada “A fold esquerda”").
 
 ```haskell
 -- file: ch04/Sum.hs
@@ -1379,7 +1380,7 @@ nicerSum = foldl (+) 0
 
 #### Secções
 
-Haskell fornece um atalho útil para notação vamos escrever uma função parcialmente aplicadas em estilo infixo. Se colocar um operador em parênteses, nós podemos fornecer o seu argumento a esquerda ou direita dentro dos parênteses para obter uma função aplicada parcialmente. Este tipo de aplicação parcial é chamado de _section_.
+Haskell fornece um atalho útil para notação vamos escrever uma função parcialmente aplicada em estilo infixo. Se colocar um operador em parênteses, nós podemos fornecer o seu argumento a esquerda ou direita dentro dos parênteses para obter uma função aplicada parcialmente. Este tipo de aplicação parcial é chamado de _section_.
 
     ghci> (1+) 2
     3
@@ -1389,9 +1390,9 @@ Haskell fornece um atalho útil para notação vamos escrever uma função parci
     [8,32,128,512]
 
 
-Se nos fornecer o argumento à esquerda dentro da seção, chamando a função resultante com um material argumento argumento do lado direito do operador. E vice-versa.
+Se fornecermos o argumento esquerdo dentro da seção, chamar a função resultante com um argumento fornece o argumento direito do operador. E vice versa.
 
-Lembre-se que nós podemos envolver um nome de função em backquotes usá-lo como um operador infixo. Isto nos permite usar seções com funções.
+Lembre-se de que podemos incluir um nome de função em backquotes para usá-lo como um operador infixo. Isso nos permite usar seções com funções
 
     ghci> :type (`elem` ['a'..'z'])
     (`elem` ['a'..'z']) :: Char -> Bool
@@ -1417,7 +1418,7 @@ isInAny4 needle haystack = any (needle `isInfixOf`) haystack
 ### As-patterns
 
 
-A função Haskell `tails`, no módulo `Data.List`, generaliza a função `tail` foi introduzida recentemente. Em vez de retornar uma “cauda” da lista, ele retorna _todos_ eles.
+A função Haskell `tails`, no módulo `Data.List`, generaliza a função `tail` que introduzimos recentemente. Em vez de retornar uma “cauda” da lista, ela retorna _todos_ eles.
 
     ghci> :m +Data.List
     ghci> tail "foobar"
@@ -1427,7 +1428,7 @@ A função Haskell `tails`, no módulo `Data.List`, generaliza a função `tail`
     ghci> tails "foobar"
     ["foobar","oobar","obar","bar","ar","r",""]
 
-Cada uma dessas cadeias é um _sufixo_ de String inicial, para `tails` produz uma lista de todos os sufixos, além de uma lista vazia extra no final. Ela produz sempre que a lista extra vazio, mesmo quando sua lista de entrada está vazia.
+Cada uma dessas cadeias é um _sufixo_ da String inicial, para `tails` produz uma lista de todos os sufixos, além de uma lista vazia extra no final. Ela produz sempre que uma lista extra vazia, mesmo quando sua lista de entrada estiver vazia.
 
     ghci> tails []
     [[]]
@@ -1441,40 +1442,39 @@ suffixes xs@(_:xs') = xs : suffixes xs'
 suffixes _ = []
 ```
 
-O padrão `xs@(_:xs')` é chamado um _padrão as_, e significa “ligar o variável `xs` para o valor que corresponda ao lado direito do símbolo `@`”.
+O padrão `xs@(_:xs')` é chamado um _padrão as_, e significa “ligar a variável `xs` para o valor que corresponda ao lado direito do símbolo `@`”.
 
-No nosso exemplo, se o padrão depois do “@” corresponde, `xs` será obrigado a toda a lista que combinava e `xs'` para todos, mas o cabeça da lista (usamos o padrão wild card `_` para indicar que estamos não está interessado no valor do cabeça de lista).
+No nosso exemplo, se o padrão depois do “@” corresponde, `xs` será obrigado a toda a lista que combinava e `xs'` para todos, mas a cabeça da lista (usamos o padrão wild card `_` para indicar que não estamos interessados no valor do cabeça de lista).
 
     ghci> tails "foo"
     ["foo","oo","o",""]
     ghci> suffixes "foo"
     ["foo","oo","o"]
 
-O padrão as torna o código nosso mais legível. Para ver como isso ajuda, vamos comparar uma definição que não tenha um padrão as.
+O _padrão a  (pattern-as)_ torna o código nosso mais legível. Para ver como isso ajuda, vamos comparar uma definição que não tenha um padrão as.
 
     -- file: ch04/SuffixTree.hs
     noAsPattern :: [a] -> [[a]]
     noAsPattern (x:xs) = (x:xs) : noAsPattern xs
     noAsPattern _ = []
 
-Aqui, a lista que nós desconstruído no padrão de jogo só fica colocada de volta em conjunto no corpo da função.
+Aqui, a lista que nós desconstruímos no _pattern matching_ é colocada de volta no corpo da função.
 
-Padrões as ter um uso mais prático do que a leitura simples: eles podem nos ajudar a compartilhar dados, em vez de copiá-lo. Em nossa definição de `semPadrãoAs`, quando jogo `(x:xs)`, vamos construir uma nova cópia dele no corpo da nossa função. Isso nos leva a atribuir um nó nova lista em tempo de execução. Isso pode ser barato, mas não é livre. Em contraste, quando nós definimos `sufixos`, reutilizadas o valor `xs` que nós combinamos com o nosso como padrão. Desde que reutilizar um valor existente, evitamos uma atribuição pouco.
+As-patterns têm um uso mais prático do que a simples legibilidade: elas podem nos ajudar a compartilhar dados em vez de copiá-los. Em nossa definição de noAsPattern, quando combinamos (x: xs), construímos uma nova cópia no corpo de nossa função. Isso nos faz alocar um novo nó de lista em tempo de execução. Isso pode ser barato, mas não é gratuito. Em contraste, quando definimos sufixos, reutilizamos o valor xs que combinamos com nosso padrão. Como reutilizamos um valor existente, evitamos uma pequena alocação.
 
 ### Reutilização de código através da composição
 
 
-Parece uma vergonha para introduzir uma nova função, `sufixos`, que faz quase a mesma coisa que a função existente `tails`. Certamente nós podemos fazer melhor?
+Parece uma vergonhoso introduzir uma nova função, `sufixos`, que faz quase a mesma coisa que a função existente `tails`. Certamente nós podemos fazer melhor?
 
-Lembre-se da função `init` introduzimos na [seção chamada “Trabalhar com as listas”](#fp.lists "seção chamada “Trabalhar com as listas”"): retorna todos, mas o último elemento de uma lista.
+Lembre-se da função `init` que introduzimos na [seção chamada “Trabalhar com as listas”](#fp.lists "seção chamada “Trabalhar com as listas”"): retorna todos, mas o último elemento de uma lista.
 
 ```haskell
 -- file: ch04/SuffixTree.hs
 suffixes2 xs = init (tails xs)
 ```
 
-Esta função `sufixos2` funciona igualmente a `sufixos`, mas é um única linha de código.
-
+Esta função `sufixos2` funciona igualmente a `sufixos`, mas em um única linha de código.
 
     ghci> suffixes2 "foo"
     ["foo","oo","o"]
@@ -1487,22 +1487,21 @@ compose :: (b -> c) -> (a -> b) -> a -> c
 compose f g x = f (g x)
 ```
 
-
-Agora temos uma função, `compor`, que podemos usar para “cola” outras duas funções em conjunto.
+Agora temos uma função, `compose`, que podemos usar para “colar” outras duas funções em conjunto.
 
 ```haskell
 -- file: ch04/SuffixTree.hs
 suffixes3 xs = compose init tails xs
 ```
 
-O currying automático do Haskell nos deixa cair a variável `xs`para que possamos fazer a nossa definição ainda mais curtos.
+O currying automático do Haskell nos deixa ignorar a variável `xs`para que possamos fazer a nossa definição ainda mais curta.
 
 ```haskell
 -- file: ch04/SuffixTree.hs
 suffixes4 = compose init tails
 ```
 
-Felizmente, não precisamos de escrever a nossa própria função `compor`. Ligar funções em cada um, como isto é tão comum que a Prelude fornece composição das funções através do operador `(.)`.
+Felizmente, não precisamos de escrever a nossa própria função `compose`. Ligar funções entre si, como isto é tão comum que a Prelude fornece composição das funções através do operador `(.)`.
 
 ```haskell
 -- file: ch04/SuffixTree.hs
@@ -1520,28 +1519,27 @@ O operador `(.)` não é uma parte especial da sintaxe da linguagem, é apenas u
     ghci> suffixes5 "foo"
     ["foo","oo","o"]
 
-Podemos criar novas funções a qualquer momento por escrito cadeias de funções compostas, costurado com `(.)`, tanto tempo (é claro) como o tipo de resultado da função no lado direito de cada um `(.)` corresponde ao tipo de parâmetro que o função na esquerda pode aceitar.
+Podemos criar novas funções a qualquer momento, escrevendo cadeias de funções compostas, costuradas junto com (.), Tão longas (claro) como o tipo de resultado da função à direita de cada (.) Corresponde ao tipo de parâmetro que o função à esquerda pode aceitar. 2 comentários
 
-Como exemplo, vamos resolver um enigma muito simples: a contagem do número de palavras em uma seqüência que começa com uma letra maiúscula.
-
-    ghci> :module +Data.Char
-    ghci> let capCount = length . filter (isUpper . head) . words
-    ghci> capCount "Hello there, Mom!"
-    2
-
-
-Podemos entender que esta função é composta pela análise das suas peças. A função `(.)` é associativa direito, por isso vamos prosseguir da direita para a esquerda.
+Como exemplo, vamos resolver um quebra-cabeça simples: contando o número de palavras em uma string que começa com uma letra maiúscula.
 
     ghci> :module +Data.Char
     ghci> let capCount = length . filter (isUpper . head) . words
     ghci> capCount "Hello there, Mom!"
     2
 
-A função `words` tem um tipo de resultado de \[String\], para o que está no lado esquerdo de `(.)` deve aceitar um argumento compatível.
 
+Podemos entender que esta função é composta pela análise das suas partes. A função `(.)` é associativa direita, por isso vamos prosseguir da direita para a esquerda.
+
+    ghci> :module +Data.Char
+    ghci> let capCount = length . filter (isUpper . head) . words
+    ghci> capCount "Hello there, Mom!"
+    2
+
+A função `words` tem como resultado o tipo `[String]`, então o que estiver no lado esquerdo de (.) Deve aceitar um argumento compatível
+    
     ghci> :type isUpper . head
     isUpper . head :: [Char] -> Bool
-
 
 Essa função retorna `True` se uma palavra começa com uma letra maiúscula (testá-lo em **ghci**), os `filter (isUpper . head)` retorna uma lista de Strings contendo apenas palavras que começam com letras maiúsculas.
 
@@ -1550,7 +1548,7 @@ Essa função retorna `True` se uma palavra começa com uma letra maiúscula (te
 
 Uma vez que esta expressão retorna uma lista, tudo o que resta é calcular o comprimento da lista, o que fazemos com outra composição.
 
-Aqui está outro exemplo, retirado de uma aplicação real. Queremos extrair uma lista de nomes de macro de um arquivo de cabeçalho C acompanha `libpcap`, uma biblioteca popular pacote de filtragem de rede. O arquivo de cabeçalho contém um grande número de definições da seguinte forma.
+Aqui está outro exemplo, retirado de uma aplicação real. Queremos extrair uma lista de nomes de macro de um arquivo de cabeçalho C retirado de `libpcap`, uma biblioteca popular pacote de filtragem de rede. O arquivo de cabeçalho contém um grande número de definições da seguinte forma.
 
 ```c
 #define DLT_EN10MB      1       /* Ethernet (10Mb) */
@@ -1570,7 +1568,7 @@ dlts :: String -> [String]
 dlts = foldr step [] . lines
 ```
 
-Nós tratamos todo um arquivo como uma String, dividi-lo com `lines`, em seguida, aplicar `foldr passo []` para a lista resultante de linhas. A função de auxiliar `passo` opera em uma única linha.
+Nós tratamos todo um arquivo como uma String, dividi-lo com `lines`, em seguida, aplicamos `foldr step []` para a lista resultante de linhas. A função de auxiliar `step` opera em uma única linha.
 
 ```haskell
 -- file: ch04/dlts.hs
