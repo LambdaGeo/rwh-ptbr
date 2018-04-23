@@ -253,7 +253,7 @@ As funções `isInfixOf`e `isSuffixOf`correspondem em qualquer lugar em uma list
 
 Não existe uma regra rígida que determine quando você deve usar a notação infix versus prefix, embora a notação de prefixo seja muito mais comum. É melhor escolher o que tornar seu código mais legível em uma situação específica. 
 
->![[Note]](support/figs/note.png)**Cuidados com anotação familia em uma linguagem desconhecida**
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**Cuidados com anotação familia em uma linguagem desconhecida**
 
 >Algumas outras linguagens de programação usam backticks, mas apesar das semelhanças visuais, o propósito dos backticks em Haskell não remotamente lembra seu significado em, por exemplo, scripts shell Perl, Python ou Unix. Sem comentários
 
@@ -661,9 +661,9 @@ loop acc (x:xs) = let acc' = acc * 10 + digitToInt x
 
 Nós calculamos um novo valor para o acumulador e damos o nome acc '. Em seguida, chamamos a função loop novamente, passando o valor atualizado acc 'e o resto da lista de entrada; isso é equivalente ao loop escrito em C.
 
-![[Note]](support/figs/note.png)
 
->**As aspas simples em nomes de variáveis**
+
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**As aspas simples em nomes de variáveis**
 
 >Lembre-se, uma aspa simples é um caractere legal para ser usado em um nome de variável do Haskell e é pronunciado como “primo”. Há um idioma comum em programas do Haskell envolvendo uma variável, digamos foo, e outra variável, digamos foo '. Normalmente podemos supor que foo 'é de alguma forma relacionado a foo. Geralmente é um novo valor para foo, como em nosso código acima. 15 comentários
 
@@ -692,9 +692,9 @@ Chamamos o caso não-recursivo (quando a lista estiver vazia) e de o _caso de ba
 
 Como uma técnica útil, recursão estrutural não está confinada a lista, podemos usá-lo em outros tipos de dados algébricos, também. Teremos mais a dizer sobre isso mais tarde.
 
-![[Note]](support/figs/note.png)
 
->Qual é a grande coisa sobre recursão de cauda?
+
+>![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**Qual é a grande coisa sobre recursão de cauda?**
 
 Em uma linguagem imperativa, um loop é executado em espaço constante. Faltando loops, usamos funções recursivas de cauda em Haskell. Normalmente, uma função recursiva aloca algum espaço cada vez que se aplica, portanto, sabe para onde retornar.
 
@@ -804,9 +804,9 @@ myMap f (x:xs) = f x : myMap f xs
 myMap _ _      = []
 ```
 
-![[Note]](support/figs/note.png)
 
-> O que esses curingas estão fazendo lá?
+
+> ![[Note]]({{site.url}}/rwh-ptbr/assets/note.png)**O que esses curingas estão fazendo lá?**
 
 >Se você é novo em programação funcional, as razões para combinar padrões de certas maneiras nem sempre serão óbvias. Por exemplo, na definição de myMap acima, a primeira equação liga a função que estamos mapeando para a variável f, mas a segunda usa curingas para os dois parâmetros. O que está acontecendo? 
 
@@ -1071,9 +1071,9 @@ myFoldl f z xs = foldr step id xs z
 ```
 
 
-![[Tip]](support/figs/tip.png)
 
->Compreender foldl em termos de foldr
+
+>![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png)**Compreender foldl em termos de foldr**
 
 >Se você quiser definir-se um desafio contínuo, tente seguir a definição acima de `foldl` usando `foldr`. Esteja avisado: isto não é trivial! Você pode querer ter as seguintes ferramentas na mão: algumas pílulas de dor de cabeça e um copo de água, **ghci**(para que você possa descobrir o que faz a função `id`), e um lápis e papel.
 
@@ -1633,7 +1633,7 @@ A função `foldl` que discutimos anteriormente não é o único lugar onde pode
 
 
 
->![[Tip]](support/figs/tip.png) Você precisa saber de tudo isso agora?
+>![[Tip]]({{site.url}}/rwh-ptbr/assets/tip.png) **Você precisa saber de tudo isso agora?**
 
 >É perfeitamente razoável para pular esta seção até que você encontrar um space leak “in the wild”. Desde que você usa `foldr` se você estiver gerando uma lista, e `foldl'` em vez de `foldl` contrário, vazamentos de espaço não são susceptíveis de incomodá-lo na prática por um tempo.
 
@@ -1753,7 +1753,7 @@ Os melhores guias para saber se o seq é necessário e como ele está funcionand
 
 \[[9](#id594951)\] A barra invertida foi escolhido por sua semelhança visual com a letra grega lambda, `λ`. Embora GHC pode aceitar a entrada Unicode, ele trata corretamente `λ` como uma letra, não como sinônimo de `\`.
 
-![](support/figs/rss.png) Quer ficar atualizado? Assine o feed comentário para [este capítulo](http://book.realworldhaskell.org/feeds/comments/fp/), ou o [livro inteiro](http://book.realworldhaskell.org/feeds/comments/).
+![]({{site.url}}/rwh-ptbr/assets/rss.png) Quer ficar atualizado? Assine o feed comentário para [este capítulo](http://book.realworldhaskell.org/feeds/comments/fp/), ou o [livro inteiro](http://book.realworldhaskell.org/feeds/comments/).
 
 Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart e John Goerzen. Esta obra está licenciada sob uma [Creative Commons Attribution-Noncommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/). Ícones por [Paul Davey](mailto:mattahan@gmail.com) aka [Mattahan](http://mattahan.deviantart.com/). Tradução por Doralice de Araujo Chaves, Sergio Souza Costa, Nick Rudnick e [Google Translate](http://www.google.com/).
 
