@@ -1578,9 +1578,9 @@ Nós tratamos todo um arquivo como uma String, dividi-lo com `lines`, em seguida
         secondWord = head . tail . words
 ```
 
-Se coincidir com uma definição de macro com a nossa expressão guarda, podemos contras o nome da macro para a cabeça da lista que está retornando, caso contrário, deixamos a lista intocada.
+Se coincidir com uma definição de macro com a nossa expressão guard, podemos construir `cons` o nome da macro para a cabeça da lista que está retornando, caso contrário, deixamos a lista intocada.
 
-Enquanto as funções individuais do corpo de `palavra2` estão agora familiar para nós, pode levar um pouco de prática para montar uma cadeia de composições como esta. Vamos examinar o processo.
+Enquanto as funções individuais do corpo de `secondWord` estão agora familiar para nós, pode levar um pouco de prática para montar uma cadeia de composições como esta. Vamos examinar o processo.
 
 Mais uma vez, procede da direita para a esquerda. A primeira função é `words`. 
 
@@ -1600,7 +1600,7 @@ Em seguida, aplicamos `tail` para o resultado de `words`.
     ghci> (tail . words) "#define DLT_CHAOS    5"
     ["DLT_CHAOS","5"]
 
-Finalmente, aplicando `head` para o resultado de `drop 1 . words` nos dará o nome de nossa macro.
+Finalmente, aplicamos `head` para o resultado de `drop 1 . words` nos dará o nome de nossa macro.
 
     ghci> :type head . tail . words
     head . tail . words :: String -> String
@@ -1609,38 +1609,39 @@ Finalmente, aplicando `head` para o resultado de `drop 1 . words` nos dará o no
 
 #### Use "head" sabiamente
 
-Depois da advertência contra lista de funções inseguras na [seção chamada “Trabalhar segura e saudavelmente a com funções crashy”](#fp.lists.safe "seção chamada “Trabalhar segura e saudavelmente a com funções crashy”"), aqui estamos chamando tanto a `head` e a `tail`, duas dessas funções de lista inseguro. O Que Dá?
+Depois da advertência contra lista de funções inseguras na [seção chamada “Trabalhar segura e saudavelmente a com funções crashy”](#fp.lists.safe "seção chamada “Trabalhar segura e saudavelmente a com funções crashy”"), aqui estamos chamando tanto a `head` e a `tail`, duas dessas funções inseguras de lista 
 
-Neste caso, podemos nos assegurar de inspeção que estamos seguros de uma falha de execução. O guarda padrão na definição de `passo` contém duas palavras, por isso quando nós aplicamos `words` a qualquer String de palavras que faz passar pelo guarda, que vamos ter uma lista de pelo menos dois elementos, `"#define"` e alguns macro iniciando com `"DLT_"`.
+Neste caso, podemos nos assegurar de inspeção que estamos seguros de uma falha de execução. O pattern guard na definição de `step` contém duas palavras, por isso quando nós aplicamos `words` a qualquer String de palavras que faz passar pelo guard, que vamos ter uma lista de pelo menos dois elementos, `"#define"` e alguma macro iniciando com `"DLT_"`.
 
-Este tipo de raciocínio que devemos fazer para nos convencermos de que nosso código não vai explodir quando chamamos funções parciais. Não se esqueça nossa admoestação anterior: chamar funções inseguro como este requer cuidados, e muitas vezes pode tornar o código mais frágil de maneira sutil. Se por algum motivo, modificou o padrão de proteção para conter apenas uma palavra, poderíamos nos expor à possibilidade de um acidente, como o corpo da função assume que receberá duas palavras.
+Este tipo de raciocínio que devemos fazer para nos convencermos de que nosso código não vai explodir quando chamamos funções parciais. Não se esqueça nossa admoestação anterior: chamar funções inseguras como este requer cuidados, e muitas vezes pode tornar o código mais frágil de maneira sutil. Se por algum motivo, modificou o pattern guarda para conter apenas uma palavra, poderíamos nos expor à possibilidade de um acidente, como o corpo da função assume que receberá duas palavras.
 
 ### Dicas para escrever código legível
 
+Até agora, neste capítulo, nos deparamos com duas características tentadoras de Haskell: recursão de cauda e funções anônimas. Por mais legais que sejam, não queremos usá-los com frequência. 
 
-Até agora, neste capítulo, me deparei com duas características tentador olhar de Haskell: recursão de cauda e funções anônimas. Tão agradável como estes são, muitas vezes não se deseja usá-los.
+Muitas operações de manipulação de listas podem ser mais facilmente expressas usando combinações de funções de biblioteca, como map, take e filter. Sem dúvida, é preciso alguma prática para se acostumar a usá-los. Em troca de nosso investimento inicial, podemos escrever e ler o código mais rapidamente e com menos bugs.
 
-Muitas operações de manipulação de lista pode ser mais facilmente expressos usando combinações de funções de biblioteca, tais como `map`, `take`, e `filter`. Sem dúvida, isto requer alguma prática para se acostumar com estes. No retorno para nosso investimento inicial, podemos ler e escrever código mais rapidamente e com menos bugs.
+A razão para isso é simples. Uma definição de função recursiva de cauda tem o mesmo problema que um loop em uma linguagem imperativa: é completamente geral. Pode realizar alguma filtragem, algum mapeamento ou quem sabe o que mais. Somos forçados a examinar detalhadamente toda a definição da função para ver o que ela realmente está fazendo. Em contraste, o `map` e a maioria das outras funções de manipulação de listas fazem apenas uma coisa. Podemos dar por certo o que esses blocos de construção simples fazem, e focar na ideia que o código está tentando expressar, não nos mínimos detalhes de como ele está manipulando suas entradas. 
 
-A razão para isso é simples. Uma definição de função recursiva de cauda tem o mesmo problema como um loop em uma linguagem imperativa: é completamente geral. Ele pode realizar alguns filtragem, mapeamento de alguns, ou quem sabe mais o quê. Somos obrigados a olhar em detalhe toda a definição da função para ver o que ele está realmente fazendo. Em contraste, `map` e funções de manipulação mais outra lista fazer apenas _uma_ coisa. Podemos tomar como garantido que estes blocos de construção simples fazer, e focar na idéia de que o código é tentar expressar, não os mínimos detalhes de como é a manipulação de seus insumos.
+No meio termo entre funções recursivas de cauda (com generalidade completa) e nossa caixa de ferramentas de funções de manipulação de lista (cada qual faz uma coisa) estão os `folds`. Um `fold` requer mais esforço para entender do que, digamos, uma composição de `map` e `filter` que faz a mesma coisa, mas se comporta de maneira mais regular e previsível do que uma função recursiva de cauda. Como regra geral, não use um `fold` se você puder compor algumas funções de biblioteca, mas tente usar um `fold` em preferência a um loop recursivo. 
 
-No meio do caminho entre a cauda funções recursivas (com a generalidade completo) e nossa caixa de ferramentas de funções de manipulação de lista (cada um deles faz uma coisa) encontram-se as dobras. Uma dobra exige mais esforço para entender que, digamos, uma composição de `map` e `filter`que faz a mesma coisa, mas ele se comporta de forma mais regular e previsível do que uma função recursiva de cauda. Como regra geral, não use uma dobra se você pode compor algumas funções da biblioteca, mas caso contrário tenta usar uma dobra de preferência à mão-rolados uma loop uma recursiva cauda.
-
-Para as funções anônimas, eles tendem a interromper o “fluxo” de ler um pedaço de código. É muitas vezes tão fácil de escrever uma definição de função local em um cláusula `let` ou `where`, e usar isso, como é para colocar uma função anônima em seu lugar. As vantagens relativas de uma função chamada são dois: não precisamos entender a definição da função quando estamos lendo o código que usa-lo, e um nome de função bem escolhido age como um pequeno pedaço de documentação local.
+Quanto às funções anônimas, elas tendem a interromper o “fluxo” da leitura de um trecho de código. Muitas vezes é tão fácil escrever uma definição de função local em uma cláusula let ou where, e usar isso, como é colocar uma função anônima no lugar. As vantagens relativas de uma função nomeada são duas: não precisamos entender a definição da função quando estamos lendo o código que a utiliza; e um nome de função bem escolhido funciona como uma minúscula documentação local
 
 ### Space leaks e avaliação rigorosa
 -
 A função `foldl` que discutimos anteriormente não é o único lugar onde podem ocorrer vazamentos espaço no código Haskell. Vamos usá-lo para ilustrar como a avaliação não-estrita às vezes pode ser problemático, e como resolver as dificuldades que podem surgir.
 
-![[Tip]](support/figs/tip.png)
 
->Você precisa saber de tudo isso agora?
+
+>![[Tip]](support/figs/tip.png) Você precisa saber de tudo isso agora?
 
 >É perfeitamente razoável para pular esta seção até que você encontrar um space leak “in the wild”. Desde que você usa `foldr` se você estiver gerando uma lista, e `foldl'` em vez de `foldl` contrário, vazamentos de espaço não são susceptíveis de incomodá-lo na prática por um tempo.
 
+>É perfeitamente razoável pular esta seção até encontrar um vazamento de espaço “em estado selvagem”. Desde que você use `foldr` se estiver gerando uma lista e `foldl'` em vez de `foldl`, caso contrário, é pouco provável que vazamentos de espaço incomodem você durante algum tempo.
+
 #### Evitar space leaks com seq
 
-Nós nos referimos a uma expressão que não é avaliada preguiçosamente tão _rigorosa_, tão `foldl'` é uma rigorosa deixou desistir. Ele ignora avaliação usual Haskell não-estrita através da utilização de uma função chamada `seq`.
+Nós nos referimos a uma expressão que não é avaliada preguiçosamente como  strict, tão `foldl'` é uma strict fold a esquerda. Ela ignora avaliação usual Haskell não-estrita através da utilização de uma função chamada `seq`.
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1655,14 +1656,14 @@ Esta função `seq` tem um tipo peculiar, insinuando que ele não está jogando 
     ghci> :type seq
     seq :: a -> t -> t
 
-Ele funciona da seguinte forma: quando uma expressão `seq` é avaliada seguintes, ele força o seu primeiro argumento a ser avaliada, em seguida, retorna seu segundo argumento. Na verdade, não fazer nada com o primeiro argumento: `seq` existe apenas como uma maneira de forçar que o valor a ser avaliada. Vamos caminhar através de uma aplicação breve para ver o que acontece.
+Ele opera da seguinte maneira: quando uma expressão `seq` é avaliada, ela força seu primeiro argumento a ser avaliado e, em seguida, retorna seu segundo argumento. Na verdade, ele não faz nada com o primeiro argumento: o `seq` existe apenas como uma maneira de forçar esse valor a ser avaliado. Vamos percorrer um breve aplicação para ver o que acontece
 
 ```haskell
 -- file: ch04/Fold.hs
 foldl' (+) 1 (2:[])
 ```
 
-Isso expande o seguinte.
+Isso expande como segue.
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1670,15 +1671,13 @@ let new = 1 + 2
 in new `seq` foldl' (+) new []
 ```
 
-
-O uso de `seq` avalia forçada `novo` a `3`, e retorna seu segundo argumento.
+O uso de `seq` força a avaliação de `new` para `3`, e retorna seu segundo argumento.
 
 ```haskell
 -- file: ch04/Fold.hs
 foldl' (+) 3 []
 ```
-
-Acabamos com o resultado seguinte.
+Acabamos com o seguinte resultado .
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1689,7 +1688,7 @@ Graças a `seq`, não há thunks à vista.
 
 #### Aprender a usar o seq
 
-Sem algum sentido, existe um elemento de mistério para usar efetivamente seguintes. Aqui estão algumas regras úteis para usá-lo bem.
+Sem algum sentido, existe um elemento de mistério para usar efetivamente `seq`. Aqui estão algumas regras úteis para usá-lo bem.
 
 Para ter algum efeito, uma expressão `seq` devem ser a primeira coisa avaliada em uma expressão.
 
@@ -1711,7 +1710,7 @@ hiddenByLet x y z = let a = x `seq` someFunc y
 onTheOutside x y = x `seq` someFunc y
 ```
 
-Para estritamente avaliar vários valores, aplicações da cadeia de `seq` juntos.
+Para estritamente avaliar vários valores, cadeie aplicações de `seq` juntas.
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1727,11 +1726,11 @@ badExpression step zero (x:xs) =
         (badExpression step (step zero x) xs)
 ```
 
-Aqui, a intenção aparente é o de avaliar estrita `step zero x`. Uma vez que a expressão é repetido no corpo da função, estritamente avaliar a primeira instância de que não terá nenhum efeito sobre o segundo. A utilização de `let` partir da definição de acima `foldl'` mostra como conseguir este efeito corretamente.
+Aqui, a aparente intenção é avaliar o `step zero x` estritamente. Como a expressão é duplicada no corpo da função, a avaliação estrita da primeira instância não terá efeito sobre a segunda. O uso de let da definição de `fold'` acima mostra como obter esse efeito corretamente.
 
-Ao avaliar uma expressão, `seq` pára logo que se chega a um construtor. Para os tipos simples, como números, isso significa que irá avaliá-los completamente. tipos de dados algébricos são uma história diferente. Considere o valor `(1+2):(3+4):[]`. Se aplicarmos `seq` para isso, vai avaliar o thunk `(1+2)`. Uma vez que ele irá parar quando atingir o primeiro construtor `(:)`, ele não terá nenhum efeito sobre a conversão segundo. O mesmo é verdadeiro para tuplas: `seq ((1+2),(3+4)) True` não fará nada para o thunks dentro do par, uma vez que imediatamente bate construtor do par.
+Ao avaliar uma expressão, o `seq` pára assim que atinge um construtor. Para tipos simples, como números, isso significa que eles serão avaliados completamente. Tipos de dados algébricos são uma história diferente. Considere o valor `(1 + 2) :( 3 + 4): []`. Se aplicarmos seq, avaliaremos a `(1 + 2)` _thunk_. Como ele irá parar quando atingir o primeiro (:) construtor, ele não terá efeito na segunda thunk. O mesmo vale para tuplas: `seq ((1 + 2), (3 + 4)) True` não fará nada para os thunks dentro do par, uma vez que ele atinge imediatamente o construtor do par. 5 comentários
 
-Se necessário, podemos utilizar técnicas habituais de programação funcional para contornar essas limitações.
+Se necessário, podemos usar técnicas normais de programação funcional para contornar essas limitações.
 
 ```haskell
 -- file: ch04/Fold.hs
@@ -1741,13 +1740,12 @@ strictList (x:xs) = x `seq` x : strictList xs
 strictList []     = []
 ```
 
-É importante compreender que a `seq` não é livre: ele tem que executar uma verificação em tempo de execução para ver se uma expressão foi avaliada. Use com moderação. Por exemplo, enquanto a nossa função `parEstrito` avalia o conteúdo de um par até o primeiro construtor, ele adiciona as despesas gerais da correspondência padrão, duas aplicações de `seq`, e da construção de uma nova tupla. Se fôssemos medir o seu desempenho no circuito interno de um referência, podemos encontrá-lo para tornar o programa lento.
+É importante compreender que a `seq` não é livre: ele tem que executar uma verificação em tempo de execução para ver se uma expressão foi avaliada. Use com moderação. Por exemplo, enquanto a nossa função `strictPair` avalia o conteúdo de um par até o primeiro construtor, ele adiciona as despesas gerais do pattern matching, duas aplicações de `seq`, e da construção de uma nova tupla. Se fôssemos medir o seu desempenho no loop interno de um benchmark, podemos encontrá-lo para tornar o programa lento.
 
-Além do seu custo de desempenho se em demasia, `seq` não é um milagre cura para todos os problemas de consumo de memória. Só porque você _pode_ avaliar algo estritamente não significa que você _deve_. O uso descuidado do `seq` podem fazer nada; vazamentos mover espaço existente ao redor, ou introduzir novos vazamentos.
+Além de seu custo de desempenho, se usado em demasia, o seq não é um remédio milagroso para problemas de consumo de memória. Só porque você pode avaliar algo estritamente não significa que você deveria. O uso descuidado do seq pode não fazer absolutamente nada; mover o  vazaamento de espaço memória; ou introduzir novos vazamentos. 
 
-Os melhores guias para se `seq` é necessário, e como ele funciona, são medidas de desempenho e perfil, a qual será abordada no [Chapter 25, _Profiling e ajuste de desempenho_](profiling-and-optimization.html "Chapter 25, Profiling e ajuste de desempenho"). A partir de uma base de medição empírica, você irá desenvolver um senso de confiança de quando `seq` é mais útil.
+Os melhores guias para saber se o seq é necessário e como ele está funcionando são medições e profiles de desempenho, os quais abordaremos no Capítulo 25, Criação de perfil e otimização. A partir de uma base de medição empírica, você desenvolverá uma noção confiável de quando o seq é mais útil. 3
 
-  
 
 * * *
 
