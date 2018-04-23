@@ -771,9 +771,9 @@ Estes exemplos seguem um padrão comum para escrever funções recursivas sobre 
 
 #### Mapeando sobre uma lista
 
-As funções `quadrado` e `maiuscula` que nós definimos produzir novas listas, que são os mesmos comprimentos de suas listas de entrada, e não apenas uma peça de trabalho por elemento. Esse é um padrão comum que prelúdio Haskell define uma função, `map`, para torná-lo mais fácil. `map` tem uma função, e aplica a cada elemento de uma lista, retornando uma nova lista construída a partir dos resultados dessas aplicações.
+As funções `square` e `toUpperCase` que nós acabamos de definir produz novas listas, que são dos mesmos comprimentos de suas listas de entrada, e aplica um pequeno código por elemento. Esse é um padrão comum que Haskell Prelude define uma função, `map`, que torná-os mais fáceus. `map` tem uma função, e aplica a cada elemento de uma lista, retornando uma nova lista construída a partir dos resultados dessas aplicações.
 
-Aqui estão as nossas funções `square` e `maiuscula` reescrito para usar `map`.
+Aqui estão as nossas funções `square` e `toUpperCase` reescrito para usar `map`.
 
 ```haskell
 -- file: ch04/Map.hs
@@ -783,8 +783,7 @@ square2 xs = map squareOne xs
 upperCase2 xs = map toUpper xs
 ```
 
-
-Este é o nosso primeiro olhar de perto uma função que recebe outra função como argumento. Podemos aprender muito sobre o `map` simplesmente inspecionando seu tipo.
+Este é o nosso primeiro olhar mais perto sobre uma função que recebe outra função como argumento. Podemos aprender muito sobre o `map` simplesmente inspecionando seu tipo.
 
 ```haskell
     ghci> :type map
@@ -795,7 +794,7 @@ A assinatura nos diz que `map` tem dois argumentos. A primeira é uma função q
 
 Desde `map` tem uma função como argumento, nós nos referimos a ela como uma função _higher-order_ (Apesar do nome, não há nada de misterioso sobre funções de ordem superior, é apenas um termo para funções que recebem outras funções como argumentos, ou funções de retorno.). 
 
-Desde `map` resumos o padrão comum para as nossas funções `square` e `maiuscula` para que possamos reutilizá-lo com menos clichê, podemos olhar para o que essas funções têm em comum e descobrir como implementá-lo nós mesmos.
+Desde `map` abstrai o padrão comum para as nossas funções `square` e `toUpperCase` para que possamos reutilizá-lo com menos clichê, podemos olhar para o que essas funções têm em comum e descobrir como implementá-las nós mesmos.
 
 ```haskell
 -- file: ch04/Map.hs
@@ -807,16 +806,15 @@ myMap _ _      = []
 
 ![[Note]](support/figs/note.png)
 
->Quais são esses wild cards que fazem lá?
+> O que esses curingas estão fazendo lá?
 
->Se você é novo em programação funcional, as razões para os padrões de correspondência de certas maneiras, nem sempre são óbvias. Por exemplo, na definição de `meuMap` acima, a primeira equação liga a função que está mapeando a variável `f`, mas o segundo usa cartões selvagens para ambos os parâmetros. O acontecendo estabele que?
+>Se você é novo em programação funcional, as razões para combinar padrões de certas maneiras nem sempre serão óbvias. Por exemplo, na definição de myMap acima, a primeira equação liga a função que estamos mapeando para a variável f, mas a segunda usa curingas para os dois parâmetros. O que está acontecendo? 4 comentários
 
->Nós usamos um wild card no lugar de `f` para indicar que não estamos chamando a função `f` no lado direito da equação. E sobre a lista de parâmetros? O tipo de lista tem dois construtores. Nós já encontrados no construtor não vazia na primeira equação que define `myMap`. Por eliminação, o construtor da segunda equação é necessariamente o construtor lista vazia, então não há necessidade de realizar um jogo para ver o que realmente é o seu valor.
+>Usamos um curinga no lugar de f para indicar que não estamos chamando a função f no lado direito da equação. E quanto ao parâmetro list? O tipo de lista possui dois construtores. Nós já combinamos no construtor não vazio na primeira equação que define myMap. Por eliminação, o construtor na segunda equação é necessariamente o construtor da lista vazia, portanto não há necessidade de realizar uma correspondência para ver qual é realmente seu valor. 12 comentários
 
->Por uma questão de estilo, é bom para usar wild cards para o bem conhecido tipos simples, como listas e Maybe. Para obter mais ou menos complicados tipos familiares, pode ser mais seguro e mais legível o nome construtores explicitamente.
+>Por uma questão de estilo, é bom usar curingas para tipos simples bem conhecidos, como listas e talvez. Para tipos mais complicados ou menos familiares, pode ser mais seguro e legível nomear construtores explicitamente. Sem comentários
 
-Procuramos a nossa função `meuMap` para nos dar alguma garantia de que ele se comporta de forma semelhante ao `map`padrão.
-
+Experimentos a nossa função `meuMap` para nos dar alguma garantia de que ela se comporta de forma semelhante ao `map`padrão.
 
     ghci> :module +Data.Char
     ghci> map toLower "SHOUTING"
@@ -826,7 +824,7 @@ Procuramos a nossa função `meuMap` para nos dar alguma garantia de que ele se 
     ghci> map negate [1,2,3]
     [-1,-2,-3]
 
-Este padrão de manchas um idioma repetida, então abstraí-lo para que possamos reutilizar (e escrever menos!) De código, é um aspecto comum de programação Haskell. Enquanto a abstração não é exclusivo para Haskell, funções de ordem superior tornam extremamente fácil.
+Esse padrão de detectar um idioma repetido e, em seguida, abstraí-lo para que possamos reutilizar (e escrever menos!) Código, é um aspecto comum da programação de Haskell. Embora a abstração não seja exclusiva de Haskell, funções de alta ordem tornam isso extremamente fácil
 
 ### Seleção de entrada
 
