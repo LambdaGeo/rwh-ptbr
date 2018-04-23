@@ -808,13 +808,13 @@ myMap _ _      = []
 
 > O que esses curingas estão fazendo lá?
 
->Se você é novo em programação funcional, as razões para combinar padrões de certas maneiras nem sempre serão óbvias. Por exemplo, na definição de myMap acima, a primeira equação liga a função que estamos mapeando para a variável f, mas a segunda usa curingas para os dois parâmetros. O que está acontecendo? 4 comentários
+>Se você é novo em programação funcional, as razões para combinar padrões de certas maneiras nem sempre serão óbvias. Por exemplo, na definição de myMap acima, a primeira equação liga a função que estamos mapeando para a variável f, mas a segunda usa curingas para os dois parâmetros. O que está acontecendo? 
 
->Usamos um curinga no lugar de f para indicar que não estamos chamando a função f no lado direito da equação. E quanto ao parâmetro list? O tipo de lista possui dois construtores. Nós já combinamos no construtor não vazio na primeira equação que define myMap. Por eliminação, o construtor na segunda equação é necessariamente o construtor da lista vazia, portanto não há necessidade de realizar uma correspondência para ver qual é realmente seu valor. 12 comentários
+>Usamos um curinga no lugar de f para indicar que não estamos chamando a função f no lado direito da equação. E quanto ao parâmetro list? O tipo de lista possui dois construtores. Nós já combinamos no construtor não vazio na primeira equação que define myMap. Por eliminação, o construtor na segunda equação é necessariamente o construtor da lista vazia, portanto não há necessidade de realizar uma correspondência para ver qual é realmente seu valor.
 
->Por uma questão de estilo, é bom usar curingas para tipos simples bem conhecidos, como listas e talvez. Para tipos mais complicados ou menos familiares, pode ser mais seguro e legível nomear construtores explicitamente. Sem comentários
+>Por uma questão de estilo, é bom usar curingas para tipos simples bem conhecidos, como listas e `Maybe`. Para tipos mais complicados ou menos familiares, pode ser mais seguro e legível nomear construtores explicitamente. 
 
-Experimentos a nossa função `meuMap` para nos dar alguma garantia de que ela se comporta de forma semelhante ao `map`padrão.
+Experimentos a nossa função `myMap` para nos dar alguma garantia de que ela se comporta de forma semelhante ao `map`padrão.
 
     ghci> :module +Data.Char
     ghci> map toLower "SHOUTING"
@@ -828,7 +828,7 @@ Esse padrão de detectar um idioma repetido e, em seguida, abstraí-lo para que 
 
 ### Seleção de entrada
 
-Outra operação comum em uma seqüência de dados é um pente fino nele para os elementos que satisfaçam algum critério. Aqui está uma função que percorre uma lista de números e retorna aqueles que são estranhos. O nosso código tem um caso recursivo que é um pouco mais complexo do que nossas funções anteriores: ele só coloca um número na lista, ele retorna se o número for ímpar. Usando um guarda expressa muito bem isso.
+Outra operação comum em uma sequência de dados é verificar quais os elementos que satisfazem algum critério. Aqui está uma função que percorre uma lista de números e retorna aqueles que são ímpares. Nosso código tem um caso recursivo que é um pouco mais complexo que nossas funções anteriores: ele só coloca um número na lista que retorna se o número for ímpar. Usando um guarda expressa isso muito bem
 
 ```haskell
     -- file: ch04/Filter.hs
@@ -844,18 +844,21 @@ Vamos ver isso em ação.
     ghci> oddList [1,1,2,3,5,8,13,21,34]
     [1,1,3,5,13,21]
 
-Mais uma vez, essa expressão é tão comum que o Prelude define uma função, `filter`, que já introduziu. Ele elimina a necessidade de código clichê para recurse sobre a lista.
+Mais uma vez, essa expressão é tão comum que o Prelude define uma função, `filter`, que já introduzimos. Ela elimina a necessidade de código clichê para fazer essa recursão sobre a lista.
 
     ghci> :type filter
     filter :: (a -> Bool) -> [a] -> [a]
     ghci> filter odd [3,1,4,1,5,9,2,6,5]
     [3,1,1,5,9,5]
 
-A função `filter` tem um predicado e aplica a cada elemento em sua lista de entrada, retornando uma lista de apenas aqueles para os quais o predicado avaliar para `True`. Nós iremos rever `filter` novamente em breve, na [seção chamada “Folding da direita”](#fp.foldr.filter "seção chamada “Folding da direita”").
+A função `filter` toma um predicado e aplica a cada elemento em sua lista de entrada, retornando uma lista com apenas aqueles para os quais o predicado retornar `True`. Nós iremos rever `filter` novamente em breve, na [seção chamada “Folding da direita”](#fp.foldr.filter "seção chamada “Folding da direita”").
 
-#### Computing uma resposta sobre um conjunto
+
+
+#### Computing uma resposta sobre uma coleção
 
 Outra coisa comum de se fazer com uma coleção é reduzi-lo a um único valor. Um exemplo simples disso é somar os valores de uma lista.
+
 ```haskell
 -- file: ch04/Sum.hs
 mySum xs = helper 0 xs
@@ -863,9 +866,9 @@ mySum xs = helper 0 xs
           helper acc _      = acc
 ```
 
-Nossa função `ajudante` é cauda recursiva, e usa um parâmetro acumulador, `acc`, para segurar a soma das correntes parciais da lista. Como já vimos com `asInt`, esta é uma forma “natural” para representar um loop em uma linguagem puramente funcional.
+Nossa função `helper` é usa recursão de cauda, e usa um parâmetro acumulador, `acc`, para acumlar a somas parciais correntes da lista. Como já vimos com `asInt`, esta é uma forma “natural” para representar um loop em uma linguagem puramente funcional.
 
-Para algo um pouco mais complicado, vamos dar uma olhada na soma de verificação Adler-32. Este é um algoritmo de soma de verificação popular, que concatena duas somas de 16 bits em um soma de verificação de 32 bits único. A primeira verificação é a soma de todos os bytes de entrada, mais um. A segunda é a soma de todos os valores intermediários da soma primeiro. Em cada caso, as somas são calculadas modulo 65521. Aqui está uma simples, a aplicação Java unoptimised. (É seguro ignorar isso se você não ler Java.)
+Para algo um pouco mais complicado, vamos dar uma olhada na soma de verificação Adler-32. Este é um algoritmo de soma de verificação popular; Ele concatena duas somas de verificação de 16 bits em uma única soma de verificação de 32 bits. A primeira soma de verificação é a soma de todos os bytes de entrada, mais um. A segunda é a soma de todos os valores intermediários da primeira soma de verificação. Em cada caso, as somas são calculadas no módulo 65521. Aqui está uma implementação simples e não otimizada de Java. (É seguro ignorá-lo se você não tiver familiriaridade como Java.)
 
 ```java
 public class Adler32 
@@ -887,7 +890,7 @@ public class Adler32
 ```
 
 
-Apesar de Adler-32 é uma soma simples, esse código não é muito fácil de ler por conta do bit girando envolvidos. Podemos fazer melhor com uma implementação de Haskell?
+Apesar de Adler-32 ser uma soma simples, esse código não é muito fácil de ler por conta do bit-twiddling envolvido. Podemos fazer melhor com uma implementação de Haskell?
 
 ```haskell
 -- file: ch04/Adler32.hs
@@ -903,11 +906,11 @@ adler32 xs = helper 1 0 xs
           helper a b _     = (b `shiftL` 16) .|. a
 ```
 
-Este código não é exatamente fácil de seguir do que o código Java, mas vamos olhar o que está acontecendo. Primeiro de tudo, nós introduzimos algumas novas funções. A função `shiftL` implementa um deslocamento lógico à esquerda; `(.&.)` fornece bit a bit “e”; e prevê `(.|.)` bit a bit “ou”.
+Este código não é exatamente fácil de seguir do que o código Java, mas vamos olhar o que está acontecendo. Primeiro de tudo, nós introduzimos algumas novas funções. A função `shiftL` implementa um deslocamento lógico à esquerda; `(.&.)` fornece bit a bit “and”; e prevê `(.|.)` bit a bit “or”.
 
-Mais uma vez, a nossa função `ajudante` é recursiva cauda. Nós viramos as duas variáveis, atualizado em cada iteração do loop em Java em parâmetros acumulador. Quando o nosso recursão termina no final da lista de entrada, calculamos nosso soma de verificação e devolvê-lo.
+Mais uma vez, nossa função `helper` usa recursão de cauda. Nós transformamos as duas variáveis que atualizamos em cada iteração de loop em Java para os dois parâmetro de acumulador. Quando nossa recursão termina com final da lista de entrada, calculamos nosso `checksum` e o retornamos. 
 
-Se dermos um passo para trás, podemos reestruturar nossas Haskell adler32 para ser mais semelhante a nossa função `meuSoma` anterior. Em vez de dois parâmetros acumulador, pode-se usar um par como o acumulador.
+Se voltarmo um pouco, podemos reestruturar nosso Haskell adler32 para se assemelhar mais a nossa função mySum anterior. Em vez de dois parâmetros acumuladores, podemos usar um par como acumulador
 
 ```haskell
 -- file: ch04/Adler32.hs
