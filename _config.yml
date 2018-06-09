@@ -16,8 +16,7 @@
 title: Real World Haskell (PT-BR)
 email: sergio.costa@ecp.ufma.br
 description: >- # this means to ignore newlines until "baseurl:"
-  O livro "Real World Haskell" <http://book.realworldhaskell.org/read/> é um dos melhores livros sobre Haskell, integrando de modo conciso teoria e prática. Depois de alguns 
-  anos estamos retomando sua tradução, com algumas atualizações. Aceitamos colaborações, sintam-se a vontade em fazer  os pull requests :)
+ Uma tradução não oficial do livro Real World Haskell.
 baseurl: "/rwh-ptbr" # the subpath of your site, e.g. /blog
 url: "https://profsergiocosta.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: profsergiocosta
