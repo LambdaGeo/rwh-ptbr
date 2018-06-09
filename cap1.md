@@ -1,8 +1,4 @@
 ---
-
-# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
-layout: page
----
 Uma tradução não oficial do livro Real World Haskell 
 de Bryan O'Sullivan, Don Stewart, and John Goerzen
 
