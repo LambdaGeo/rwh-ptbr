@@ -1,11 +1,4 @@
----
-layout: page
----
-Uma tradução não oficial do livro Real World Haskell 
-de Bryan O'Sullivan, Don Stewart, and John Goerzen
-
--------------------------------------------------------
-
+[Sumário](index)
 
 ## Capítulo 4. Programação funcional
 
