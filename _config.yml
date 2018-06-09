@@ -16,7 +16,8 @@
 title: Real World Haskell (PT-BR)
 email: sergio.costa@ecp.ufma.br
 description: >- # this means to ignore newlines until "baseurl:"
- Uma tradução não oficial do livro Real World Haskell.
+ Uma tradução não oficial do livro Real World Haskell de Bryan O’Sullivan, Don Stewart, and John Goerzen
+
 baseurl: "/rwh-ptbr" # the subpath of your site, e.g. /blog
 url: "https://profsergiocosta.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: profsergiocosta
