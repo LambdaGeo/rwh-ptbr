@@ -25,14 +25,23 @@ import Test.QuickCheck
 import Data.List
 ```
 
-And the function we want to test — a custom sort routine: 
+Caso esteja usando o stack, lembre-se de adicionar o framework na lista de dependencias:
 
+```yaml
+dependencies:
+- base >= 4.7 && < 5
+- QuickCheck
+```
+E a função que nós queremos testar – uma rotina personalizada de ordenação:: 
+
+```haskell
 \-- file: ch11/QC-basics.hs
 qsort :: Ord a => \[a\] -> \[a\]
 qsort \[\]     = \[\]
 qsort (x:xs) = qsort lhs ++ \[x\] ++ qsort rhs
     where lhs = filter  (< x) xs
           rhs = filter (>= x) xs
+```
 
 [No comments](comment: add)
 
