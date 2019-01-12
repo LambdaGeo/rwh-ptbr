@@ -18,7 +18,7 @@ Real World Haskell by Bryan O'Sullivan, Don Stewart, and John Goerzen
 8. Efficient file processing, regular expressions, and file name matching
 9. I/O case study: a library for searching the filesystem
 10. Code case study: parsing a binary data format
-11. Testing and quality assurance
+11. [Testes e garantia de qualidade](cap11)
 12. Barcode recognition
 13. Data structures
 14. Monads
