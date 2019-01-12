@@ -35,36 +35,41 @@ dependencies:
 E a função que nós queremos testar – uma rotina personalizada de ordenação:: 
 
 ```haskell
-\-- file: ch11/QC-basics.hs
-qsort :: Ord a => \[a\] -> \[a\]
-qsort \[\]     = \[\]
-qsort (x:xs) = qsort lhs ++ \[x\] ++ qsort rhs
+-- file: ch11/QC-basics.hs
+qsort :: Ord a => [a] -> [a]
+qsort []     = []
+qsort (x:xs) = qsort lhs ++ [x] ++ qsort rhs
     where lhs = filter  (< x) xs
           rhs = filter (>= x) xs
 ```
 
-[No comments](comment: add)
+Esta é a clássica implementação de ordenação em Haskell: um estudo sobre a elegância em programação funcional, não em eficiência (este não é um algoritmo de ordenação in-place, que altera a estrutura). Agora, nós queremos checar se esta função obedece às regras básicas que uma boa ordenação deveria seguir. Uma invariante útil para começar e uma que aparece com frequência em códigos puramente funcionais, é a idempotência – uma função aplicada duas vezes deve ter o mesmo resultado quando aplicada apenas uma vez. Para a nossa rotina de ordenação – um algoritmo estável de ordenação – isso deve ser sempre verdadeiro, ou a situação irá ficar feia. A invariante pode ser codificada como uma simples propriedade, da seguinte maneira
 
-This is the classic Haskell sort implementation: a study in functional programming elegance, if not efficiency (this isn't an inplace sort). Now, we'd like to check that this function obeys the basic rules a good sort should follow. One useful invariant to start with, and one that comes up in a lot of purely functional code, is _idempotency_ — applying a function twice has the same result as applying it only once. For our sort routine, a stable sort algorithm, this should certainly be true, or things have gone horribly wrong! This invariant can be encoded as a property simply: [5 comments](comments: show / hide)
-
+```haskell
 \-- file: ch11/QC-basics.hs
-prop\_idempotent xs = qsort (qsort xs) == qsort xs
+prop_idempotent xs = qsort (qsort xs) == qsort xs
+```
 
-[7 comments](comments: show / hide)
+Iremos usar a conveção de QuickCheck de prefixar as propriedades de teste com `prop_` para diferenciá-las de código normal. A propriedade de idempotência é escrita simplesmente como uma função Haskell declarando uma igualdade que deve valer para todos os dados da entrada que é ordenada. Podemos checar manualmente se isso faz sentido para alguns casos simples:
 
-We'll use the QuickCheck convention of prefixing test properties with `prop_` to distinguish them from normal code. This idempotency property is written simply as a Haskell function stating an equality that must hold for any input data that is sorted. We can check this makes sense for a few simple cases by hand: [No comments](comment: add)
+```
+ghci> prop_idempotent []       
+True
+ghci> prop_idempotent [1,1,1,1]  
+True
+ghci> prop_idempotent [1..100]
+True
+ghci> prop_idempotent [1,5,2,1,2,0,9]
+True
+```
+Parece estar certo. Entretanto, escrever os dados de entrada à mão é tedioso e viola o código moral dos programadores funcionais eficientes: deixe a máquina fazer o trabalho! Para automatizar isto, a biblioteca QuickCheck provê um conjunto de geradores de dados para todos os tipos de dados básicos do Haskell. QuickCheck usa o `typeclass` Arbitrary para apresentar uma interface uniforme a um pseudo aleatório gerador de dados com o tipo do sistema usado para resolver a questão de qual gerador usar. QuickCheck normalmente esconde o funcionamento da geração de dados, entretanto, nós podemos também executar os geradores à mão para obter uma ideia dos dados que o QuickCheck produz. Por exemplo, gerar uma lista aleatória de valores booleanos:
 
-    ghci> 
+```
+ghci> generate 10 (System.Random.mkStdGen 2) arbitrary :: [Bool]
+[False,False,False,False,False,True]
+```
 
-[No comments](comment: add)
-
-Looking good. However, writing out the input data by hand is tedious, and violates the moral code of the efficient functional programmer: let the machine do the work! To automate this the QuickCheck library comes with a set of data generators for all the basic Haskell data types. QuickCheck uses the Arbitrary typeclass to present a uniform interface to (pseudo-)random data generation with the type system used to resolve which generator to use. QuickCheck normally hides the data generation plumbing, however we can also run the generators by hand to get a sense for the distribution of data QuickCheck produces. For example, to generate a random list of boolean values: [8 comments](comments: show / hide)
-
-    ghci> 
-
-[10 comments](comments: show / hide)
-
-QuickCheck generates test data like this and passes it to the property of our choosing, via the `quickCheck` function. The type of the property itself determines which data generator is used. `quickCheck` then checks that for all the test data produced, the property is satisfied. Now, since our idempotency test is polymorphic in the list element type, we need to pick a particular type to generate test data for, which we write as a type constraint on the property. To run the test, we just call `quickCheck` with our property function, set to the required data type (otherwise the list element type will default to the uninteresting `()` type): [3 comments](comments: show / hide)
+QuickCheck generates test data like this and passes it to the property of our choosing, via the `quickCheck` function. The type of the property itself determines which data generator is used. `quickCheck` then checks that for all the test data produced, the property is satisfied. Now, since our idempotency test is polymorphic in the list element type, we need to pick a particular type to generate test data for, which we write as a type constraint on the property. To run the test, we just call `quickCheck` with our property function, set to the required data type (otherwise the list element type will default to the uninteresting `()` type): 
 
     ghci> 
 
