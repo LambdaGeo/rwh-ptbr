@@ -1,28 +1,31 @@
-Chapter 11. Testing and quality assurance
------------------------------------------
+
+[Sumário](index)
+
+## Capítulo 11. Testes e garantia de qualidade         
+
 
 Construir sistemas reais significa ter cuidado com o controle de qualidade, robustez e corretude. Com os mecanismos certos para a garantia de qualidade, código bem-escrito pode parecer uma máquina precisa, com todas as funções executando suas tarefas de acordo com as especificações. Não há desleixo nas situações críticas o que resulta em código que é auto-explicativo – e obviamente correto – do tipo que inspira confiança.
 
-In Haskell, we have several tools at our disposal for building such precise systems. The most obvious tool, and one built into the language itself, is the expressive type-system, which allows for complicated invariants to be enforced statically — making it impossible to write code violating chosen constraints. In addition, purity and polymorphism encourage a style of code that is modular, refactorable and testable. This is the kind of code that just doesn't go wrong. [3 comments](comments: show / hide)
+Em Haskell, existem diversas ferramentas à disposição para construir tais sistemas precisos. A ferramenta mais óbvia, e construída na própria linguagem é o sistema de tipos expressivo, garante que toda verificação seja feita estaticamente – tornando impossível escrever código que viole tais restrições. Adicionalmente, pureza e polimorfismo promovem um estilo de código que é modular, refatorável e testável. Este é o tipo de código que não contém erros.
 
-Testing plays a key role in keeping code on the straight-and-narrow path. The main testing mechanisms in Haskell are traditional unit testing (via the HUnit library), and its more powerful descendant: type-based “property” testing, with QuickCheck, an open source testing framework for Haskell. Property-based testing encourages a high level approach to testing in the form of abstract invariants functions should satisfy universally, with the actual test data generated for the programmer by the testing library. In this way code can be hammered with thousands of tests that would be infeasible to write by hand, often uncovering subtle corner cases that wouldn't be found otherwise. [1 comment](comments: show / hide)
+Os testes possuem um papel importante para manter o código no caminho certo. Os principal mecanismo de teste em Haskell são os tradicionais teste de unidade (por meio da biblioteca HUnit) e o seu descendente mais poderoso, teste baseado em propriedades através do QuickCheck, um framework de testes de código-livre para Haskell. Testes baseados em propriedades promovem uma abordagem de alto-nível para os testes na forma de funções invariantes que devem satisfazer universalmente, com os dados reais de testes gerados pela biblioteca para o progamador. Desta forma, o código pode ser exaustivamente testado com milhares de testes que iriam ser inviáveis para escrever manualmente, geralmente não cobrindo casos especiais que não seriam encontrados de outra forma.
 
-In this chapter we'll look at how to use QuickCheck to establish invariants in code and then re-examine the pretty printer developed in previous chapters, testing it with QuickCheck. We'll also see how to guide the testing process with GHC's code coverage tool: HPC. [No comments](comment: add)
+Neste capítulo iremos ver como usar QuickCheck para estabelecer invariantes no código, e então re-examinar o "pretty printer" desenvolvido nos capítulos anteriores, testando-o com o framework. Iremos também ver como conduzir o processo de testes com a ferramenta de cobertura de testes do GHC: HPC.
 
-QuickCheck: type-based testing
-------------------------------
+### QuickCheck: Teste baseado em tipos
 
-To get an overview of how property-based testing works, we'll begin with a simple scenario: you've written a specialised sorting function and want to test its behaviour. [No comments](comment: add)
+Para obter uma ideia geral sobre como funcionam os testes baseado em tipos, iremos começar com um cenário simples: você escreveu uma função específica de ordenação e deseja testar o seu comportamento.
 
-First, we import the QuickCheck library\[[27](#ftn.id628218)\], and any other modules we need: [1 comment](comments: show / hide)
+Primeiramente, nos importamos a biblioteca QuickCheck e os módulos necessários:
 
+
+```haskell
 \-- file: ch11/QC-basics.hs
 import Test.QuickCheck
 import Data.List
+```
 
-[2 comments](comments: show / hide)
-
-And the function we want to test — a custom sort routine: [No comments](comment: add)
+And the function we want to test — a custom sort routine: 
 
 \-- file: ch11/QC-basics.hs
 qsort :: Ord a => \[a\] -> \[a\]
