@@ -1,7 +1,7 @@
 Chapter 11. Testing and quality assurance
 -----------------------------------------
 
-Building real systems means caring about quality control, robustness and correctness. With the right quality assurance mechanisms in place, well-written code can feel like a precision machine, with all functions performing their tasks exactly as specified. There is no sloppiness around the edges, and the final result can be code that is self-explanatory, obviously correct -- the kind of code that inspires confidence. [4 comments](comments: show / hide)
+Construir sistemas reais significa ter cuidado com o controle de qualidade, robustez e corretude. Com os mecanismos certos para a garantia de qualidade, código bem-escrito pode parecer uma máquina precisa, com todas as funções executando suas tarefas de acordo com as especificações. Não há desleixo nas situações críticas o que resulta em código que é auto-explicativo – e obviamente correto – do tipo que inspira confiança.
 
 In Haskell, we have several tools at our disposal for building such precise systems. The most obvious tool, and one built into the language itself, is the expressive type-system, which allows for complicated invariants to be enforced statically — making it impossible to write code violating chosen constraints. In addition, purity and polymorphism encourage a style of code that is modular, refactorable and testable. This is the kind of code that just doesn't go wrong. [3 comments](comments: show / hide)
 
