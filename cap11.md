@@ -66,16 +66,39 @@ Parece estar certo. Entretanto, escrever os dados de entrada à mão é tedioso 
 
 ```
 ghci> generate  arbitrary :: IO [Bool]
-[False,False,False,False,False,True]
+[False,True,True,True,False,True,False,True]
 ```
 
-QuickCheck generates test data like this and passes it to the property of our choosing, via the `quickCheck` function. The type of the property itself determines which data generator is used. `quickCheck` then checks that for all the test data produced, the property is satisfied. Now, since our idempotency test is polymorphic in the list element type, we need to pick a particular type to generate test data for, which we write as a type constraint on the property. To run the test, we just call `quickCheck` with our property function, set to the required data type (otherwise the list element type will default to the uninteresting `()` type): 
 
-    ghci> 
+QuickCheck gera dados de teste desta maneira e os passa à propriedade de nossa escolha, por meio da função quickCheck. O tipo da propriedade em si determina qual gerador de dados é usado. O `quickCheck` então checa para todos os dados de teste produzido, que a propriedade foi satisfeita. Agora, uma vez que nosso teste de idempotência é polimórfico na lista de tipos de elementos, precisamos escolher um tipo particular para o qual desejamos gerar os dados de teste, o qual iremos escrever como uma restrição de tipo da propriedade. Para executar o teste, apenas chamando quickCheck com a nossa função de propriedade, que está configurada para o tipo de dado requerido (caso contrário, o tipo de elemento da lista irá ser o padrão desinteressante tipo ())
 
-[5 comments](comments: show / hide)
+```
+ghci> (prop_idempotent :: [Integer] -> Bool)
 
-For the 100 different lists generated, our property held — great! When developing tests, it is often useful to see the actual data generated for each test. To do this, we would replace `quickCheck` with its sibling, `verboseCheck`, to see (verbose) output for each test. Now, let's look at more sophisticated properties that our function might satisfy. [7 comments](comments: show / hide)
++++ OK, passed 100 tests.
+```
+Para as diferentes 100 listas geradas, a nossa propriedade foi um sucesso. Quando escrever testes, geralmente é útil olhar os dados reais gerados para cada teste. Para fazer isso, iremos substituir quickCheck pelo seu irmão, verboseCheck, para ver a saída de cada teste. Por exemplo, mostrando apenas parte da saída:
+
+```
+ghci> verboseCheck (prop_idempotent :: [Integer] -> Bool)
+Passed:  
+[]
+
+Passed: 
+[-1]
+
+Passed:  
+[]
+
+Passed:  
+[-2,-1]
+
+Passed:  
+[2,3,-2]
+
+...
+```
+Observe que os testes são aplicados a listas de diferentes tamanhos. Agora, vamos olhar para propriedades sofisticadas que a nossa função deve satisfazer.
 
 ### Testing for properties
 
