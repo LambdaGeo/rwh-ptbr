@@ -65,7 +65,7 @@ True
 Parece estar certo. Entretanto, escrever os dados de entrada à mão é tedioso e viola o código moral dos programadores funcionais eficientes: deixe a máquina fazer o trabalho! Para automatizar isto, a biblioteca QuickCheck provê um conjunto de geradores de dados para todos os tipos de dados básicos do Haskell. QuickCheck usa o `typeclass` Arbitrary para apresentar uma interface uniforme a um pseudo aleatório gerador de dados com o tipo do sistema usado para resolver a questão de qual gerador usar. QuickCheck normalmente esconde o funcionamento da geração de dados, entretanto, nós podemos também executar os geradores à mão para obter uma ideia dos dados que o QuickCheck produz. Por exemplo, gerar uma lista aleatória de valores booleanos:
 
 ```
-ghci> generate 10 (System.Random.mkStdGen 2) arbitrary :: [Bool]
+ghci> generate  arbitrary :: IO [Bool]
 [False,False,False,False,False,True]
 ```
 
