@@ -100,35 +100,38 @@ Passed:
 ```
 Observe que os testes são aplicados a listas de diferentes tamanhos. Agora, vamos olhar para propriedades sofisticadas que a nossa função deve satisfazer.
 
-### Testing for properties
+### Testes de propriedade
 
 Good libraries consist of a set of orthogonal primitives having sensible relationships to each other. We can use QuickCheck to specify the relationships between functions in our code, helping us find a good library interface by developing functions that are interrelated via useful properties. QuickCheck in this way acts as an API "lint" tool — it provides machine support for ensuring our library API makes sense. [2 comments](comments: show / hide)
 
-The list sorting function should certainly have a number of interesting properties that tie it to other list operations. For example: the first element in a sorted list should always be the smallest element of the input list. We might be tempted to specify this intuition in Haskell, using the `List` library's `minimum` function: [No comments](comment: add)
+Boas bibliotecas consistem de um conjunto de primitivas ortogonais que possuem relações sensíveis entre si. Podemos usar QuickCheck para especificar as relações entre funções no nosso código, o que nos ajuda a encontrar uma boa interface para a biblioteca por meio do desenvolvimento de funções que são interrelacionadas através de propriedades úteis. QuickCheck atua desta maneira como uma ferramenta “lint” d – ela provê suporte da máquina para assegurar que a nossa biblioteca esta consistente.
 
-\-- file: ch11/QC-basics.hs
-prop\_minimum xs         = head (qsort xs) == minimum xs
+A função de ordenação de lista deve certamente conter um número de propriedades interessantes que se relacionam com outras operações de lista. Por exemplo, o primeiro elemento em uma lista ordenada deve sempre ser o menor elemento da lista de entrada. Ficamos tentados a especificar essa intuição em Haskell, usando a função `minimum` da biblioteca `List:
 
-[No comments](comment: add)
+```haskell
+-- file: ch11/QC-basics.hs
+prop_minimum xs         = head (qsort xs) == minimum xs
+```
+Testando isso, no entanto, revela um erro:
+```
+ghci> quickCheck (prop_minimum :: [Integer] -> Bool)
+0** Exception: Prelude.head: empty list
+```
 
-Testing this, though, reveals an error: [No comments](comment: add)
+A propriedade falhou quando ordenou uma lista vazia, para a qual head e minimum não estão definidas, como podemos ver pela sua definição:
 
-    ghci> 
+```haskell
+-- file: ch11/minimum.hs
+head :: [a] -> a
+head (x:_) = x
+head [] = error "Prelude.head: empty list"
 
-[2 comments](comments: show / hide)
+ 
 
-The property failed when sorting an empty list — for which `head` and `minimum` are't defined, as we can see from their definition: [4 comments](comments: show / hide)
-
-\-- file: ch11/minimum.hs
-head       :: \[a\] -> a
-head (x:\_) = x
-head \[\]    = error "Prelude.head: empty list"
-
-minimum    :: (Ord a) => \[a\] -> a
-minimum \[\] =  error "Prelude.minimum: empty list"
-minimum xs =  foldl1 min xs
-
-[1 comment](comments: show / hide)
+minimum :: (Ord a) => [a] -> a
+minimum [] = error "Prelude.minimum: empty list"
+minimum xs = foldl1 min xs
+```
 
 So this property will only hold for non-empty lists. QuickCheck, thankfully, comes with a full property writing embedded language, so we can specify more precisely our invariants, filtering out values we don't want to consider. For the empty list case, we really want to say: _if_ the list is non-empty, _then_ the first element of the sorted result is the minimum. This is done by using the `(==>)` implication function, which filters out invalid data before running the property: [No comments](comment: add)
 
