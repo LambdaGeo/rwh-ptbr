@@ -100,7 +100,7 @@ Passed:
 ```
 Observe que os testes são aplicados a listas de diferentes tamanhos. Agora, vamos olhar para propriedades sofisticadas que a nossa função deve satisfazer.
 
-### Testes de propriedade
+#### Testes de propriedade
 
 Boas bibliotecas consistem de um conjunto de primitivas ortogonais que possuem relações sensíveis entre si. Podemos usar QuickCheck para especificar as relações entre funções no nosso código, o que nos ajuda a encontrar uma boa interface para a biblioteca por meio do desenvolvimento de funções que são interrelacionadas através de propriedades úteis. QuickCheck atua desta maneira como uma ferramenta “lint” d – ela provê suporte da máquina para assegurar que a nossa biblioteca esta consistente.
 
@@ -167,19 +167,19 @@ prop_append xs ys       =
         head (qsort (xs ++ ys)) == min (minimum xs) (minimum ys)
 ```
 
-### Testing against a model
+#### Testando sobre um modelo
 
-Another technique for gaining confidence in some code is to test it against a model implementation. We can tie our implementation of list sort to the reference sort function in the standard list library, and, if they behave the same, we gain confidence that our sort does the right thing. [No comments](comment: add)
+Outra técnica para adquirir confiança no código é testar sobre uma implementação modelo. Podemos relacionar a nossa implementação de ordenação de lista com a função de ordenação presente na biblioteca padrão, se elas possuem o mesmo comportamento, nós ganhamos confiança que nossa função de ordenação faz o que é certo:
 
-\-- file: ch11/QC-basics.hs
-prop\_sort\_model xs      = sort xs == qsort xs
+```haskell
+-- file: ch11/QC-basics.hs
+prop_sort_model xs      = sort xs == qsort xs
+```
 
-[No comments](comment: add)
+Este tipo de teste baseado em modelo é extremamente poderoso. Geralmente, desenvolvedores irão ter uma implementação de referência ou protótipo que, embora ineficiente, é correta. Isso pode então ser mantido por perto e usado para assegurar que o código de produção otimizado está de acordo com a referência. Ao construir uma grande suíte desses testes baseados em modelos e executando-os regularmente(em cada commit, por exemplo), podemos facilmente assegurar a precisão de nosso código. Grandes projetos Haskell geralmente possuem suítes de propriedades de tamanho comparável com o próprio projeto, com milhares de invariantes testadas em cada mudança, mantendo o código de acordo com a especificação e assegurando que ele se comporta como requerido.
 
-This kind of model-based testing is extremely powerful. Often developers will have a reference implementation or prototype that, while inefficient, is correct. This can then be kept around and used to ensure optimised production code conforms to the reference. By building a large suite of these model-based tests, and running them regularly (on every commit, for example), we can cheaply ensure the precision of our code. Large Haskell projects often come bundled with property suites comparable in size to the project itself, with thousands of invariants tested on every change, keeping the code tied to the specification, and ensuring it behaves as required. [6 comments](comments: show / hide)
+### Caso de estudo de teste: especificando uma `pretty printer`
 
-Testing case study: specifying a pretty printer
------------------------------------------------
 
 Testing individual functions for their natural properties is one of the basic building blocks that guides development of large systems in Haskell. We'll look now at a more complicated scenario: taking the pretty printing library developed in earlier chapters, and building a test suite for it. [3 comments](comments: show / hide)
 
