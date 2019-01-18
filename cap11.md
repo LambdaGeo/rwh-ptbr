@@ -128,9 +128,6 @@ minimum :: (Ord a) => [a] -> a
 minimum [] = error "Prelude.minimum: empty list"
 minimum xs = foldl1 min xs
 ```
-
-So this property will only hold for non-empty lists. QuickCheck, thankfully, comes with a full property writing embedded language, so we can specify more precisely our invariants, filtering out values we don't want to consider. For the empty list case, we really want to say: _if_ the list is non-empty, _then_ the first element of the sorted result is the minimum. This is done by using the `(==>)` implication function, which filters out invalid data before running the property: [No comments](comment: add)
-
 Portanto esta propriedade irá funcionar apenas para listas não-vazias. QuickCheck, felizmente, vem com uma linguagem própria para escrever propriedades, para que possamos especificar mais precisamente nossas invariantes, removendo valores que não queremos considerar. Para o caso da lista vazia, nós realmente queremos dizer que se a lista não está vazia, então o primeiro elemento da lista ordenada é o menor da lista de entrada. Isto é feito utilizando a função de implicação(`==>`), que remove dados inválidos antes de executar as propriedades:
 
 ```haskell
@@ -180,15 +177,16 @@ Este tipo de teste baseado em modelo é extremamente poderoso. Geralmente, desen
 
 ### Caso de estudo de teste: especificando uma `pretty printer`
 
+Testar as propriedades naturais de  funções individuais é um das mais básicas abordagens que guiam o desenvolvimento de grandes sistemas em Haskell. Veremos agora um cenário mais complicado: construir uma suíte de testes para a biblioteca de pretty-printing* desenvolvida em capítulos anteriores.
 
-Testing individual functions for their natural properties is one of the basic building blocks that guides development of large systems in Haskell. We'll look now at a more complicated scenario: taking the pretty printing library developed in earlier chapters, and building a test suite for it. [3 comments](comments: show / hide)
+*N.dT.: Pretty-printing é o nome que se dá à apresentação de um conteúdo de maneira em que a estrutura da apresentação intensifica o sentido do próprio conteúdo
 
 ### Generating test data
 
-Recall that the pretty printer is built around the Doc, an algebraic data type that represents well-formed documents: [No comments](comment: add)
+Lembre-se que a pretty printer é construída de acordo com o Doc, um tipo de dado algébrico que representa documentos bem-estruturados.
 
+```haskell
 \-- file: ch11/Prettify2.hs
-
 data Doc = Empty
          | Char Char
          | Text String
@@ -196,18 +194,18 @@ data Doc = Empty
          | Concat Doc Doc
          | Union Doc Doc
          deriving (Show,Eq)
+```
 
-[2 comments](comments: show / hide)
 
-The library itself is implemented as a set of functions that build and transform values of this document type, before finally rendering the finished document to a string. [1 comment](comments: show / hide)
+A biblioteca em si é implementada como um conjunto de funções que criam e transformam valores deste tipo de documento, antes de finalmente criar a sua representação completa em uma string.
 
-QuickCheck encourages an approach to testing where the developer specifies invariants that should hold for any data we can throw at the code. To test the pretty printing library, then, we'll need a source of input data. To do this, we take advantage of the small combinator suite for building random data that QuickCheck provides via the Arbitrary class. The class provides a function, `arbitrary`, to generate data of each type, and with this we can define our data generator for our custom data types. \[[28](#ftn.id628795)\] [3 comments](comments: show / hide)
+QuickCheck encoraja uma abordagem para testes onde o desenvolvedor especifica invariantes que deveriam ser verdadeiras para quaisquer dados que sejam consumidos pelo código. Para testar a biblioteca de pretty-printing, então, precisaremos de uma fonte de dados de entrada. Para isso, usufruímos da pequena suíte de combinação para construção de dados randômicos que o QuickCheck provê, via a classe Arbitrary. Essa classe fornece uma função, arbitrary, que gera dados de diferentes tipos. Com ela, podemos definir nosso gerador de dados para nossos próprios tipos de dados:
 
+```haskell
 \-- file: ch11/Arbitrary.hs
 class Arbitrary a where
   arbitrary   :: Gen a
-
-[No comments](comment: add)
+```
 
 One thing to notice is that the generators run in a Gen environment, indicated by the type. This is a simple state-passing monad that is used to hide the random number generator state that is threaded through the code. We'll look thoroughly at monads in later chapters, but for now it suffices to know that, as Gen is defined as a monad, we can use `do` syntax to write new generators that access the implicit random number source. To actually write generators for our custom type we use any of a set of functions defined in the library for introducing new random values and gluing them together to build up data structures of the type we're interested in. The types of the key functions are: [2 comments](comments: show / hide)
 
