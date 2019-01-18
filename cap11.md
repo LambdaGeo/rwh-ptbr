@@ -102,8 +102,6 @@ Observe que os testes são aplicados a listas de diferentes tamanhos. Agora, vam
 
 ### Testes de propriedade
 
-Good libraries consist of a set of orthogonal primitives having sensible relationships to each other. We can use QuickCheck to specify the relationships between functions in our code, helping us find a good library interface by developing functions that are interrelated via useful properties. QuickCheck in this way acts as an API "lint" tool — it provides machine support for ensuring our library API makes sense. [2 comments](comments: show / hide)
-
 Boas bibliotecas consistem de um conjunto de primitivas ortogonais que possuem relações sensíveis entre si. Podemos usar QuickCheck para especificar as relações entre funções no nosso código, o que nos ajuda a encontrar uma boa interface para a biblioteca por meio do desenvolvimento de funções que são interrelacionadas através de propriedades úteis. QuickCheck atua desta maneira como uma ferramenta “lint” d – ela provê suporte da máquina para assegurar que a nossa biblioteca esta consistente.
 
 A função de ordenação de lista deve certamente conter um número de propriedades interessantes que se relacionam com outras operações de lista. Por exemplo, o primeiro elemento em uma lista ordenada deve sempre ser o menor elemento da lista de entrada. Ficamos tentados a especificar essa intuição em Haskell, usando a função `minimum` da biblioteca `List:
@@ -126,8 +124,6 @@ head :: [a] -> a
 head (x:_) = x
 head [] = error "Prelude.head: empty list"
 
- 
-
 minimum :: (Ord a) => [a] -> a
 minimum [] = error "Prelude.minimum: empty list"
 minimum xs = foldl1 min xs
@@ -135,40 +131,41 @@ minimum xs = foldl1 min xs
 
 So this property will only hold for non-empty lists. QuickCheck, thankfully, comes with a full property writing embedded language, so we can specify more precisely our invariants, filtering out values we don't want to consider. For the empty list case, we really want to say: _if_ the list is non-empty, _then_ the first element of the sorted result is the minimum. This is done by using the `(==>)` implication function, which filters out invalid data before running the property: [No comments](comment: add)
 
+Portanto esta propriedade irá funcionar apenas para listas não-vazias. QuickCheck, felizmente, vem com uma linguagem própria para escrever propriedades, para que possamos especificar mais precisamente nossas invariantes, removendo valores que não queremos considerar. Para o caso da lista vazia, nós realmente queremos dizer que se a lista não está vazia, então o primeiro elemento da lista ordenada é o menor da lista de entrada. Isto é feito utilizando a função de implicação(`==>`), que remove dados inválidos antes de executar as propriedades:
+
+```haskell
 \-- file: ch11/QC-basics.hs
 prop\_minimum' xs         = not (null xs) ==> head (qsort xs) == minimum xs
+```
+O resultado é claro. Removendo o caso da lista vazia, podemos confirmar que a propriedade de fato funciona:
 
-[6 comments](comments: show / hide)
+```
+ghci> quickCheck (prop_minimum' :: [Integer] -> Property)
+00, passed 100 tests.
+```
+Note que tivemos que mudar o tipo da propriedade, anteriormente sendo um simples resultado Bool para agora ser um resultado mais geral do tipo Property(a propriedade em si agora é uma função que remove listas vazias, antes de testá-las, ao invés de uma simples constante booleana).
 
-The result is quite clean. By separating out the empty list case, we can now confirm the property does in fact hold: [No comments](comment: add)
+Podemos agora completar o conjunto básico de propriedades para a função de ordenação com outras invariantes que ela deve satisfazer: a saída deve ser ordenada (cada elemento deve ser menor, ou igual, ao seu sucessor); a saída deve ser uma permutação da entrada (a qual nós alcançamos através da função diferença de lista, `(\\)`); o último elemento ordenado deve ser o maior elemento; e se encontramos o menor elemento de duas listas, ele deve ser o primeiro elemento se juntarmos e ordenarmos tais listas. Estas propriedades podem ser definidas como:
 
-    ghci> 
-
-[2 comments](comments: show / hide)
-
-Note that we had to change the type of the property from being a simple Bool result to the more general Property type (the property itself is now a function that filters non-empty lists, before testing them, rather than a simple boolean constant). [3 comments](comments: show / hide)
-
-We can now complete the basic property set for the sort function with some other invariants that it should satisfy: that the output is ordered (each element should be smaller than, or equal to, its successor); that the output is a permutation of the input (which we achieve via the list difference function, `(\\)`); that the last sorted element should be the largest element; and if we find the smallest element of two different lists, that should be the first element if we append and sort those lists. These properties can be stated as: [2 comments](comments: show / hide)
-
-\-- file: ch11/QC-basics.hs
-prop\_ordered xs = ordered (qsort xs)
-    where ordered \[\]       = True
-          ordered \[x\]      = True
+```haskell
+-- file: ch11/QC-basics.hs
+prop_ordered xs = ordered (qsort xs)
+    where ordered []       = True
+          ordered [x]      = True
           ordered (x:y:xs) = x <= y && ordered (y:xs)
 
-prop\_permutation xs = permutation xs (qsort xs)
-    where permutation xs ys = null (xs \\\\ ys) && null (ys \\\\ xs)
+prop_permutation xs = permutation xs (qsort xs)
+    where permutation xs ys = null (xs \\ ys) && null (ys \\ xs)
 
-prop\_maximum xs         =
+prop_maximum xs         =
     not (null xs) ==>
         last (qsort xs) == maximum xs
 
-prop\_append xs ys       =
+prop_append xs ys       =
     not (null xs) ==>
     not (null ys) ==>
         head (qsort (xs ++ ys)) == min (minimum xs) (minimum ys)
-
-[6 comments](comments: show / hide)
+```
 
 ### Testing against a model
 
