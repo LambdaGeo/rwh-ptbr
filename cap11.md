@@ -202,49 +202,49 @@ A biblioteca em si é implementada como um conjunto de funções que criam e tra
 QuickCheck encoraja uma abordagem para testes onde o desenvolvedor especifica invariantes que deveriam ser verdadeiras para quaisquer dados que sejam consumidos pelo código. Para testar a biblioteca de pretty-printing, então, precisaremos de uma fonte de dados de entrada. Para isso, usufruímos da pequena suíte de combinação para construção de dados randômicos que o QuickCheck provê, via a classe Arbitrary. Essa classe fornece uma função, arbitrary, que gera dados de diferentes tipos. Com ela, podemos definir nosso gerador de dados para nossos próprios tipos de dados:
 
 ```haskell
-\-- file: ch11/Arbitrary.hs
+\-- file: Test.QuickCheck
 class Arbitrary a where
   arbitrary   :: Gen a
 ```
+Algo a ser notado é geradores são executados em um ambiente Gen, indicado pelo tipo. Isso é um simples monad `state-passing` que é usada para esconder o estado do gerador de número randômico, que esta espalhado pelo código. Examinaremos monads minuciosamente em capítulos posteriores, por agora é suficientes dizer que, como Gen é definido como um `monad`, nós podemos usar sua sintaxe do para escrever novos geradores que acessam o código de números randômicos implícito. Na realidade, para escrever geradores para nosso próprio tipo, usamos qualquer conjunto de funções definidas na biblioteca para introduzir novos valores randômicos, para posteriormente juntá-los para construir estruturas de dados nas quais estejamos interessantes. Os tipos da principais funções existentes no QuickCheck são:`
 
-One thing to notice is that the generators run in a Gen environment, indicated by the type. This is a simple state-passing monad that is used to hide the random number generator state that is threaded through the code. We'll look thoroughly at monads in later chapters, but for now it suffices to know that, as Gen is defined as a monad, we can use `do` syntax to write new generators that access the implicit random number source. To actually write generators for our custom type we use any of a set of functions defined in the library for introducing new random values and gluing them together to build up data structures of the type we're interested in. The types of the key functions are: [2 comments](comments: show / hide)
+```haskell
+-- Defined in ‘Test.QuickCheck.Gen’
+elements :: [a] -> Gen a
+choose   :: Random a => (a, a) -> Gen a
+oneof    :: [Gen a] -> Gen a
+```
 
-\-- file: ch11/Arbitrary.hs
-  elements :: \[a\] -> Gen a
-  choose   :: Random a => (a, a) -> Gen a
-  oneof    :: \[Gen a\] -> Gen a
+A função `elements`, por exemplo, recebe uma lista de valores e retorna um gerador de valores randômicos a partir daquela lista. Usaremos `choose` e `oneof` depois. Com isso, podemos começar a escrever realmente nossos geradores para tipos de dados simples. Por exemplo, considere um novo tipo de dado para a lógica ternária:
 
-[2 comments](comments: show / hide)
-
-The function `elements`, for example, takes a list of values, and returns a generator of random values from that list. `choose` and `oneof` we'll use later. With this, we can start writing generators for simple data types. For example, if we define a new data type for ternary logic: [1 comment](comments: show / hide)
-
-\-- file: ch11/Arbitrary.hs
+```haskell
+\-- file: rwhptbr/Ch11.hs
 data Ternary
     = Yes
     | No
     | Unknown
     deriving (Eq,Show)
+```
 
-[1 comment](comments: show / hide)
+Podemos escrever uma instância de Arbitrary para o tipo Ternary definindo uma função que escolhe um elemento da lista dos possíveis valores do tipo Ternary:
 
-we can write an Arbitrary instance for the Ternary type by defining a function that picks elements from a list of the possible values of Ternary type: [No comments](comment: add)
-
+```haskell
 \-- file: ch11/Arbitrary.hs
 instance Arbitrary Ternary where
-  arbitrary     = elements \[Yes, No, Unknown\]
+  arbitrary     = elements [Yes, No, Unknown]
+```
 
-[1 comment](comments: show / hide)
-
-Another approach to data generation is to generate values for one of the basic Haskell types and then translate those values into the type you're actually interested in. We could have written the Ternary instance by generating integer values from 0 to 2 instead, using `choose`, and then mapping them onto the ternary values: [1 comment](comments: show / hide)
+Another approach to data generation is to generate values for one of the basic Haskell types and then translate those values into the type you're actually interested in. We could have written the Ternary instance by generating integer values from 0 to 2 instead, using `choose`, and then mapping them onto the ternary values: 
 
 \-- file: ch11/Arbitrary2.hs
 instance Arbitrary Ternary where
-  arbitrary     = do
-      n <- choose (0, 2) :: Gen Int
-      return $ case n of
-                    0 -> Yes
-                    1 -> No
-                    \_ -> Unknown
+    --arbitrary     = elements [Yes, No, Unknown]
+    arbitrary     = do
+        n <- choose (0, 2) :: Gen Int
+        return $ case n of
+                      0 -> Yes
+                      1 -> No
+                      _ -> Unknown
 
 [2 comments](comments: show / hide)
 
