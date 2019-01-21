@@ -218,7 +218,7 @@ oneof    :: [Gen a] -> Gen a
 A função `elements`, por exemplo, recebe uma lista de valores e retorna um gerador de valores randômicos a partir daquela lista. Usaremos `choose` e `oneof` depois. Com isso, podemos começar a escrever realmente nossos geradores para tipos de dados simples. Por exemplo, considere um novo tipo de dado para a lógica ternária:
 
 ```haskell
-\-- file: rwhptbr/Ch11.hs
+-- file: rwhptbr/Ch11.hs
 data Ternary
     = Yes
     | No
@@ -229,14 +229,15 @@ data Ternary
 Podemos escrever uma instância de Arbitrary para o tipo Ternary definindo uma função que escolhe um elemento da lista dos possíveis valores do tipo Ternary:
 
 ```haskell
-\-- file: ch11/Arbitrary.hs
+-- file: rwhptbr/Ch11.hs
 instance Arbitrary Ternary where
   arbitrary     = elements [Yes, No, Unknown]
 ```
 
-Another approach to data generation is to generate values for one of the basic Haskell types and then translate those values into the type you're actually interested in. We could have written the Ternary instance by generating integer values from 0 to 2 instead, using `choose`, and then mapping them onto the ternary values: 
+Outra abordagem para a geração de dados é gerar valores para um dos tipos básicos de Haskell e traduzir tais valores em tipos nos quais estejamos interessados. Poderíamos ter escrito a instância de Ternary gerando valores inteiros de 0 a 2 por exemplo, usando `choose`, e então mapeando os para valores ternários:
 
-\-- file: ch11/Arbitrary2.hs
+```haskell
+-- file: rwhptbr/Ch11.hs
 instance Arbitrary Ternary where
     --arbitrary     = elements [Yes, No, Unknown]
     arbitrary     = do
@@ -245,19 +246,25 @@ instance Arbitrary Ternary where
                       0 -> Yes
                       1 -> No
                       _ -> Unknown
+```
 
-[2 comments](comments: show / hide)
+Para tipos enumarados, essa abordagem funciona bem, já que os inteiros são facilmente mapeáveis para os construtores do tipo de dado. Para tipos cartesianos (como as estruturas e as tuplas), precisamos de, no lugar, gerar cara componente do produto separadamente (e recursivamente para tipos aninhados), e então combinar os componentes. Por exemplo, para gerar pares de valores randômicos:
 
-For simple _sum_ types, this approach works nicely, as the integers map nicely onto the constructors of the data type. For _product_ types (such as structures and tuples), we need to instead generate each component of the product separately (and recursively for nested types), and then combine the components. For example, to generate random pairs of random values: [No comments](comment: add)
-
-\-- file: ch11/Arbitrary.hs
+```haskell
+-- Defined in ‘Test.QuickCheck.Arbitrary’
 instance (Arbitrary a, Arbitrary b) => Arbitrary (a, b) where
   arbitrary = do
       x <- arbitrary
       y <- arbitrary
       return (x, y)
+```
 
-[2 comments](comments: show / hide)
+Então, poderiamos testar com uma tupla de inteiros:
+
+```
+ghci> generate  arbitrary :: IO [(Int,Int)]
+[(27,-24),(-3,-13),(17,24),(28,-1),(-24,5),(-14,-25),(-21,15),(0,20),(-1,-6),(30,7),(19,7),(14,20),(-16,0),(12,-29),(28,18),(23,7),(2,26),(15,27)]
+```
 
 So let's now write a generator for all the different variants of the Doc type. We'll start by breaking the problem down, first generating random constructors for each type, then, depending on the result, the components of each field. The most complicated case are the union and concatenation variants. [2 comments](comments: show / hide)
 
