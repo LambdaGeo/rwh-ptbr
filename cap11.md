@@ -265,16 +265,18 @@ Então, poderiamos testar com uma tupla de inteiros:
 ghci> generate  arbitrary :: IO [(Int,Int)]
 [(27,-24),(-3,-13),(17,24),(28,-1),(-24,5),(-14,-25)]
 ```
-
-So let's now write a generator for all the different variants of the Doc type. We'll start by breaking the problem down, first generating random constructors for each type, then, depending on the result, the components of each field. The most complicated case are the union and concatenation variants. [2 comments](comments: show / hide)
+Vamos escrever um gerador para todas as diferentes variantes do tipo Doc. Começaremos quebrando o problema em problemas menores, inicialmente gerando construtores randômicos para cada tipo, e então, dependendo do resultado, os componentes de cada campo. Os casos mais complicados são as variantes de concatenação e união.
 
 First, though, we need to write an instance for generating random characters — QuickCheck doesn't have a default instance for characters, due to the abundance of different text encodings we might want to use for character tests. We'll write our own, and, as we don't care about the actual text content of the document, a simple generator of alphabetic characters and punctuation will suffice (richer generators are simple extensions of this basic approach): [1 comment](comments: show / hide)
 
-\-- file: ch11/QC.hs
-instance Arbitrary Char where
-    arbitrary = elements (\['A'..'Z'\] ++ \['a' .. 'z'\] ++ " ~!@#$%^&\*()")
+Quando este livro foi escrito originalmente, o QuickCheck não tem uma instância padrão para caracteres, devido à abundância de diferentes codificações de texto que podemos querer usar para testes de caracteres. Nas versões mais recentes já existe essa implementação definida em `Test.QuickCheck`:
 
-[6 comments](comments: show / hide)
+```haskell
+-- Defined in ‘Test.QuickCheck.Arbitrary’
+instance Arbitrary Char where
+    arbitrary = elements (['A'..'Z'] ++ ['a' .. 'z'] ++ " ~!@#$%^&*()")
+```
+
 
 With this in place, we can now write an instance for documents, by enumerating the constructors, and filling the fields in. We choose a random integer to represent which document variant to generate, and then dispatch based on the result. To generate concat or union document nodes, we just recurse on `arbitrary`, letting type inference determine which instance of `Arbitrary` we mean: [1 comment](comments: show / hide)
 
