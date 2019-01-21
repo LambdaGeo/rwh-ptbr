@@ -263,7 +263,8 @@ Então, poderiamos testar com uma tupla de inteiros:
 
 ```
 ghci> generate  arbitrary :: IO [(Int,Int)]
-[(27,-24),(-3,-13),(17,24),(28,-1),(-24,5),(-14,-25),(-21,15),(0,20),(-1,-6),(30,7),(19,7),(14,20),(-16,0),(12,-29),(28,18),(23,7),(2,26),(15,27)]
+[(27,-24),(-3,-13),(17,24),(28,-1),(-24,5),(-14,-25),(-21,15),(0,20),(-1,-6),(30,7),(19,7),
+(14,20),(-16,0),(12,-29),(28,18),(23,7),(2,26),(15,27)]
 ```
 
 So let's now write a generator for all the different variants of the Doc type. We'll start by breaking the problem down, first generating random constructors for each type, then, depending on the result, the components of each field. The most complicated case are the union and concatenation variants. [2 comments](comments: show / hide)
