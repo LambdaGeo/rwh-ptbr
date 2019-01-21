@@ -277,10 +277,10 @@ instance Arbitrary Char where
     arbitrary = elements (['A'..'Z'] ++ ['a' .. 'z'] ++ " ~!@#$%^&*()")
 ```
 
+Com isso, podemos agora escrever uma instância para documentos enumerando os construtores e preenchendo os campos. Escolhemos um inteiro randômico para representar qual variante do documento será gerada, e então realizar a escolha baseada no resultado. Para gerar nós de documentos de concatenação ou união, usamos recursão sobre arbitrary, deixando a inferência de tipos determinar qual instância de Arbitrary desejamos:
 
-With this in place, we can now write an instance for documents, by enumerating the constructors, and filling the fields in. We choose a random integer to represent which document variant to generate, and then dispatch based on the result. To generate concat or union document nodes, we just recurse on `arbitrary`, letting type inference determine which instance of `Arbitrary` we mean: [1 comment](comments: show / hide)
-
-\-- file: ch11/QC.hs
+```haskell
+-- Defined in ‘Test.QuickCheck.Arbitrary’
 instance Arbitrary Doc where
     arbitrary = do
         n <- choose (1,6) :: Gen Int
@@ -302,8 +302,7 @@ instance Arbitrary Doc where
              6 -> do x <- arbitrary
                      y <- arbitrary
                      return (Union x y)
-
-[5 comments](comments: show / hide)
+```
 
 That was fairly straightforward, and we can clean it up some more by using the `oneof` function, whose type we saw earlier, to pick between different generators in a list (we can also use the monadic combinator, `liftM` to avoid naming intermediate results from each generator): [3 comments](comments: show / hide)
 
