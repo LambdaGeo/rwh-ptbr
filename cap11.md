@@ -488,7 +488,7 @@ runTests = $quickCheckAll
 Tudo o que precisamos é executar todos os testes e verificar se passou em todos os testes:
 
 ```haskell
--- file: app/Main.hs
+-- file: test/Spec.hs
 main :: IO ()
 main = runTests >>= \passed -> if passed then putStrLn "All tests passed."
                                          else putStrLn "Some tests failed."
@@ -498,7 +498,7 @@ main = runTests >>= \passed -> if passed then putStrLn "All tests passed."
 Para verificar se está tudo ok, basta então executar a função main:
 
 ```
-ghci> main
+$ stack test 
 === prop_empty_id from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:120 ===
 +++ OK, passed 100 tests.
 
@@ -525,97 +525,47 @@ All tests passed.
 
 A total of 1400 individual tests were created, which is comforting. We can increase the depth easily enough, but to find out exactly how well the code is being tested we should turn to the built in code coverage tool, HPC, which can state precisely what is going on. [1 comment](comments: show / hide)
 
-Measuring test coverage with HPC
---------------------------------
+## Medindo a cobertura de teste com HPC
 
-HPC (Haskell Program Coverage) is an extension to the compiler to observe what parts of the code were actually executed during a given program run. This is useful in the context of testing, as it lets us observe precisely which functions, branches and expressions were evaluated. The result is precise knowledge about the percent of code tested, that's easy to obtain. HPC comes with a simple utility to generate useful graphs of program coverage, making it easy to zoom in on weak spots in the test suite. [No comments](comment: add)
+Atualmente esse processo é bem distinto nas versões mais novas, o que irá requerer uma revisão completa desta seção. Para uma visão básica do processo, basta adicionar o parâmetro coverage:
 
-To obtain test coverage data, all we need to do is add the `-fhpc` flag to the command line, when compiling the tests: [2 comments](comments: show / hide)
+```
+$ stack test --coverage
+=== prop_empty_id from src/Ch11.hs:121 ===
++++ OK, passed 100 tests.
 
-    $ ghc -fhpc Run.hs --make
-  
+=== prop_char from src/Ch11.hs:126 ===
++++ OK, passed 100 tests.
 
-[No comments](comment: add)
+=== prop_text from src/Ch11.hs:127 ===
++++ OK, passed 100 tests.
 
-Then run the tests as normal; [No comments](comment: add)
+=== prop_line from src/Ch11.hs:128 ===
++++ OK, passed 1 test.
 
-    $ ./Run
-                 simple : .....                            (1000)
-                complex : ..                               (400)
+=== prop_double from src/Ch11.hs:129 ===
++++ OK, passed 100 tests.
 
-   
+=== prop_hcat from src/Ch11.hs:131 ===
++++ OK, passed 100 tests.
 
-[No comments](comment: add)
+=== prop_punctuate' from src/Ch11.hs:141 ===
++++ OK, passed 100 tests.
 
-During the test run the trace of the program is written to .tix and .mix files in the current directory. Afterwards, these files are used by the command line tool, `hpc`, to display various statistics about what happened. The basic interface is textual. To begin, we can get a summary of the code tested during the run using the `report` flag to `hpc`. We'll exclude the test programs themselves, (using the `--exclude` flag), so as to concentrate only on code in the pretty printer library. Entering the following into the console: [No comments](comment: add)
+All tests passed.
 
-    $ hpc report Run --exclude=Main --exclude=QC
-     18% expressions used (30/158)
-      0% boolean coverage (0/3)
-           0% guards (0/3), 3 unevaluated
-         100% 'if' conditions (0/0)
-         100% qualifiers (0/0)
-     23% alternatives used (8/34)
-      0% local declarations used (0/4)
-     42% top-level declarations used (9/21)
-    
+rwhptbr-0.1.0.0: Test suite rwhptbr-test passed
+Generating coverage report for rwhptbr's test-suite "rwhptbr-test"
+ 92% expressions used (150/162)
+100% boolean coverage (1/1)
+     100% guards (0/0)
+     100% 'if' conditions (1/1)
+     100% qualifiers (0/0)
+ 85% alternatives used (17/20)
+100% local declarations used (2/2)
+ 82% top-level declarations used (19/23)
+The coverage report for rwhptbr's test-suite "rwhptbr-test" is available at /home/sergiosouzacosta/tmp/rwhptbr/.stack-work/install/x86_64-linux-tinfo6/lts-13.4/8.6.3/hpc/rwhptbr/rwhptbr-test/hpc_index.html
+Only one tix file found in /home/sergiosouzacosta/tmp/rwhptbr/.stack-work/install/x86_64-linux-tinfo6/lts-13.4/8.6.3/hpc/, so not generating a unified coverage report.
 
-[No comments](comment: add)
-
-we see that, on the last line, 42% of top level definitions were evaluated during the test run. Not too bad for a first attempt. As we test more and more functions from the library, this figure will rise. The textual version is useful for a quick summary, but to really see what's going on it is best to look at the marked up output. To generate this, use the `markup` flag instead: [No comments](comment: add)
-
-    $ hpc markup Run --exclude=Main --exclude=QC
-  
-
-[No comments](comment: add)
-
-This will generate one html file for each Haskell source file, and some index files. Loading the file `hpc_index.html` into a browser, we can see some pretty graphs of the code coverage: [No comments](comment: add)
-
-![Revised coverage for module Prettify2: 52% of top level definitions (up from 42%), 23% of alternatives, 18% of expressions.](figs/ch11-hpc-round1.png)
-
-Not too bad. Clicking through to the pretty module itself, we see the actual source of the program, marked up in bold yellow for code that wasn't tested, and code that was executed simply bold. [No comments](comment: add)
-
-![Screenshot of annotated coverage output, displaying the Monoid instance for Doc in bold yellow (not tested), and other code nearby in bold (was executed).](figs/ch11-coverage-screen.png)
-
-We forgot to test the Monoid instance, for example, and some of the more complicated functions. HPC helps keep our test suite honest. Let's add a test for the typeclass instance of Monoid, the class of types that support appending and empty elements: [6 comments](comments: show / hide)
-
-\-- file: ch11/QC.hs
-prop\_mempty\_id x =
-    mempty \`mappend\` x == x
-  &&
-    x \`mappend\` mempty == (x :: Doc)
-
-[2 comments](comments: show / hide)
-
-Running this property in ghci, to check it is correct: [No comments](comment: add)
-
-    ghci> 
-
-[No comments](comment: add)
-
-We can now recompile and run the test driver. It is important to remove the old .tix file first though, or an error will occur as HPC tries to combine the statistics from separate runs: [No comments](comment: add)
-
-  $ ghc -fhpc Run.hs --make -no-recomp
-  $ ./Run 
-  Hpc failure: inconsistent number of tick boxes
-  (perhaps remove Run.tix file?)
-  $ rm \*.tix
-  $ ./Run   
-                     simple : .....                            (1000)
-                    complex : ...                              (600)
-
-[No comments](comment: add)
-
-Another two hundred tests were added to the suite, and our coverage statistics improves to 52 percent of the code base: [No comments](comment: add)
-
-![Coverage for module Prettify2: 42% of top level definitions, 23% of alternatives, 18% of expressions.](figs/ch11-hpc-round2.png)
-
-HPC ensures that we're honest in our testing, as anything less than 100% coverage will be pointed out in glaring color. In particular, it ensures the programmer has to think about error cases, and complicated branches with obscure conditions, all forms of code smell. When combined with a saturating test generation system, like QuickCheck's, testing becomes a rewarding activity, and a core part of Haskell development. [2 comments](comments: show / hide)
-
-  
-
-* * *
-
-\[[27](#id628218)\] Throughout this chapter we'll use QuickCheck 1.0 (classic QuickCheck). It should be kept in mind that a some functions may differ in later releases of the library.
-
-\[[28](#id628795)\] The class also defines a method, `coarbitrary`, which given a value of some type, yields a function for new generators. We can disregard for now, as it is only needed for generating random values of function type. One result of disregarding `coarbitrary` is that GHC will warn about it not being defined, however, it is safe to ignore these warnings.
+An index of the generated HTML coverage reports is available at /home/sergiosouzacosta/tmp/rwhptbr/.stack-work/install/x86_64-linux-tinfo6/lts-13.4/8.6.3/hpc/index.html
+```
