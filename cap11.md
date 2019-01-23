@@ -181,7 +181,7 @@ Testar as propriedades naturais de  funções individuais é um das mais básica
 
 *N.dT.: Pretty-printing é o nome que se dá à apresentação de um conteúdo de maneira em que a estrutura da apresentação intensifica o sentido do próprio conteúdo
 
-### Generating test data
+#### Gerando dados de teste
 
 Lembre-se que a pretty printer é construída de acordo com o Doc, um tipo de dado algébrico que representa documentos bem-estruturados.
 
@@ -280,7 +280,7 @@ instance Arbitrary Char where
 Com isso, podemos agora escrever uma instância para documentos enumerando os construtores e preenchendo os campos. Escolhemos um inteiro randômico para representar qual variante do documento será gerada, e então realizar a escolha baseada no resultado. Para gerar nós de documentos de concatenação ou união, usamos recursão sobre arbitrary, deixando a inferência de tipos determinar qual instância de Arbitrary desejamos:
 
 ```haskell
--- Defined in ‘Test.QuickCheck.Arbitrary’
+-- file: rwhptbr/Ch11.hs
 instance Arbitrary Doc where
     arbitrary = do
         n <- choose (1,6) :: Gen Int
@@ -304,71 +304,104 @@ instance Arbitrary Doc where
                      return (Union x y)
 ```
 
-That was fairly straightforward, and we can clean it up some more by using the `oneof` function, whose type we saw earlier, to pick between different generators in a list (we can also use the monadic combinator, `liftM` to avoid naming intermediate results from each generator): [3 comments](comments: show / hide)
+Essa foi uma abordagem bem direta, e podemos melhorá-la um pouco mais usando a função `oneof`, cujo tipo vimos anteriormente, para escolher entre diferentes geradores em uma lista (podemos usar também o combinador monádico, `liftM`, para evitar nomear resultados intermediários de cada gerador):
 
-\-- file: ch11/QC.hs
+```haskell
+-- file: rwhptbr/Ch11.hs
 instance Arbitrary Doc where
     arbitrary =
-        oneof \[ return Empty
+        oneof [ return Empty
               , liftM  Char   arbitrary
               , liftM  Text   arbitrary
               , return Line
               , liftM2 Concat arbitrary arbitrary
-              , liftM2 Union  arbitrary arbitrary \]
+              , liftM2 Union  arbitrary arbitrary ]
 
-[1 comment](comments: show / hide)
+```
 
-The latter is more concise, just picking between a list of generators, but they describe the same data either way. We can check that the output makes sense, by generating a list of random documents (seeding the pseudo-random generator with an initial seed of 2): [7 comments](comments: show / hide)
+Para usar o combinador `liftM` foi importado o módulo `Control.Monad`. Esta última versão é mais concisa – escolhendo apenas de uma lista de geradores – embora ambas as versões descrevam os mesmo dados. Podemos checar que a saída faz sentido, ao gerar uma lista de documentos randômicos (escolhemos a semente inicial do gerador pseudo-randômico como 2):
 
-    ghci> 
+```
+ ghci> generate  arbitrary :: IO [Doc]
+[Concat (Char '-') Line,Line,Empty,Union (Concat (Union (Concat (Union (Concat Empty (Concat (Char 'w') 
+(Text "\239568T\1075378\DLE[\728682\498698B\SUBtG\EM{\17001d\SYN\989106-\221109\DC4 "))) (Char 'U')) 
+(Text "Q\DEL }&\ENQ\100331\SI\DC1\ACK0")) Line) (Concat Empty (Char '1'))) Line, 
+Text "VzAmS \649947M",Text "]\fieI8\649227e\197534\r\"\RSn\FSW\959162\&6(\">2@$\1050828\DLE",
+Union (Union Line Line) Empty]
 
-[8 comments](comments: show / hide)
+```
+Examinando a saída, vemos uma boa mistura de casos básicos e alguns documentos aninhados mais complicados. Geraremos centenas desde a cada execução de teste para que o teste seja válido. Agora podemos escrever algumas propriedades genéricas para nossas funções
 
-Looking at the output we see a good mix of simple, base cases, and some more complicated nested documents. We'll be generating hundreds of these each test run, so that should do a pretty good job. We can now write some generic properties for our document functions. [No comments](comment: add)
+#### Testando a Construção de Documentos
 
-### Testing document construction
+Duas das funções básicas sobre documentos são a constante de documento nulo (função nulária), empty, e a função anexar. Revendo suas definições:
 
-Two of the basic functions on documents are the null document constant (a nullary function), `empty`, and the append function. Their types are: [3 comments](comments: show / hide)
-
-\-- file: ch11/Prettify2.hs
+```haskell
+-- file: rwhptbr/Ch11.hs
 empty :: Doc
-(<>)  :: Doc -> Doc -> Doc
+empty = Empty
 
-[No comments](comment: add)
+(<>) :: Doc -> Doc -> Doc
+Empty <> y = y
+x <> Empty = x
+x <> y = x `Concat` y
 
-Together, these should have a nice property: appending or prepending the empty list onto a second list, should leave the second list unchanged. We can state this invariant as a property: [1 comment](comments: show / hide)
+```
 
-\-- file: ch11/QC.hs
-prop\_empty\_id x =
+Para evitar conflito com o operador `<>` já existente em Prelude, uma alternativa é esconder esse operador na importação:
+
+```haskell
+-- file: rwhptbr/Ch11.hs
+import Prelude hiding ((<>))
+```
+
+Juntas, essas funções deveriam compor uma propriedade razoável: anexar ou prepor uma lista vazia a uma segunda lista deveria deixar a segunda lista inalterada. Podemos afirmar essa invariante como uma propriedade:
+
+```haskell
+-- file: rwhptbr/Ch11.hs
+prop_empty_id x =
     empty <> x == x
   &&
     x <> empty == x
+```
 
-[No comments](comment: add)
+Ao confirmar que essa propriedade é verdadeira, podemos continuar a criação de nossos testes:
 
-Confirming that this is indeed true, we're now underway with our testing: [2 comments](comments: show / hide)
+```
+ghci> quickCheck prop_empty_id
++++ OK, passed 100 tests.
+```
 
-    ghci> 
+Outras funções na API são simples o suficiente para terem o seu comportamento completamente descrito por propriedades são as seguintes:
 
-[4 comments](comments: show / hide)
 
-To look at what actual test documents were generated (by replacing `quickCheck` with `verboseCheck`). A good mixture of both simple and complicated cases are being generated. We can refine the data generation further, with constraints on the proportion of generated data, if desirable. [8 comments](comments: show / hide)
+```haskell
+-- file: rwhptbr/Ch11.hs
+char :: Char -> Doc
+char c = Char c
 
-Other functions in the API are also simple enough to have their behaviour fully described via properties. By doing so we can maintain an external, checkable description of the function's behaviour, so later changes won't break these basic invariants. [No comments](comment: add)
+text :: String -> Doc
+text "" = Empty
+text s  = Text s
 
-\-- file: ch11/QC.hs
+double :: Double -> Doc
+double d = text (show d)
 
-prop\_char c   = char c   == Char c
+line :: Doc
+line = Line
+```
 
-prop\_text s   = text s   == if null s then Empty else Text s
+Fazemos então os seguintes testes para estas funções básicas, de modo que modificações futuras não irão quebras essas invariantes básicas.
 
-prop\_line     = line     == Line
+```haskell
+-- file: rwhptbr/Ch11.hs
+prop_char c   = char c   == Char c
+prop_text s   = text s   == if null s then Empty else Text s
+prop_line     = line     == Line
+prop_double d = double d == text (show d)
+```
 
-prop\_double d = double d == text (show d)
-
-[2 comments](comments: show / hide)
-
-These properties are enough to fully test the structure returned by the basic document operators. To test the rest of the library will require more work. [No comments](comment: add)
+Essas propriedades são suficientes para testar completamente a estrutura retornada pelos operadores básicos de documentos. Testar o restante da biblioteca requer mais esforço que ficará a cargo do leitor :)
 
 ### Using lists as a model
 
