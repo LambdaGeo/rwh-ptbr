@@ -403,95 +403,125 @@ prop_double d = double d == text (show d)
 
 Essas propriedades são suficientes para testar completamente a estrutura retornada pelos operadores básicos de documentos. Testar o restante da biblioteca requer mais esforço que ficará a cargo do leitor :)
 
-### Using lists as a model
+#### Usando listas como modelos
 
-Higher order functions are the basic glue of reusable programming, and our pretty printer library is no exception — a custom fold function is used internally to implement both document concatenation and interleaving separators between document chunks. The `fold` defined for documents takes a list of document pieces, and glues them all together with a supplied combining function: [2 comments](comments: show / hide)
+Funções de alta ordem são a base de programas reusáveis, e a nossa biblioteca de pretty-printing não é exceção – uma função `fold` customizada é usada internamente para implementar tanto concatenação quanto intercalação de separadores entre pedaços de documentos. O `fold` definido para documentos recebe uma lista de pedaços de documentos e os uni de acordo com uma função de combinação:
 
-\-- file: ch11/Prettify2.hs
-fold :: (Doc -> Doc -> Doc) -> \[Doc\] -> Doc
+```haskell
+-- file: rwhptbr/Ch11.hs
+fold :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
 fold f = foldr f empty
 
-[No comments](comment: add)
+hcat :: [Doc] -> Doc
+hcat = fold (<>)
+```
 
-We can write tests in isolation for specific instances of fold easily. Horizontal concatenation of documents, for example, is easy to specify by writing a reference implementation on lists: [No comments](comment: add)
+Podemos escrever testes em isolamento para instâncias específicas de fold facilmente. A concatenação horizontal de documentos, por exemplo, é fácil de ser especificada escrevendo-se uma implementação de referência sobre listas:
 
-\-- file: ch11/QC.hs
-
-prop\_hcat xs = hcat xs == glue xs
+```haskell
+-- file: rwhptbr/Ch11.hs
+prop_hcat xs = hcat xs == glue xs
     where
-        glue \[\]     = empty
+        glue []     = empty
         glue (d:ds) = d <> glue ds
+```
 
-[2 comments](comments: show / hide)
+Acontece uma história similar com `punctuate`, onde podemos modelar a inserção de pontuação com intercalação de listas (`intersperse`, de Data.List,é uma função que recebe um elemento e o intercala entre outros elementos da lista):
 
-It is a similar story for `punctuate`, where we can model inserting punctuation with list interspersion (from `Data.List`, `intersperse` is a function that takes an element and interleaves it between other elements of a list): [No comments](comment: add)
+```haskell
+-- file: rwhptbr/Ch11.hs
+prop_punctuate s xs = punctuate s xs == intersperse s xs
+```
 
-\-- file: ch11/QC.hs
+Embora pareça correta, a execução revela uma falha na nossa lógica:
 
-prop\_punctuate s xs = punctuate s xs == intersperse s xs
+```
+ghci> quickCheck prop_punctuate
+*** Failed! Falsifiable (after 6 tests):
+Union Empty (Text "")
+[Empty,Text "\458628$"]
+```
 
-[2 comments](comments: show / hide)
+A biblioteca de pretty-printing otimiza documentos vazios redundantes, algo que o modelo de implementação não faz, logo precisaremos aumentar o nosso modelo para satisfazer a realidade. Primeiro, intercalamos a pontuação pela lista de documentos, e então eliminamos os documentos Empty espalhados pela lista, desta maneira:
 
-While this looks fine, running it reveals a flaw in our reasoning: [No comments](comment: add)
-
-    ghci> 
-
-[No comments](comment: add)
-
-The pretty printing library optimises away redundant empty documents, something the model implementation doesn't, so we'll need to augment our model to match reality. First, we can intersperse the punctuation text throughout the document list, then a little loop to clean up the `Empty` documents scattered through, like so: [3 comments](comments: show / hide)
-
-\-- file: ch11/QC.hs
-prop\_punctuate' s xs = punctuate s xs == combine (intersperse s xs)
+```haskell
+-- file: rwhptbr/Ch11.hs
+prop_punctuate' s xs = punctuate s xs == combine (intersperse s xs)
     where
-        combine \[\]           = \[\]
-        combine \[x\]          = \[x\]
+        combine []           = []
+        combine [x]          = [x]
 
         combine (x:Empty:ys) = x : combine ys
         combine (Empty:y:ys) = y : combine ys
-        combine (x:y:ys)     = x \`Concat\` y : combine ys
+        combine (x:y:ys)     = x `Concat` y : combine ys
+```
 
-[2 comments](comments: show / hide)
+Executando isso no GHCi, podemos confirmar o resultado. É reconfortante que o framework de testes consiga localizar falhas em nossa lógica expressa no código – exatamente o que estamos procurando:
 
-Running this in GHCi, we can confirm the result. It is reassuring to have the test framework spot the flaws in our reasoning about the code — exactly what we're looking for: [No comments](comment: add)
-
-    ghci> 
+```
+ghci> quickCheck prop_punctuate'
++++ OK, passed 100 tests.
+```
 
 [1 comment](comments: show / hide)
 
-### Putting it altogether
+### Juntando todas as peças
 
-We can put all these tests together in a single file, and run them simply by using one of QuickCheck's driver functions. Several exist, including elaborate parallel ones. The basic batch driver is often good enough, however. All we need do is set up some default test parameters, and then list the functions we want to test: [3 comments](comments: show / hide)
+Podemos colocar todos estes testes juntos em um único arquivo e executá-los simplesmente usando uma das funções de processamento de QuickCheck. Existem várias, inclusive ligadas a paralelismo. Entretanto, o processamento serial normalmente é bom o suficiente. Na versão em Inglês, foi utilizado o módulo Batch, que não mais existe nas versões mais recentes. Ao invés disso é o uso o módulo `QuickCheck.All`. Para funcionar, é requerido ainda o uso de template, adicionando a seguinte código no ínício do arquivo:
 
-\-- file: ch11/Run.hs
-import Prettify2
-import Test.QuickCheck.Batch
+```haskell
+-- file: rwhptbr/Ch11.hs
+{-# LANGUAGE TemplateHaskell #-}
 
-options = TestOptions
-      { no\_of\_tests         = 200
-      , length\_of\_tests     = 1
-      , debug\_tests         = False }
+module Ch11 where
+import Test.QuickCheck.All
+```
 
-main = do
-    runTests "simple" options
-        \[ run prop\_empty\_id
-        , run prop\_char
-        , run prop\_text
-        , run prop\_line
-        , run prop\_double
-        \]
+O quickcheck irá avaliar todas as funções que iniciam com `prop_`. Então, a seguinte linha de código irá fazer o trabalho de buscar todas essas funções:
 
-    runTests "complex" options
-        \[ run prop\_hcat
-        , run prop\_puncutate'
-        \]
+```haskell
+-- file: rwhptbr/Ch11.hs
+return []
+runTests = $quickCheckAll
+```
 
-[14 comments](comments: show / hide)
+Tudo o que precisamos é executar todos os testes e verificar se passou em todos os testes:
 
-We've structured the code here as a separate, standalone test script, with instances and properties in their own file, separate to the library source. This is typical for library projects, where the tests are kept apart from the library itself, and import the library via the module system. The test script can then be compiled and executed: [1 comment](comments: show / hide)
+```haskell
+-- file: app/Main.hs
+main :: IO ()
+main = runTests >>= \passed -> if passed then putStrLn "All tests passed."
+                                         else putStrLn "Some tests failed."
+```
 
-    $ 
 
-[No comments](comment: add)
+Para verificar se está tudo ok, basta então executar a função main:
+
+```
+ghci> main
+=== prop_empty_id from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:120 ===
++++ OK, passed 100 tests.
+
+=== prop_char from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:125 ===
++++ OK, passed 100 tests.
+
+=== prop_text from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:126 ===
++++ OK, passed 100 tests.
+
+=== prop_line from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:127 ===
++++ OK, passed 1 test.
+
+=== prop_double from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:128 ===
++++ OK, passed 100 tests.
+
+=== prop_hcat from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:130 ===
++++ OK, passed 100 tests.
+
+=== prop_punctuate' from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:140 ===
++++ OK, passed 100 tests.
+
+All tests passed.
+```
 
 A total of 1400 individual tests were created, which is comforting. We can increase the depth easily enough, but to find out exactly how well the code is being tested we should turn to the built in code coverage tool, HPC, which can state precisely what is going on. [1 comment](comments: show / hide)
 
