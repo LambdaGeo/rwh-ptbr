@@ -1,15 +1,8 @@
-Chapter 5. Writing a library: working with JSON data
+[Sumário](index)
 
-[Real World Haskell](/)by Bryan O'Sullivan, Don Stewart, and John Goerzen
--------------------------------------------------------------------------
+## Chapter 5. Writing a library: working with JSON data
 
-
-Chapter 5. Writing a library: working with JSON data
-----------------------------------------------------
-
-
-A whirlwind tour of JSON
-------------------------
+### A whirlwind tour of JSON
 
 In this chapter, we'll develop a small, but complete, Haskell library. Our library will manipulate and serialize data in a popular form known as JSON.
 
