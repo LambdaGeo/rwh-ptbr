@@ -1,22 +1,30 @@
 [Sumário](index)
 
-## Chapter 5. Writing a library: working with JSON data
+## Capítulo 5. Escrevendo uma biblioteca para dados no formato JSON
 
-### A whirlwind tour of JSON
+### Um tour rápido pelo JSON
 
-In this chapter, we'll develop a small, but complete, Haskell library. Our library will manipulate and serialize data in a popular form known as JSON.
+Neste capítulo, vamos desenvolver uma pequena, mas completa, biblioteca Haskell. Nossa biblioteca manipulará e serializará dados em uma  popular formato conhecido como JSON.
 
-The JSON (JavaScript Object Notation) language is a small, simple representation for storing and transmitting structured data, for example over a network connection. It is most commonly used to transfer data from a web service to a browser-based JavaScript application. The JSON format is described at [www.json.org](http://www.json.org/), and in greater detail by [RFC 4627](http://www.ietf.org/rfc/rfc4627.txt).
+A linguagem JSON (JavaScript Object Notation) é uma representação pequena e simples para armazenar e transmitir dados estruturados, por exemplo, por meio de uma conexão de rede. É mais comumente usado para transferir dados de um serviço da Web para um aplicativo JavaScript baseado em navegador. O formato JSON é descrito em [www.json.org] (http://www.json.org/), e em maior detalhe por [RFC 4627] ((http://www.ietf.org/rfc/rfc4627.txt).
 
-JSON supports four basic types of value: strings, numbers, booleans, and a special value named `null`.
+O JSON suporta quatro tipos básicos de valor: strings, numbers, booleans e um valor especial chamado `null`.
 
+```
 "a string" 12345 true
       null
+```
 
-The language provides two compound types: an _array_ is an ordered sequence of values, and an _object_ is an unordered collection of name/value pairs. The names in an object are always strings; the values in an object or array can be of any type.
+A linguagem fornece dois tipos compostos: um _array_ é uma sequência ordenada de valores e um _object_ é uma coleção não ordenada de pares nome / valor. Os nomes em um objeto são sempre strings; os valores em um objeto ou matriz podem ser de qualquer tipo.
 
-\[-3.14, true, null, "a string"\]
-      {"numbers": \[1,2,3,4,5\], "useful": false}
+```
+[-3.14, true, null, "a string"]
+      {"numbers": [1,2,3,4,5], "useful": false}
+```
+
+### Um tour rápido pelo Stack
+
+(AQUI VOU DESVCREVER UM TUTORIAL RAPIDO DE STACK)
 
 ### Representing JSON data in Haskell
 
@@ -27,7 +35,8 @@ Primeiro, crie um novo arquivo SimpleJSON em src:
 module SimpleJSON where
 ```
 
-To work with JSON data in Haskell, we use an algebraic data type to represent the range of possible JSON types.
+Para trabalhar com dados JSON no Haskell, usamos um tipo de dados algébricos para representar os valores possíveis nesse formato:
+
 ```haskell
 -- src/SimpleJSON.hs
 data JValue = JString String
@@ -39,9 +48,9 @@ data JValue = JString String
               deriving (Eq, Ord, Show)
 ```
 
-For each JSON type, we supply a distinct value constructor. Some of these constructors have parameters: if we want to construct a JSON string, we must provide a String value as an argument to the `JString` constructor.
+Para cada tipo de JSON, fornecemos um construtor de valor distinto. Alguns desses construtores possuem parâmetros: se quisermos construir uma string JSON, devemos fornecer um valor String como um argumento para o construtor `JString`.
 
-To start experimenting with this code, save the file `SimpleJSON.hs` in your editor, switch to a terminal window, and load the file into stack ghci.
+Para começar a experimentar esse código, salve o arquivo `SimpleJSON.hs` no seu editor, alterne para uma janela de terminal e carregue o arquivo executando o seguinte comando:
 
 ```
 $ stack ghci
@@ -61,7 +70,7 @@ JNumber 2.7
 JBool True :: JValue
 ```
 
-We can see how to use a constructor to take a normal Haskell value and turn it into a JValue. To do the reverse, we use pattern matching. Here's a function that we can add to `SimpleJSON.hs` that will extract a string from a JSON value for us. If the JSON value actually contains a string, our function will wrap the string with the `Just` constructor. Otherwise, it will return `Nothing`.
+Podemos ver como usar um construtor para obter um valor Haskell normal e transformá-lo em um JValue. Para fazer o inverso, usamos casamento de padrões. Aqui está uma função que podemos adicionar ao `SimpleJSON.hs` que irá extrair uma string de um valor JSON para nós. Se o valor JSON realmente contiver uma string, nossa função envolverá a string com o construtor `Just`. Caso contrário, ele retornará `Nothing`.
 
 ```haskell
 -- src/SimpleJSON.hs
@@ -69,8 +78,7 @@ getString :: JValue -> Maybe String
 getString (JString s) = Just s
 getString _           = Nothing
 ```
-
-When we save the modified source file, we can reload it in **ghci** and try the new definition. (The **:reload** command remembers the last source file we loaded, so we do not need to name it explicitly.)
+Quando salvamos o arquivo de código-fonte modificado, podemos recarregá-lo no **stack ghci ** e testar a nova definição:
 
 ```
 *Main Lib SimpleJSON> :r
@@ -81,7 +89,7 @@ Just "hello"
 *Main Lib SimpleJSON> getString (JNumber 3)
 Nothing
 ```
-A few more accessor functions, and we've got a small body of code to work with.
+A seguir mais algumas funções acessoras:
 
 ```haskell
 -- src/SimpleJSON.hs
@@ -102,8 +110,8 @@ getArray _          = Nothing
 
 isNull v            = v == JNull
 ```
+A função `truncate` transforma um ponto flutuante ou número racional em um inteiro, soltando os dígitos após o ponto decimal.
 
-The `truncate` function turns a floating point or rational number into an integer by dropping the digits after the decimal point.
 ```
 *Main Lib SimpleJSON> truncate 5.8
 5
@@ -112,13 +120,11 @@ The `truncate` function turns a floating point or rational number into an intege
 3
 ```
 
-### The anatomy of a Haskell module
+### A anatomia de um módulo Haskell
 
+Um arquivo fonte do Haskell contém uma definição de um único _module_. Um módulo nos permite determinar quais nomes dentro do módulo são acessíveis a partir de outros módulos.
 
-A Haskell source file contains a definition of a single _module_. A module lets us determine which names inside the module are accessible from other modules.
-
-A source file begins with a _module declaration_. This must precede all other definitions in the source file.
-
+Um arquivo fonte começa com uma declaração _module_. Isso deve preceder todas as outras definições no arquivo de fonte.
 
 ```haskell
 -- file: src/SimpleJSON.hs
@@ -134,16 +140,16 @@ module SimpleJSON
     , isNull
     ) where
 ```
+A palavra `module` é reservada. Ela é seguida pelo nome do módulo, que deve começar com uma letra maiúscula. Um arquivo de origem deve ter o mesmo _base name_ (o componente antes do sufixo) como o nome do módulo que ele contém. É por isso que nosso arquivo `SimpleJSON.hs` contém um módulo chamado` SimpleJSON`.
 
-The word `module` is reserved. It is followed by the name of the module, which must begin with a capital letter. A source file must have the same _base name_ (the component before the suffix) as the name of the module it contains. This is why our file `SimpleJSON.hs` contains a module named `SimpleJSON`.
+Após o nome do módulo, há uma lista de _export_, entre parênteses. A palavra-chave `where` indica que o corpo do módulo segue.
 
-Following the module name is a list of _exports_, enclosed in parentheses. The `where` keyword indicates that the body of the module follows.
+A lista de exportações indica quais nomes neste módulo estão visíveis para outros módulos. Isso nos permite manter o código privado escondido do mundo exterior. A notação especial `(..)` que segue o nome `JValue` indica que estamos exportando o tipo e todos os seus construtores.
 
-The list of exports indicates which names in this module are visible to other modules. This lets us keep private code hidden from the outside world. The special notation `(..)` that follows the name `JValue` indicates that we are exporting both the type and all of its constructors.
+Pode parecer estranho que possamos exportar o nome de um tipo (ou seja, seu construtor de tipo), mas não seus construtores de valor. A capacidade de fazer isso é importante: nos permite ocultar os detalhes de um tipo de seus usuários, fazendo o tipo _abstract_. Se não pudermos ver os construtores de valor de um tipo, não poderemos combinar o padrão com um valor desse tipo, nem podemos construir um novo valor desse tipo. Mais adiante neste capítulo, discutiremos algumas situações em que podemos querer usar um tipo abstrato.
 
-It might seem strange that we can export a type's name (i.e. its type constructor), but not its value constructors. The ability to do this is important: it lets us hide the details of a type from its users, making the type _abstract_. If we cannot see a type's value constructors, we cannot pattern match against a value of that type, nor can we construct a new value of that type. Later in this chapter, we'll discuss some situations in which we might want to make a type abstract.
+Se omitirmos as exportações (e os parênteses que as envolvem) de uma declaração do módulo, todos os nomes no módulo serão exportados.
 
-If we omit the exports (and the parentheses that enclose them) from a module declaration, every name in the module will be exported.
 
 ```haskell
 -- file: src/SimpleJSON.hs
@@ -156,12 +162,9 @@ To export no names at all (which is rarely useful), we write an empty export lis
 module ExportNothing () where
 ```
 
-### Compiling Haskell source
+### Compilando um programa Haskell
 
-
-In addition to the **ghci** interpreter, the GHC distribution includes a compiler, **ghc**, that generates native code. If you are already familiar with a command line compiler such as **gcc** or **cl** (the C++ compiler component of Microsoft's Visual Studio), you'll immediately be at home with **ghc**.
-
-To compile a source file, we first open a terminal or command prompt window, then invoke **ghc** with the name of the source file to compile.
+Para compilar um arquivo de código-fonte e executar o binário, primeiro abrimos um terminal ou janela de prompt de comando, depois invocamos os seguintes comandos:
 
 ```
 $ stack build
@@ -169,17 +172,7 @@ $ stack run
 someFunc
 ```
 
-The `-c` option tells **ghc** to only generate object code. If we were to omit the `-c` option, the compiler would attempt to generate a complete executable. That would fail, because we haven't written a `main` function, which GHC calls to start the execution of a standalone program.
-
-After **ghc** completes, if we list the contents of the directory, it should contain two new files: `SimpleJSON.hi` and `SimpleJSON.o`. The former is an _interface file_, in which **ghc** stores information about the names exported from our module in machine-readable form. The latter is an _object file_, which contains the generated machine code.
-
-
-### Generating a Haskell program, and importing modules
-
-Apagar o arquivo Lib.hs, que não iremos usar mais.
-
-
-Now that we've successfully compiled our minimal library, we'll write a tiny program to exercise it. Create the following file in your text editor, and save it as `Main.hs`.
+Agora que compilamos com sucesso nossa biblioteca mínima, vamos começar a escrever a biblioteca proposta aqui. Então, antes de seguir, apague o arquivo Lib.hs, já que não iremos usar mais e então modifique o arquiv app/Main.hs: 
 
 ```haskell
 -- file: app/Main.hs
