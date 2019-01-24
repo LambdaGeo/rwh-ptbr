@@ -797,7 +797,33 @@ Since this evaluates to `True`, the result of `nicest` here is `" a"`.
 
 If we apply our `pretty` function to the same JSON data as earlier, we can see that it produces different output depending on the width that we give it.
 
-    ghci> 
+```haskell
+-- file: app/Main.hs
+module Main (main) where
+
+import SimpleJSON
+import Prettify
+import PrettyJSON
+
+
+value = renderJValue $ JObject [("f", JNumber 1), ("q", JBool True)]
+main :: IO ()
+main = do
+    putStrLn (pretty 10 value)
+    putStrLn (pretty 20 value)
+    putStrLn (pretty 30 value)
+```
+    
+Executando
+```
+$stack run
+{"f": 1.0,
+"q": true
+}
+{"f": 1.0, "q": true
+}
+{"f": 1.0, "q": true }
+```
 
 ### Exercises
 
