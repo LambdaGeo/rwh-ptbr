@@ -18,40 +18,73 @@ The language provides two compound types: an _array_ is an ordered sequence of v
 \[-3.14, true, null, "a string"\]
       {"numbers": \[1,2,3,4,5\], "useful": false}
 
-Representing JSON data in Haskell
----------------------------------
+### Representing JSON data in Haskell
+
+Primeiro, crie um novo arquivo SimpleJSON em src:
+
+```haskell
+-- src/SimpleJSON.hs
+module SimpleJSON where
+```
 
 To work with JSON data in Haskell, we use an algebraic data type to represent the range of possible JSON types.
-
-\-\- file: ch05/SimpleJSON.hs
+```haskell
+-- src/SimpleJSON.hs
 data JValue = JString String
             | JNumber Double
             | JBool Bool
             | JNull
-            | JObject \[(String, JValue)\]
-            | JArray \[JValue\]
+            | JObject [(String, JValue)]
+            | JArray [JValue]
               deriving (Eq, Ord, Show)
+```
 
 For each JSON type, we supply a distinct value constructor. Some of these constructors have parameters: if we want to construct a JSON string, we must provide a String value as an argument to the `JString` constructor.
 
-To start experimenting with this code, save the file `SimpleJSON.hs` in your editor, switch to a **ghci** window, and load the file into **ghci**.
+To start experimenting with this code, save the file `SimpleJSON.hs` in your editor, switch to a terminal window, and load the file into stack ghci.
 
-    ghci> 
+```
+$ stack ghci
+Using main module: 1. Package `hs2json' component exe:hs2json-exe with main-is file: /home/sergiosouzacosta/tmp/hs2json/app/Main.hs
+The following GHC options are incompatible with GHCi and have not been passed to it: -threaded
+Configuring GHCi with the following packages: hs2json
+GHCi, version 8.6.3: http://www.haskell.org/ghc/  :? for help
+[1 of 3] Compiling Lib              ( /home/sergiosouzacosta/tmp/hs2json/src/Lib.hs, interpreted )
+[2 of 3] Compiling Main             ( /home/sergiosouzacosta/tmp/hs2json/app/Main.hs, interpreted )
+[3 of 3] Compiling SimpleJSON       ( /home/sergiosouzacosta/tmp/hs2json/src/SimpleJSON.hs, interpreted )
+Ok, three modules loaded.
+*Main Lib SimpleJSON> JString "foo"
+JString "foo"
+*Main Lib SimpleJSON>  JNumber 2.7
+JNumber 2.7
+*Main Lib SimpleJSON> :type JBool True
+JBool True :: JValue
+```
 
 We can see how to use a constructor to take a normal Haskell value and turn it into a JValue. To do the reverse, we use pattern matching. Here's a function that we can add to `SimpleJSON.hs` that will extract a string from a JSON value for us. If the JSON value actually contains a string, our function will wrap the string with the `Just` constructor. Otherwise, it will return `Nothing`.
 
-\-\- file: ch05/SimpleJSON.hs
+```haskell
+-- src/SimpleJSON.hs
 getString :: JValue -> Maybe String
 getString (JString s) = Just s
 getString _           = Nothing
+```
 
 When we save the modified source file, we can reload it in **ghci** and try the new definition. (The **:reload** command remembers the last source file we loaded, so we do not need to name it explicitly.)
 
-    ghci> 
-
+```
+*Main Lib SimpleJSON> :r
+[3 of 3] Compiling SimpleJSON       ( /home/sergiosouzacosta/tmp/hs2json/src/SimpleJSON.hs, interpreted )
+Ok, three modules loaded.
+*Main Lib SimpleJSON> getString (JString "hello")
+Just "hello"
+*Main Lib SimpleJSON> getString (JNumber 3)
+Nothing
+```
 A few more accessor functions, and we've got a small body of code to work with.
 
-\-\- file: ch05/SimpleJSON.hs
+```haskell
+-- src/SimpleJSON.hs
 getInt (JNumber n) = Just (truncate n)
 getInt _           = Nothing
 
@@ -68,19 +101,27 @@ getArray (JArray a) = Just a
 getArray _          = Nothing
 
 isNull v            = v == JNull
+```
 
 The `truncate` function turns a floating point or rational number into an integer by dropping the digits after the decimal point.
+```
+*Main Lib SimpleJSON> truncate 5.8
+5
+*Main Lib SimpleJSON> :module +Data.Ratio
+*Main Lib SimpleJSON Data.Ratio> truncate (22 % 7)
+3
+```
 
-    ghci> 
+### The anatomy of a Haskell module
 
-The anatomy of a Haskell module
--------------------------------
 
 A Haskell source file contains a definition of a single _module_. A module lets us determine which names inside the module are accessible from other modules.
 
 A source file begins with a _module declaration_. This must precede all other definitions in the source file.
 
-\-\- file: ch05/SimpleJSON.hs
+
+```haskell
+-- file: src/SimpleJSON.hs
 module SimpleJSON
     (
       JValue(..)
@@ -92,6 +133,7 @@ module SimpleJSON
     , getArray
     , isNull
     ) where
+```
 
 The word `module` is reserved. It is followed by the name of the module, which must begin with a capital letter. A source file must have the same _base name_ (the component before the suffix) as the name of the module it contains. This is why our file `SimpleJSON.hs` contains a module named `SimpleJSON`.
 
@@ -103,45 +145,59 @@ It might seem strange that we can export a type's name (i.e. its type constructo
 
 If we omit the exports (and the parentheses that enclose them) from a module declaration, every name in the module will be exported.
 
-\-\- file: ch05/Exporting.hs
+```haskell
+-- file: src/SimpleJSON.hs
 module ExportEverything where
-
+```
 To export no names at all (which is rarely useful), we write an empty export list using a pair of parentheses.
 
-\-\- file: ch05/Exporting.hs
+```haskell
+-- file: src/SimpleJSON.hs
 module ExportNothing () where
+```
 
-Compiling Haskell source
-------------------------
+### Compiling Haskell source
+
 
 In addition to the **ghci** interpreter, the GHC distribution includes a compiler, **ghc**, that generates native code. If you are already familiar with a command line compiler such as **gcc** or **cl** (the C++ compiler component of Microsoft's Visual Studio), you'll immediately be at home with **ghc**.
 
 To compile a source file, we first open a terminal or command prompt window, then invoke **ghc** with the name of the source file to compile.
 
-**`ghc -c SimpleJSON.hs`**
+```
+$ stack build
+$ stack run
+someFunc
+```
 
 The `-c` option tells **ghc** to only generate object code. If we were to omit the `-c` option, the compiler would attempt to generate a complete executable. That would fail, because we haven't written a `main` function, which GHC calls to start the execution of a standalone program.
 
 After **ghc** completes, if we list the contents of the directory, it should contain two new files: `SimpleJSON.hi` and `SimpleJSON.o`. The former is an _interface file_, in which **ghc** stores information about the names exported from our module in machine-readable form. The latter is an _object file_, which contains the generated machine code.
 
-Generating a Haskell program, and importing modules
----------------------------------------------------
+
+### Generating a Haskell program, and importing modules
+
+Apagar o arquivo Lib.hs, que não iremos usar mais.
+
 
 Now that we've successfully compiled our minimal library, we'll write a tiny program to exercise it. Create the following file in your text editor, and save it as `Main.hs`.
 
-\-\- file: ch05/Main.hs
-module Main () where
+```haskell
+-- file: app/Main.hs
+module Main (main) where
 
 import SimpleJSON
 
-main = print (JObject \[("foo", JNumber 1), ("bar", JBool False)\])
-
+main = print (JObject [("foo", JNumber 1), ("bar", JBool False)])
+```
 Notice the `import` directive that follows the module declaration. This indicates that we want to take all of the names that are exported from the `SimpleJSON` module, and make them available in our module. Any `import` directives must appear in a group at the beginning of a module. They must appear after the module declaration, but before all other code. We cannot, for example, scatter them throughout a source file.
 
 Our choice of naming for the source file and function is deliberate. To create an executable, **ghc** expects a module named `Main` that contains a function named `main`. The `main` function is the one that will be called when we run the program once we've built it.
 
-**`ghc -o simple Main.hs SimpleJSON.o`**
-
+```
+$stack buid
+$ stack run
+JObject [("foo",JNumber 1.0),("bar",JBool False)]
+```
 This time around, we're omitting the `-c` option when we invoke **ghc**, so it will attempt to generate an executable. The process of generating an executable is called _linking_. As our command line suggests, **ghc** is perfectly able to both compile source files and link an executable in a single invocation.
 
 We pass **ghc** a new option, `-o`, which takes one argument: this is the name of the executable that **ghc** should create\[[10](#ftn.id598725)\]. Here, we've decided to name the program `simple`. On Windows, the program will have the suffix `.exe`, but on Unix variants there will not be a suffix.
@@ -152,14 +208,15 @@ When compiling, we can pass **ghc** any mixture of source and object files. If *
 
 Once **ghc** has finished compiling and linking our `simple` program, we can run it from the command line.
 
-Printing JSON data
-------------------
+### Printing JSON data
+
 
 Now that we have a Haskell representation for JSON's types, we'd like to be able to take Haskell values and render them as JSON data.
 
 There are a few ways we could go about this. Perhaps the most direct would be to write a rendering function that prints a value in JSON form. Once we're done, we'll explore some more interesting approaches.
 
-\-\- file: ch05/PutJSON.hs
+```haskell
+-- file: src/PutJSON.hs
 module PutJSON where
 
 import Data.List (intercalate)
@@ -174,19 +231,22 @@ renderJValue (JBool False) = "false"
 renderJValue JNull         = "null"
 
 renderJValue (JObject o) = "{" ++ pairs o ++ "}"
-  where pairs \[\] = ""
+  where pairs [] = ""
         pairs ps = intercalate ", " (map renderPair ps)
         renderPair (k,v)   = show k ++ ": " ++ renderJValue v
 
-renderJValue (JArray a) = "\[" ++ values a ++ "\]"
-  where values \[\] = ""
+renderJValue (JArray a) = "[" ++ values a ++ "]"
+  where values [] = ""
         values vs = intercalate ", " (map renderJValue vs)
+```
 
 Good Haskell style involves separating pure code from code that performs I/O. Our `renderJValue` function has no interaction with the outside world, but we still need to be able to print a JValue.
 
-\-\- file: ch05/PutJSON.hs
+```haskell
+-- file: src/PutJSON.hs
 putJValue :: JValue -> IO ()
 putJValue v = putStrLn (renderJValue v)
+```
 
 Printing a JSON value is now easy.
 
@@ -194,44 +254,15 @@ Why should we separate the rendering code from the code that actually prints a v
 
 This idea of separating pure from impure code is powerful, and pervasive in Haskell code. Several Haskell compression libraries exist, all of which have simple interfaces: a compression function accepts an uncompressed string and returns a compressed string. We can use function composition to render JSON data to a string, then compress to another string, postponing any decision on how to actually display or transmit the data.
 
-Type inference is a double-edged sword
---------------------------------------
+Experimentando
+```
+$stack ghci
+*Main PutJSON SimpleJSON> putJValue (JObject [("nome", JString "Sergio"), ("idade", JNumber 38)])
+{"nome": "Sergio", "idade": 38.0}
+```
 
-A Haskell compiler's ability to infer types is powerful and valuable. Early on, you'll probably be faced by a strong temptation to take advantage of type inference by omitting as many type declarations as possible: let's simply make the compiler figure the whole lot out!
 
-Skimping on explicit type information has a downside, one that disproportionately affects new Haskell programmer. As a new Haskell programmer, we're extremely likely to write code that will fail to compile due to straightforward type errors.
-
-When we omit explicit type information, we force the compiler to figure out our intentions. It will infer types that are logical and consistent, but perhaps not at all what we meant. If we and the compiler unknowingly disagree about what is going on, it will naturally take us longer to find the source of our problem.
-
-Suppose, for instance, that we write a function that we believe returns a String, but we don't write a type signature for it.
-
-\-\- file: ch05/Trouble.hs
-upcaseFirst (c:cs) = toUpper c -- forgot ":cs" here
-
-Here, we want to upper-case the first character of a word, but we've forgotten to append the rest of the word onto the result. We think our function's type is String -> String, but the compiler will correctly infer its type as String -> Char. Let's say we then try to use this function somewhere else.
-
-\-\- file: ch05/Trouble.hs
-camelCase :: String -> String
-camelCase xs = concat (map upcaseFirst (words xs))
-
-When we try to compile this code or load it into **ghci**, we won't necessarily get an obvious error message.
-
-    ghci> 
-
-Notice that the error is reported where we _use_ the `upcaseFirst` function. If we're erroneously convinced that our definition and type for `upcaseFirst` are correct, we may end up staring at the wrong piece of code for quite a while, until enlightenment strikes.
-
-Every time we write a type signature, we remove a degree of freedom from the type inference engine. This reduces the likelihood of divergence between our understanding of our code and the compiler's. Type declarations also act as shorthand for ourselves as readers of our own code, making it easier for us to develop a sense of what must be going on.
-
-This is not to say that we need to pepper every tiny fragment of code with a type declaration. It is, however, usually good form to add a signature to every top-level definition in our code. It's best to start out fairly aggressive with explicit type signatures, and slowly ease back as your mental model of how type checking works becomes more accurate.
-
-![[Tip]](/support/figs/tip.png)
-
-Explicit types, undefined values, and error
-
-The special value `undefined` will happily typecheck no matter where we use it, as will an expression like `error "argh!"`. It is especially important that we write type signatures when we use these. Suppose we use `undefined` or `error "write me"` to act as a placeholder in the body of a top-level definition. If we omit a type signature, we may be able to use the value we have defined in places where a correctly typed version would be rejected by the compiler. This can easily lead us astray.
-
-A more general look at rendering
---------------------------------
+#### A more general look at rendering
 
 Our JSON rendering code is narrowly tailored to the exact needs of our data types and the JSON formatting conventions. The output it produces can be unfriendly to human eyes. We will now look at rendering as a more generic task: how can we build a library that is useful for rendering data in a variety of situations?
 
@@ -251,18 +282,25 @@ Instead of rendering straight to a string, our `Prettify` module will use an abs
 
 We will name our new JSON rendering module `PrettyJSON.hs`, and retain the name `renderJValue` for the rendering function. Rendering one of the basic JSON values is straightforward.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: ch05/PrettyJSON.hs
+module PrettyJSON where
+
+import SimpleJSON
+import Prettify
+
 renderJValue :: JValue -> Doc
 renderJValue (JBool True)  = text "true"
 renderJValue (JBool False) = text "false"
 renderJValue JNull         = text "null"
 renderJValue (JNumber num) = double num
 renderJValue (JString str) = string str
+```
 
-The `text`, `double`, and `string` functions will be provided by our `Prettify` module.
+The Doc, `text`, `double`, and `string` functions will be provided by our `Prettify` module.
 
-Developing Haskell code without going nuts
-------------------------------------------
+#### Developing Haskell code without going nuts
+
 
 Early on, as we come to grips with Haskell development, we have so many new, unfamiliar concepts to keep track of at one time that it can be a challenge to write code that compiles at all.
 
@@ -270,7 +308,10 @@ As we write our first substantial body of code, it's a _huge_ help to pause ever
 
 One useful technique for quickly developing the skeleton of a program is to write placeholder, or _stub_ versions of types and functions. For instance, we mentioned above that our `string`, `text` and `double` functions would be provided by our `Prettify` module. If we don't provide definitions for those functions or the Doc type, our attempts to “compile early, compile often” with our JSON renderer will fail, as the compiler won't know anything about those functions. To avoid this problem, we write stub code that doesn't do anything.
 
-\-\- file: ch05/PrettyStub.hs
+```haskell
+-- file: src/Prettify.hs
+module Prettify where
+
 import SimpleJSON
 
 data Doc = ToBeDefined
@@ -284,21 +325,32 @@ text str = undefined
 
 double :: Double -> Doc
 double num = undefined
+```
 
 The special value `undefined` has the type `a`, so it always typechecks, no matter where we use it. If we attempt to evaluate it, it will cause our program to crash.
 
-    ghci> 
-
+```
+ghci> :type undefined
+undefined :: a
+ghci> undefined
+*** Exception: Prelude.undefined
+ghci> :type double
+double :: Double -> Doc
+ghci> double 3.14
+*** Exception: Prelude.undefined
+```
 Even though we can't yet run our stubbed code, the compiler's type checker will ensure that our program is sensibly typed.
 
-Pretty printing a string
-------------------------
+#### Pretty printing a string
+
 
 When we must pretty print a string value, JSON has moderately involved escaping rules that we must follow. At the highest level, a string is just a series of characters wrapped in quotes.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: src/Prettify.hs
 string :: String -> Doc
 string = enclose '"' '"' . hcat . map oneChar
+```
 
 ![[Note]](/support/figs/note.png)
 
@@ -308,45 +360,51 @@ This style of writing a definition exclusively as a composition of other functio
 
 Contrast the point-free definition of `string` above with this “pointy” version, which uses a variable `s` to refer to the value on which it operates.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: src/PrettyJSON.hs
 pointyString :: String -> Doc
 pointyString s = enclose '"' '"' (hcat (map oneChar s))
-
+```
 The `enclose` function simply wraps a Doc value with an opening and closing character.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: src/PrettyJSON.hs
 enclose :: Char -> Char -> Doc -> Doc
 enclose left right x = char left <> x <> char right
-
+```
 We provide a `(<>)` function in our pretty printing library. It appends two Doc values, so it's the Doc equivalent of `(++)`.
 
-\-\- file: ch05/PrettyStub.hs
+```haskell
+-- file: src/Prettify.hs
 (<>) :: Doc -> Doc -> Doc
 a <> b = undefined
 
 char :: Char -> Doc
 char c = undefined
-
+```
 Our pretty printing library also provides `hcat`, which concatenates multiple Doc values into one: it's the analogue of `concat` for lists.
 
-\-\- file: ch05/PrettyStub.hs
-hcat :: \[Doc\] -> Doc
+```haskell
+-- file: src/Prettify.hs
+hcat :: [Doc] -> Doc
 hcat xs = undefined
-
+```
 Our `string` function applies the `oneChar` function to every character in a string, concatenates the lot, and encloses the result in quotes. The `oneChar` function escapes or renders an individual character.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: src/PrettyJSON.hs
 oneChar :: Char -> Doc
 oneChar c = case lookup c simpleEscapes of
               Just r -> text r
               Nothing | mustEscape c -> hexEscape c
                       | otherwise    -> char c
-    where mustEscape c = c < ' ' || c == '\\x7f' || c > '\\xff'
+    where mustEscape c = c < ' ' || c == '\x7f' || c > '\xff'
 
-simpleEscapes :: \[(Char, String)\]
-simpleEscapes = zipWith ch "\\b\\n\\f\\r\\t\\\\\"/" "bnfrt\\\\\"/"
-    where ch a b = (a, \['\\\',b\])
-
+simpleEscapes :: [(Char, String)]
+simpleEscapes = zipWith ch "\b\n\f\r\t\\\"/" "bnfrt\\\"/"
+    where ch a b = (a, ['\\',b])
+```
+(ter que jogar essa parte para outro lugar, pois ainda nao roda)
 The `simpleEscapes` value is a list of pairs. We call a list of pairs an _association list_, or _alist_ for short. Each element of our alist associates a character with its escaped representation.
 
     ghci> 
@@ -355,90 +413,127 @@ Our `case` expression attempts to see if our character has a match in this alist
 
 The more complicated escaping involves turning a character into the string “`\u`” followed by a four-character sequence of hexadecimal digits representing the numeric value of the Unicode character.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: src/PrettyJSON.hs
 smallHex :: Int -> Doc
-smallHex x  = text "\\\u"
-           <\> text (replicate (4 - length h) '0')
-           <\> text h
+smallHex x  = text "\\u"
+           <> text (replicate (4 - length h) '0')
+           <> text h
     where h = showHex x ""
-
+```
+Para usar o showHex é preciso importar:
+```
+import Numeric (showHex)
+```
 The `showHex` function comes from the `Numeric` library (you will need to import this at the beginning of `Prettify.hs`), and returns a hexadecimal representation of a number.
 
-    ghci> 
-
+Em outro terminal e em outra pasta, fora do projeto:
+```
+$stack ghci
+Prelude> :module Numeric
+Prelude Numeric> showHex 114111 ""
+"1bdbf"
+```
 The `replicate` function is provided by the Prelude, and builds a fixed-length repeating list of its argument.
-
-    ghci> 
-
+```
+*Main> replicate 5 "foo"
+["foo","foo","foo","foo","foo"]
+```
 There's a wrinkle: the four-digit encoding that `smallHex` provides can only represent Unicode characters up to `0xffff`. Valid Unicode characters can range up to `0x10ffff`. To properly represent a character above `0xffff` in a JSON string, we follow some complicated rules to split it into two. This gives us an opportunity to perform some bit-level manipulation of Haskell numbers.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: src/PrettyJSON.hs
 astral :: Int -> Doc
 astral n = smallHex (a + 0xd800) <> smallHex (b + 0xdc00)
     where a = (n \`shiftR\` 10) .&. 0x3ff
           b = n .&. 0x3ff
-
+```
 The `shiftR` function comes from the `Data.Bits` module, and shifts a number to the right. The `(.&.)` function, also from `Data.Bits`, performs a bit-level _and_ of two values.
-
-    ghci> 
-
+```
+$stack ghci
+Prelude> :module Data.Bits
+Prelude Data.Bits>  0x10000 `shiftR` 4
+4096
+```
 Now that we've written `smallHex` and `astral`, we can provide a definition for `hexEscape`.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: src/PrettyJSON.hs
 hexEscape :: Char -> Doc
 hexEscape c | d < 0x10000 = smallHex d
             | otherwise   = astral (d - 0x10000)
   where d = ord c
+```
 
-Arrays and objects, and the module header
------------------------------------------
+Ok, agora pode compilar:
+
+```
+$ stack build
+```
+
+### Arrays and objects, and the module header
+
 
 Compared to strings, pretty printing arrays and objects is a snap. We already know that the two are visually similar: each starts with an opening character, followed by a series of values separated with commas, followed by a closing character. Let's write a function that captures the common structure of arrays and objects.
 
-\-\- file: ch05/PrettyJSON.hs
-series :: Char -> Char -> (a -> Doc) -> \[a\] -> Doc
+```haskell
+-- file: src/PrettyJSON.hs
+series :: Char -> Char -> (a -> Doc) -> [a] -> Doc
 series open close item = enclose open close
                        . fsep . punctuate (char ',') . map item
-
+```
 We'll start by interpreting this function's type. It takes an opening and closing character, then a function that knows how to pretty print a value of some unknown type `a`, followed by a list of values of type `a`, and it returns a value of type Doc.
 
 Notice that although our type signature mentions four parameters, we have only listed three in the definition of the function. We are simply following the same rule that lets us simplify a definiton like `myLength xs = length xs` to `myLength = length`.
 
 We have already written `enclose`, which wraps a Doc value in opening and closing characters. The `fsep` function will live in our `Prettify` module. It combines a list of Doc values into one, possibly wrapping lines if the output will not fit on a single line.
 
-\-\- file: ch05/PrettyStub.hs
-fsep :: \[Doc\] -> Doc
+```haskell
+-- file: src/Prettify.hs
+fsep :: [Doc] -> Doc
 fsep xs = undefined
-
+```
 By now, you should be able to define your own stubs in `Prettify.hs`, by following the examples we have supplied. We will not explicitly define any more stubs.
 
 The `punctuate` function will also live in our `Prettify` module, and we can define it in terms of functions for which we've already written stubs.
 
-\-\- file: ch05/Prettify.hs
-punctuate :: Doc -> \[Doc\] -> \[Doc\]
-punctuate p \[\]     = \[\]
-punctuate p \[d\]    = \[d\]
-punctuate p (d:ds) = (d <> p) : punctuate p ds
+```haskell
+-- file: src/Prettify.hs
+punctuate :: Doc -> [Doc] -> [Doc]
+punctuate p []     = []
+punctuate p [d]    = [d]
+punctuate p (d:ds) = (d <> p) : punctuate p ds  
+```
 
 With this definition of `series`, pretty printing an array is entirely straightforward. We add this equation to the end of the block we've already written for our `renderJValue` function.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: src/PrettyJSON.hs
 renderJValue (JArray ary) = series '\[' '\]' renderJValue ary
-
+```
 To pretty print an object, we need to do only a little more work: for each element, we have both a name and a value to deal with.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: src/PrettyJSON.hs
 renderJValue (JObject obj) = series '{' '}' field obj
     where field (name,val) = string name
-                          <\> text ": "
-                          <\> renderJValue val
+                          <> text ": "
+                          <> renderJValue val
+```
 
-Writing a module header
------------------------
+Ok, agora pode compilar:
+
+```
+$ stack build
+```
+
+
+### Writing a module header
 
 Now that we have written the bulk of our `PrettyJSON.hs` file, we must go back to the top and add a module declaration.
 
-\-\- file: ch05/PrettyJSON.hs
+```haskell
+-- file: src/PrettyJSON.hs
 module PrettyJSON
     (
       renderJValue
@@ -451,7 +546,7 @@ import Data.Bits (shiftR, (.&.))
 import SimpleJSON (JValue(..))
 import Prettify (Doc, (<>), char, double, fsep, hcat, punctuate, text,
                  compact, pretty)
-
+```
 We export just one name from this module: `renderJValue`, our JSON rendering function. The other definitions in the module exist purely to support `renderJValue`, so there's no reason to make them visible to other modules.
 
 Regarding imports, the `Numeric` and `Data.Bits` modules are distributed with GHC. We've already written the `SimpleJSON` module, and filled our `Prettify` module with skeletal definitions. Notice that there's no difference in the way we import standard modules from those we've written ourselves.
@@ -467,12 +562,13 @@ With each `import` directive, we explicitly list each of the names we want to br
 
 This idea of using explicit imports is a guideline that usually makes sense, not a hard-and-fast rule. Occasionally, we'll need so many names from a module that listing each one becomes messy. In other cases, a module might be so widely used that a moderately experienced Haskell programmer will probably know which names come from that module.
 
-Fleshing out the pretty printing library
-----------------------------------------
+### Fleshing out the pretty printing library
+
 
 In our `Prettify` module, we represent our Doc type as an algebraic data type.
 
-\-\- file: ch05/Prettify.hs
+```haskell
+-- file: src/Prettify.hs
 data Doc = Empty
          | Char Char
          | Text String
@@ -480,14 +576,15 @@ data Doc = Empty
          | Concat Doc Doc
          | Union Doc Doc
            deriving (Show,Eq)
-
+```
 Observe that the Doc type is actually a tree. The `Concat` and `Union` constructors create an internal node from two other Doc values, while the `Empty` and other simple constructors build leaves.
 
 In the header of our module, we will export the name of the type, but not any of its constructors: this will prevent modules that use the Doc type from creating and pattern matching against Doc values.
 
 Instead, to create a Doc, a user of the `Prettify` module will call a function that we provide. Here are the simple construction functions. As we add real definitions, we must replace any stubbed versions already in the `Prettify.hs` source file.
 
-\-\- file: ch05/Prettify.hs
+```haskell
+-- file: src/Prettify.hs
 empty :: Doc
 empty = Empty
 
@@ -500,25 +597,27 @@ text s  = Text s
 
 double :: Double -> Doc
 double d = text (show d)
-
+```
 The `Line` constructor represents a line break. The `line` function creates _hard_ line breaks, which always appear in the pretty printer's output. Sometimes we'll want a _soft_ line break, which is only used if a line is too wide to fit in a window or page. We'll introduce a `softline` function shortly.
 
-\-\- file: ch05/Prettify.hs
+```haskell
+-- file: src/Prettify.hs
 line :: Doc
 line = Line
-
+```
 Almost as simple as the basic constructors is the `(<>)` function, which concatenates two Doc values.
 
-\-\- file: ch05/Prettify.hs
+```haskell
+-- file: src/Prettify.hs
 (<>) :: Doc -> Doc -> Doc
 Empty <> y = y
 x <> Empty = x
-x <> y = x \`Concat\` y
-
+x <> y = x `Concat` y
+```
 We pattern match against `Empty` so that concatenating a Doc value with `Empty` on the left or right will have no effect. This keeps us from bloating the tree with useless values.
-
+```
     ghci> 
-
+```
 ![[Tip]](/support/figs/tip.png)
 
 A mathematical moment
@@ -527,23 +626,27 @@ If we briefly put on our mathematical hats, we can say that `Empty` is the ident
 
 Our `hcat` and `fsep` functions concatenate a list of Doc values into one. In [the section called “Exercises”](functional-programming.html#fp.fold.exercises "Exercises"), we mentioned that we could define concatenation for lists using `foldr`.
 
-\-\- file: ch05/Concat.hs
-concat :: \[\[a\]\] -> \[a\]
-concat = foldr (++) \[\]
-
+```haskell
+-- file: src/Prettify.hs
+concat :: [[a]] -> [a]
+concat = foldr (++) []
+```
 Since `(<>)` is analogous to `(++)`, and `empty` to `[]`, we can see how we might write `hcat` and `fsep` as folds, too.
 
-\-\- file: ch05/Prettify.hs
-hcat :: \[Doc\] -> Doc
+```haskell
+-- file: src/Prettify.hs
+hcat :: [Doc] -> Doc
 hcat = fold (<>)
 
-fold :: (Doc -> Doc -> Doc) -> \[Doc\] -> Doc
+fold :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
 fold f = foldr f empty
+```
 
 The definition of `fsep` depends on several other functions.
 
-\-\- file: ch05/Prettify.hs
-fsep :: \[Doc\] -> Doc
+```haskell
+-- file: src/Prettify.hs
+fsep :: [Doc] -> Doc
 fsep = fold (</>)
 
 (</>) :: Doc -> Doc -> Doc
@@ -551,22 +654,24 @@ x </> y = x <> softline <> y
 
 softline :: Doc
 softline = group line
-
+```
 These take a little explaining. The `softline` function should insert a newline if the current line has become too wide, or a space otherwise. How can we do this if our Doc type doesn't contain any information about rendering? Our answer is that every time we encounter a soft newline, we maintain _two_ alternative representations of the document, using the `Union` constructor.
 
-\-\- file: ch05/Prettify.hs
+```haskell
+-- file: src/Prettify.hs
 group :: Doc -> Doc
 group x = flatten x \`Union\` x
-
+```
 Our `flatten` function replaces a `Line` with a space, turning two lines into one longer line.
 
-\-\- file: ch05/Prettify.hs
+```haskell
+-- file: src/Prettify.hs
 flatten :: Doc -> Doc
 flatten (x \`Concat\` y) = flatten x \`Concat\` flatten y
 flatten Line           = Char ' '
 flatten (x \`Union\` _)  = flatten x
 flatten other          = other
-
+```
 Notice that we always call `flatten` on the left element of a `Union`: the left of each `Union` is always the same width (in characters) as, or wider than, the right. We'll be making use of this property in our rendering functions below.
 
 ### Compact rendering
@@ -575,19 +680,20 @@ We frequently need to use a representation for a piece of data that contains as 
 
 For these cases, and because it's a simple piece of code to start with, we provide a bare-bones compact rendering function.
 
-\-\- file: ch05/Prettify.hs
+```haskell
+-- file: src/Prettify.hs
 compact :: Doc -> String
-compact x = transform \[x\]
-    where transform \[\] = ""
+compact x = transform [x]
+    where transform [] = ""
           transform (d:ds) =
               case d of
                 Empty        -> transform ds
                 Char c       -> c : transform ds
                 Text s       -> s ++ transform ds
-                Line         -> '\\n' : transform ds
-                a \`Concat\` b -> transform (a:b:ds)
-                _ \`Union\` b  -> transform (b:ds)
-
+                Line         -> '\n' : transform ds
+                a `Concat` b -> transform (a:b:ds)
+                _ `Union` b  -> transform (b:ds)
+```
 The `compact` function wraps its argument in a list, and applies the `transform` helper function to it. The `transform` function treats its argument as a stack of items to process, where the first element of the list is the top of the stack.
 
 The `transform` function's `(d:ds)` pattern breaks the stack into its head, `d`, and the remainder, `ds`. In our `case` expression, the first several branches recurse on `ds`, consuming one item from the stack for each recursive application. The last two branches add items in front of `ds`: the `Concat` branch adds both elements to the stack, while the `Union` branch ignores its left element, on which we called `flatten`, and adds its right element to the stack.
@@ -628,30 +734,32 @@ When we apply `compact`, it turns its argument into a list and applies `transfor
 
 While our `compact` function is useful for machine-to-machine communication, its result is not always easy for a human to follow: there's very little information on each line. To generate more readable output, we'll write another function, `pretty`. Compared to `compact`, `pretty` takes one extra argument: the maximum width of a line, in columns. (We're assuming that our typeface is of fixed width.)
 
-\-\- file: ch05/Prettify.hs
+```haskell
+-- file: src/Prettify.hs
 pretty :: Int -> Doc -> String
-
+```
 To be more precise, this Int parameter controls the behaviour of `pretty` when it encounters a `softline`. Only at a `softline` does `pretty` have the option of either continuing the current line or beginning a new line. Elsewhere, we must strictly follow the directives set out by the person using our pretty printing functions.
 
 Here's the core of our implementation
 
-\-\- file: ch05/Prettify.hs
-pretty width x = best 0 \[x\]
+```haskell
+-- file: src/Prettify.hs
+pretty width x = best 0 [x]
     where best col (d:ds) =
               case d of
                 Empty        -> best col ds
                 Char c       -> c :  best (col + 1) ds
                 Text s       -> s ++ best (col + length s) ds
-                Line         -> '\\n' : best 0 ds
-                a \`Concat\` b -> best col (a:b:ds)
-                a \`Union\` b  -> nicest col (best col (a:ds))
+                Line         -> '\n' : best 0 ds
+                a `Concat` b -> best col (a:b:ds)
+                a `Union` b  -> nicest col (best col (a:ds))
                                            (best col (b:ds))
           best _ _ = ""
 
-          nicest col a b | (width - least) \`fits\` a = a
+          nicest col a b | (width - least) `fits` a = a
                          | otherwise                = b
                          where least = min width col
-
+```
 Our `best` helper function takes two arguments: the number of columns emitted so far on the current line, and the list of remaining Doc values to process.
 
 In the simple cases, `best` updates the `col` variable in straightforward ways as it consumes the input. Even the `Concat` case is obvious: we push the two concatenated components onto our stack/list, and don't touch `col`.
@@ -660,18 +768,21 @@ The interesting case involves the `Union` constructor. Recall that we applied `f
 
 To do this, we write a small helper that determines whether a single line of a rendered Doc value will fit into a given number of columns.
 
-\-\- file: ch05/Prettify.hs
+```haskell
+-- file: src/Prettify.hs
 fits :: Int -> String -> Bool
-w \`fits\` _ | w < 0 = False
-w \`fits\` ""        = True
-w \`fits\` ('\\n':_)  = True
-w \`fits\` (c:cs)    = (w - 1) \`fits\` cs
+w `fits` _ | w < 0 = False
+w `fits` ""        = True
+w `fits` ('\n':_)  = True
+w `fits` (c:cs)    = (w - 1) `fits` cs
+```
 
 ### Following the pretty printer
 
 In order to understand how this code works, let's first consider a simple Doc value.
 
-    ghci> 
+*Main Prettify PrettyJSON PutJSON SimpleJSON>  empty </> char 'a'
+Concat (Union (Char ' ') Line) (Char 'a')
 
 We'll apply `pretty 2` on this value. When we first apply `best`, the value of `col` is zero. It matches the `Concat` case, pushes the values `Union (Char ' ') Line` and `Char 'a'` onto the stack, and applies itself recursively. In the recursive application, it matches on `Union (Char ' ') Line`.
 
@@ -679,7 +790,8 @@ At this point, we're going to ignore Haskell's usual order of evaluation. This k
 
 To figure out what the result of `nicest` is here, we do a little substitution. The values of `width` and `col` are 0 and 2, respectively, so `least` is 0, and `width - least` is 2. We quickly evaluate ``2 `fits` " a"`` in **ghci**.
 
-    ghci> 
+*Main Prettify PrettyJSON PutJSON SimpleJSON> 2 `fits` " a"
+True
 
 Since this evaluates to `True`, the result of `nicest` here is `" a"`.
 
