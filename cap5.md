@@ -382,6 +382,14 @@ a <> b = undefined
 char :: Char -> Doc
 char c = undefined
 ```
+
+Para evitar conflito com o operador `<>` já existente em Prelude, uma alternativa é esconder esse operador na importação:
+
+```haskell
+-- file: rwhptbr/Ch11.hs
+import Prelude hiding ((<>))
+```
+
 Our pretty printing library also provides `hcat`, which concatenates multiple Doc values into one: it's the analogue of `concat` for lists.
 
 ```haskell
