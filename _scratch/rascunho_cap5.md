@@ -90,3 +90,17 @@ Note that the file name and the module name match exactly, except for the .hs. I
 
 Modules are a neat way to organize your code. You can keep related functionality in a single module, which makes it easy to search for functionality around your code.
 
+Crie um novo arquivo SimpleJSON em src:
+
+module SimpleJSON where
+    
+data JValue = JString String
+            | JNumber Double
+            | JBool Bool
+            | JNull
+            | JObject [(String, JValue)]
+            | JArray [JValue]
+              deriving (Eq, Ord, Show)
+              
+          
+
