@@ -144,16 +144,18 @@ A função de ordenação de lista deve certamente conter um número de propried
 -- file: src/QuickTestes.hs
 prop_minimum xs         = head (qsort xs) == minimum xs
 ```
-Testando isso, no entanto, revela um erro:
+Ao recarregar o moduloe e testar essa nova propriendade, iremos indentificar um erro:
 ```
+ghci>:r
 ghci> quickCheck (prop_minimum :: [Integer] -> Bool)
-0** Exception: Prelude.head: empty list
+*** Failed! Exception: 'Prelude.head: empty list' (after 1 test):
+[]
 ```
 
 A propriedade falhou quando ordenou uma lista vazia, para a qual head e minimum não estão definidas, como podemos ver pela sua definição:
 
 ```haskell
--- file: ch11/minimum.hs
+-- defined in Prelude.hs
 head :: [a] -> a
 head (x:_) = x
 head [] = error "Prelude.head: empty list"
@@ -165,21 +167,21 @@ minimum xs = foldl1 min xs
 Portanto esta propriedade irá funcionar apenas para listas não-vazias. QuickCheck, felizmente, vem com uma linguagem própria para escrever propriedades, para que possamos especificar mais precisamente nossas invariantes, removendo valores que não queremos considerar. Para o caso da lista vazia, nós realmente queremos dizer que se a lista não está vazia, então o primeiro elemento da lista ordenada é o menor da lista de entrada. Isto é feito utilizando a função de implicação(`==>`), que remove dados inválidos antes de executar as propriedades:
 
 ```haskell
-\-- file: ch11/QC-basics.hs
+-- file: src/QuickTestes.hs
 prop_minimum' xs         = not (null xs) ==> head (qsort xs) == minimum xs
 ```
 O resultado é claro. Removendo o caso da lista vazia, podemos confirmar que a propriedade de fato funciona:
 
 ```
 ghci> quickCheck (prop_minimum' :: [Integer] -> Property)
-00, passed 100 tests.
++++ OK, passed 100 tests; 17 discarded.
 ```
 Note que tivemos que mudar o tipo da propriedade, anteriormente sendo um simples resultado Bool para agora ser um resultado mais geral do tipo Property(a propriedade em si agora é uma função que remove listas vazias, antes de testá-las, ao invés de uma simples constante booleana).
 
 Podemos agora completar o conjunto básico de propriedades para a função de ordenação com outras invariantes que ela deve satisfazer: a saída deve ser ordenada (cada elemento deve ser menor, ou igual, ao seu sucessor); a saída deve ser uma permutação da entrada (a qual nós alcançamos através da função diferença de lista, `(\\)`); o último elemento ordenado deve ser o maior elemento; e se encontramos o menor elemento de duas listas, ele deve ser o primeiro elemento se juntarmos e ordenarmos tais listas. Estas propriedades podem ser definidas como:
 
 ```haskell
--- file: ch11/QC-basics.hs
+-- file: src/QuickTestes.hs
 prop_ordered xs = ordered (qsort xs)
     where ordered []       = True
           ordered [x]      = True
@@ -203,7 +205,7 @@ prop_append xs ys       =
 Outra técnica para adquirir confiança no código é testar sobre uma implementação modelo. Podemos relacionar a nossa implementação de ordenação de lista com a função de ordenação presente na biblioteca padrão, se elas possuem o mesmo comportamento, nós ganhamos confiança que nossa função de ordenação faz o que é certo:
 
 ```haskell
--- file: ch11/QC-basics.hs
+-- file: src/QuickTestes.hs
 prop_sort_model xs      = sort xs == qsort xs
 ```
 
@@ -250,14 +252,10 @@ choose   :: Random a => (a, a) -> Gen a
 oneof    :: [Gen a] -> Gen a
 ```
 
-A função `elements`, por exemplo, recebe uma lista de valores e retorna um gerador de valores randômicos a partir daquela lista. Usaremos `choose` e `oneof` depois. Com isso, podemos começar a escrever realmente nossos geradores para tipos de dados simples. Para entendermos melhor, iremos usar novamene o módulo `RandomTest` aonde iremos usar um novo tipo de dado para a lógica ternária:
+A função `elements`, por exemplo, recebe uma lista de valores e retorna um gerador de valores randômicos a partir daquela lista. Usaremos `choose` e `oneof` depois. Com isso, podemos começar a escrever realmente nossos geradores para tipos de dados simples. Para entendermos melhor, iremos usar novamene o módulo `QuickTestes` aonde iremos usar um novo tipo de dado para a lógica ternária:
 
 ```haskell
--- file: src/RandomTest.hs
-module RandomTest where
-
-import Test.QuickCheck
-
+-- file: src/QuickTestes.hs
 data Ternary
     = Yes
     | No
@@ -273,6 +271,12 @@ instance Arbitrary Ternary where
   arbitrary     = elements [Yes, No, Unknown]
 ```
 
+Com essa implementação já é possível gerar dados aleatórios para este tipo de dados:
+
+ghci>:r
+ghci>generate  arbitrary :: IO [Ternary]
+[Unknown,Yes,Yes,Yes,Unknown,Yes,Unknown,Unknown,Unknown,No,No,Yes,Yes]
+
 Outra abordagem para a geração de dados é gerar valores para um dos tipos básicos de Haskell e traduzir tais valores em tipos nos quais estejamos interessados. Poderíamos ter escrito a instância de Ternary gerando valores inteiros de 0 a 2 por exemplo, usando `choose`, e então mapeando os para valores ternários:
 
 ```haskell
@@ -287,7 +291,7 @@ instance Arbitrary Ternary where
                       _ -> Unknown
 ```
 
-Para tipos enumarados, essa abordagem funciona bem, já que os inteiros são facilmente mapeáveis para os construtores do tipo de dado. Para tipos cartesianos (como as estruturas e as tuplas), precisamos de, no lugar, gerar cara componente do produto separadamente (e recursivamente para tipos aninhados), e então combinar os componentes. Por exemplo, para gerar pares de valores randômicos:
+Para tipos enumerados, essa abordagem funciona bem, já que os inteiros são facilmente mapeáveis para os construtores do tipo de dado. Para tipos cartesianos (como as estruturas e as tuplas), precisamos de, no lugar, gerar cara componente do produto separadamente (e recursivamente para tipos aninhados), e então combinar os componentes. Por exemplo, para gerar pares de valores randômicos:
 
 ```haskell
 -- Defined in ‘Test.QuickCheck.Arbitrary’
@@ -298,12 +302,13 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (a, b) where
       return (x, y)
 ```
 
-Então, poderiamos testar com uma tupla de inteiros:
+Por exemplo, poderiamos testar com uma tupla de inteiros:
 
 ```
 ghci> generate  arbitrary :: IO [(Int,Int)]
 [(27,-24),(-3,-13),(17,24),(28,-1),(-24,5),(-14,-25)]
 ```
+
 Vamos escrever um gerador para todas as diferentes variantes do tipo Doc. Começaremos quebrando o problema em problemas menores, inicialmente gerando construtores randômicos para cada tipo, e então, dependendo do resultado, os componentes de cada campo. Os casos mais complicados são as variantes de concatenação e união.
 
 Quando este livro foi escrito originalmente, o QuickCheck não tem uma instância padrão para caracteres, devido à abundância de diferentes codificações de texto que podemos querer usar para testes de caracteres. Nas versões mais recentes já existe essa implementação definida em `Test.QuickCheck`:
