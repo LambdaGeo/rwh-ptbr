@@ -321,8 +321,6 @@ instance Arbitrary Char where
 
 Com isso, podemos agora escrever uma instância para documentos enumerando os construtores e preenchendo os campos. Escolhemos um inteiro randômico para representar qual variante do documento será gerada, e então realizar a escolha baseada no resultado. Para gerar nós de documentos de concatenação ou união, usamos recursão sobre arbitrary, deixando a inferência de tipos determinar qual instância de Arbitrary desejamos. Iremos para tanto, escrever o código em test/spec.hs:
 
-
-
 ```haskell
 -- file: test/Spec.hs
 import Test.QuickCheck
@@ -391,7 +389,7 @@ Para usar o combinador `liftM` foi importado o módulo `Control.Monad`. Esta úl
 Duas das funções básicas sobre documentos são a constante de documento nulo (função nulária), empty, e a função anexar. Revendo suas definições:
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: src/Prettify.hs
 empty :: Doc
 empty = Empty
 
@@ -402,23 +400,15 @@ x <> y = x `Concat` y
 
 ```
 
-Para evitar conflito com o operador `<>` já existente em Prelude, uma alternativa é esconder esse operador na importação:
-
-```haskell
--- file: rwhptbr/Ch11.hs
-import Prelude hiding ((<>))
-```
-
 Juntas, essas funções deveriam compor uma propriedade razoável: anexar ou prepor uma lista vazia a uma segunda lista deveria deixar a segunda lista inalterada. Podemos afirmar essa invariante como uma propriedade:
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: test/Spec.hs
 prop_empty_id x =
     empty <> x == x
   &&
     x <> empty == x
 ```
-
 Ao confirmar que essa propriedade é verdadeira, podemos continuar a criação de nossos testes:
 
 ```
@@ -426,11 +416,62 @@ ghci> quickCheck prop_empty_id
 +++ OK, passed 100 tests.
 ```
 
+(REESCREVER ESSA PARTE)O Haskell provê um template para facilitar a aplicação dos testes. Para tanto, é necessário fazer as seguinte alterações no arquivo:
+
+
+```haskell
+-- file: test/Spec.hs
+
+{-# LANGUAGE TemplateHaskell #-}
+
+import Test.QuickCheck
+import Data.List
+import Prettify
+import Control.Monad
+import Prelude hiding ((<>), empty)
+
+instance Arbitrary Doc where
+    arbitrary =
+        oneof [ return Empty
+              , liftM  Char   arbitrary
+              , liftM  Text   arbitrary
+              , return Line
+              , liftM2 Concat arbitrary arbitrary
+              , liftM2 Union  arbitrary arbitrary ]
+
+prop_empty_id x =
+    empty <> x == x
+  &&
+    x <> empty == x
+
+
+return []
+runTests = $quickCheckAll
+    
+main :: IO ()
+main = runTests >>= \passed -> if passed then putStrLn "Passou em todos testes."
+                                             else putStrLn "Alguns testes falharam"
+```
+Com essas modificações, podemos então executar nossos testes. Observe que para o quickCheckAll executar os testes, as funções precisam iniciar com `prop_`.
+
+```
+$stack test
+hs2json-0.1.0.0: test (suite: hs2json-test)
+
+=== prop_empty_id from test/Spec.hs:19 ===
++++ OK, passed 100 tests.
+
+Passou em todos testes.
+
+hs2json-0.1.0.0: Test suite hs2json-test passed
+Completed 2 action(s).
+```
+
 Outras funções na API são simples o suficiente para terem o seu comportamento completamente descrito por propriedades são as seguintes:
 
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: test/Spec.hs
 char :: Char -> Doc
 char c = Char c
 
@@ -448,7 +489,7 @@ line = Line
 Fazemos então os seguintes testes para estas funções básicas, de modo que modificações futuras não irão quebras essas invariantes básicas.
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: test/Spec.hs
 prop_char c   = char c   == Char c
 prop_text s   = text s   == if null s then Empty else Text s
 prop_line     = line     == Line
@@ -462,7 +503,7 @@ Essas propriedades são suficientes para testar completamente a estrutura retorn
 Funções de alta ordem são a base de programas reusáveis, e a nossa biblioteca de pretty-printing não é exceção – uma função `fold` customizada é usada internamente para implementar tanto concatenação quanto intercalação de separadores entre pedaços de documentos. O `fold` definido para documentos recebe uma lista de pedaços de documentos e os uni de acordo com uma função de combinação:
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: src/Pretiffy.hs
 fold :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
 fold f = foldr f empty
 
@@ -473,7 +514,7 @@ hcat = fold (<>)
 Podemos escrever testes em isolamento para instâncias específicas de fold facilmente. A concatenação horizontal de documentos, por exemplo, é fácil de ser especificada escrevendo-se uma implementação de referência sobre listas:
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: test/Spec.hs
 prop_hcat xs = hcat xs == glue xs
     where
         glue []     = empty
@@ -483,17 +524,22 @@ prop_hcat xs = hcat xs == glue xs
 Acontece uma história similar com `punctuate`, onde podemos modelar a inserção de pontuação com intercalação de listas (`intersperse`, de Data.List,é uma função que recebe um elemento e o intercala entre outros elementos da lista):
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: test/Spec.hs
 prop_punctuate s xs = punctuate s xs == intersperse s xs
 ```
 
 Embora pareça correta, a execução revela uma falha na nossa lógica:
 
 ```
-ghci> quickCheck prop_punctuate
-*** Failed! Falsifiable (after 6 tests):
-Union Empty (Text "")
-[Empty,Text "\458628$"]
+=== prop_punctuate from test/Spec.hs:39 ===
+*** Failed! Falsifiable (after 5 tests and 1 shrink):
+Char 'y'
+[Char '\EOT',Char 'f']
+
+Alguns testes falharam
+
+hs2json-0.1.0.0: Test suite hs2json-test passed
+Completed 2 action(s).
 ```
 
 A biblioteca de pretty-printing otimiza documentos vazios redundantes, algo que o modelo de implementação não faz, logo precisaremos aumentar o nosso modelo para satisfazer a realidade. Primeiro, intercalamos a pontuação pela lista de documentos, e então eliminamos os documentos Empty espalhados pela lista, desta maneira:
