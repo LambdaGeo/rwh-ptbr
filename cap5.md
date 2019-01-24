@@ -182,24 +182,16 @@ import SimpleJSON
 
 main = print (JObject [("foo", JNumber 1), ("bar", JBool False)])
 ```
-Notice the `import` directive that follows the module declaration. This indicates that we want to take all of the names that are exported from the `SimpleJSON` module, and make them available in our module. Any `import` directives must appear in a group at the beginning of a module. They must appear after the module declaration, but before all other code. We cannot, for example, scatter them throughout a source file.
+Observe a diretiva `import` que segue a declaração do módulo. Isso indica que queremos pegar todos os nomes que são exportados do módulo `SimpleJSON` e disponibilizá-los em nosso módulo. Quaisquer diretivas `import` devem aparecer em um grupo no início de um módulo. Eles devem aparecer após a declaração do módulo, mas antes de todos os outros códigos. Nós não podemos, por exemplo, espalhá-los através de um arquivo fonte. 
 
-Our choice of naming for the source file and function is deliberate. To create an executable, **ghc** expects a module named `Main` that contains a function named `main`. The `main` function is the one that will be called when we run the program once we've built it.
+O nome dos arquivos fontes e das funções são a cargo do programador. Porém, para criar um executável, o ** ghc ** espera um módulo chamado `Main` que contenha uma função chamada` main`. A função `main` é aquela que será chamada quando rodarmos o programa assim que o construirmos.
 
 ```
 $stack buid
 $ stack run
 JObject [("foo",JNumber 1.0),("bar",JBool False)]
 ```
-This time around, we're omitting the `-c` option when we invoke **ghc**, so it will attempt to generate an executable. The process of generating an executable is called _linking_. As our command line suggests, **ghc** is perfectly able to both compile source files and link an executable in a single invocation.
 
-We pass **ghc** a new option, `-o`, which takes one argument: this is the name of the executable that **ghc** should create\[[10](#ftn.id598725)\]. Here, we've decided to name the program `simple`. On Windows, the program will have the suffix `.exe`, but on Unix variants there will not be a suffix.
-
-Finally, we supply the name of our new source file, `Main.hs`, and the object file we already compiled, `SimpleJSON.o`. We must explicitly list every one of our files that contains code that should end up in the executable. If we forget a source or object file, **ghc** will complain about _undefined symbols_, which indicates that some of the definitions that it needs are not provided in the files we have supplied.
-
-When compiling, we can pass **ghc** any mixture of source and object files. If **ghc** notices that it has already compiled a source file into an object file, it will only recompile the source file if we've modified it.
-
-Once **ghc** has finished compiling and linking our `simple` program, we can run it from the command line.
 
 ### Printing JSON data
 
