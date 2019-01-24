@@ -280,7 +280,7 @@ ghci>generate  arbitrary :: IO [Ternary]
 Outra abordagem para a geração de dados é gerar valores para um dos tipos básicos de Haskell e traduzir tais valores em tipos nos quais estejamos interessados. Poderíamos ter escrito a instância de Ternary gerando valores inteiros de 0 a 2 por exemplo, usando `choose`, e então mapeando os para valores ternários:
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: src/RandomTest.hs
 instance Arbitrary Ternary where
     --arbitrary     = elements [Yes, No, Unknown]
     arbitrary     = do
@@ -319,10 +319,16 @@ instance Arbitrary Char where
     arbitrary = elements (['A'..'Z'] ++ ['a' .. 'z'] ++ " ~!@#$%^&*()")
 ```
 
-Com isso, podemos agora escrever uma instância para documentos enumerando os construtores e preenchendo os campos. Escolhemos um inteiro randômico para representar qual variante do documento será gerada, e então realizar a escolha baseada no resultado. Para gerar nós de documentos de concatenação ou união, usamos recursão sobre arbitrary, deixando a inferência de tipos determinar qual instância de Arbitrary desejamos:
+Com isso, podemos agora escrever uma instância para documentos enumerando os construtores e preenchendo os campos. Escolhemos um inteiro randômico para representar qual variante do documento será gerada, e então realizar a escolha baseada no resultado. Para gerar nós de documentos de concatenação ou união, usamos recursão sobre arbitrary, deixando a inferência de tipos determinar qual instância de Arbitrary desejamos. Iremos para tanto, escrever o código em test/spec.hs:
+
+
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: test/Spec.hs
+import Test.QuickCheck
+import Data.List
+import Prettify
+
 instance Arbitrary Doc where
     arbitrary = do
         n <- choose (1,6) :: Gen Int
@@ -344,12 +350,30 @@ instance Arbitrary Doc where
              6 -> do x <- arbitrary
                      y <- arbitrary
                      return (Union x y)
+
+main :: IO ()
+main = do
+    docs <- generate  arbitrary :: IO [Doc]
+    print docs
+    docs <- generate  arbitrary :: IO [Doc]
+    print docs
+    docs <- generate  arbitrary :: IO [Doc]
+    print docs
 ```
 
-Essa foi uma abordagem bem direta, e podemos melhorá-la um pouco mais usando a função `oneof`, cujo tipo vimos anteriormente, para escolher entre diferentes geradores em uma lista (podemos usar também o combinador monádico, `liftM`, para evitar nomear resultados intermediários de cada gerador):
+Com este código, já é possível executar o "teste":
+```
+$ stack test
+hs2json-0.1.0.0: test (suite: hs2json-test)
+
+[Text "* a\aS\770726\104944\772241Z\693704\594893\1079094\195229\133711\RS5IM\202165+T\STXh\578922\aCl*",Concat Line (Concat Empty (Char '4')),Char '\NUL',Concat Line (Concat Line (Concat (Text ">LJ\704988\96698i\325142X\GS\192746\GS\830877\EOT\1112145I\724715\448100^\DC4\SUBG.\SYN%\380946") (Union Line (Char 'm'))))]
+[Union (Union (Concat (Char 'X') Line) (Union (Concat (Text "\773866 =\988211L\926094LZ\SUBb2") (Char '{')) (Concat(Char 'g') (Union Line Line)))) Empty,Concat (Char ')') Empty,Char 'z',Empty,Empty,Empty,Union Empty (Text "U!\DEL\706669\1009497'"),Union (Concat (Text "\645294=\1058950;0ku^") (Char '\520057')) (Concat (Concat Empty (Concat (Char'\338637') Empty)) (Concat (Char '\DEL') (Union (Union Line Empty) Empty))),Char 'e']
+[Text "\961163\434986A\131685\642589sK<\366215LB\698621aw{v/m\971482TO\RS\ETX%\RS}\US\vL"]
+```
+Examinando a saída, vemos uma boa mistura de casos básicos e alguns documentos aninhados mais complicados. Geraremos centenas desde a cada execução de teste para que o teste seja válido. Agora podemos escrever algumas propriedades genéricas para nossas funções. Essa foi uma abordagem bem direta, e podemos melhorá-la um pouco mais usando a função `oneof`, cujo tipo vimos anteriormente, para escolher entre diferentes geradores em uma lista (podemos usar também o combinador monádico, `liftM`, para evitar nomear resultados intermediários de cada gerador):
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: test/Spec.hs
 instance Arbitrary Doc where
     arbitrary =
         oneof [ return Empty
@@ -360,19 +384,7 @@ instance Arbitrary Doc where
               , liftM2 Union  arbitrary arbitrary ]
 
 ```
-
-Para usar o combinador `liftM` foi importado o módulo `Control.Monad`. Esta última versão é mais concisa – escolhendo apenas de uma lista de geradores – embora ambas as versões descrevam os mesmo dados. Podemos checar que a saída faz sentido, ao gerar uma lista de documentos randômicos (escolhemos a semente inicial do gerador pseudo-randômico como 2):
-
-```
- ghci> generate  arbitrary :: IO [Doc]
-[Concat (Char '-') Line,Line,Empty,Union (Concat (Union (Concat (Union (Concat Empty (Concat (Char 'w') 
-(Text "\239568T\1075378\DLE[\728682\498698B\SUBtG\EM{\17001d\SYN\989106-\221109\DC4 "))) (Char 'U')) 
-(Text "Q\DEL }&\ENQ\100331\SI\DC1\ACK0")) Line) (Concat Empty (Char '1'))) Line, 
-Text "VzAmS \649947M",Text "]\fieI8\649227e\197534\r\"\RSn\FSW\959162\&6(\">2@$\1050828\DLE",
-Union (Union Line Line) Empty]
-
-```
-Examinando a saída, vemos uma boa mistura de casos básicos e alguns documentos aninhados mais complicados. Geraremos centenas desde a cada execução de teste para que o teste seja válido. Agora podemos escrever algumas propriedades genéricas para nossas funções
+Para usar o combinador `liftM` foi importado o módulo `Control.Monad`. Esta última versão é mais concisa – escolhendo apenas de uma lista de geradores – embora ambas as versões descrevam os mesmo dados. Podemos checar que a saída faz sentido, ao gerar uma lista de documentos randômicos (escolhemos a semente inicial do gerador pseudo-randômico como 2).
 
 #### Testando a Construção de Documentos
 
