@@ -12,7 +12,7 @@ Real World Haskell by Bryan O'Sullivan, Don Stewart, and John Goerzen
 2. [Tipos e Funções](cap2)
 3. [Definindo os tipos e entendendo as funções](cap3)
 4. [Programação funcional](cap4)
-5. Writing a library: working with JSON data
+5. [Writing a library: working with JSON data](cap5)
 6. Using typeclasses
 7. Input and output
 8. Efficient file processing, regular expressions, and file name matching
