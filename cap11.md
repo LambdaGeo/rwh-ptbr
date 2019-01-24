@@ -12,30 +12,53 @@ Os testes possuem um papel importante para manter o código no caminho certo. Os
 
 Neste capítulo iremos ver como usar QuickCheck para estabelecer invariantes no código, e então re-examinar o "pretty printer" desenvolvido nos capítulos anteriores, testando-o com o framework. Iremos também ver como conduzir o processo de testes com a ferramenta de cobertura de testes do GHC: HPC.
 
-### QuickCheck: Teste baseado em tipos
+Caso não tenha desenvolvido a biblioteca pretty-printer do capítulo 5, clone ou baixe a partir do seguinte repositório:
 
-Para obter uma ideia geral sobre como funcionam os testes baseado em tipos, iremos começar com um cenário simples: você escreveu uma função específica de ordenação e deseja testar o seu comportamento.
+```
+git clone https://github.com/profsergiocosta/hs2json.git
+```
+Após clonado, entre na pasta da biblioteca e executa os testes:
 
-Primeiramente, nos importamos a biblioteca QuickCheck e os módulos necessários:
+```
+$cd hs2json
+$stack test
+```
+Após a compilação irá aparecer a informação que ainda não existe testes implementados:
 
+```
+hs2json-0.1.0.0: test (suite: hs2json-test)
+                             
+Test suite not yet implemented
+
+hs2json-0.1.0.0: Test suite hs2json-test passed
+```
+Podemos verificar no código fonte que nenhum teste foi implementado:
 
 ```haskell
-\-- file: ch11/QC-basics.hs
-import Test.QuickCheck
-import Data.List
+\-- file: test/Spec.hs
+main :: IO ()
+main = putStrLn "Test suite not yet implemented"
 ```
 
-Caso esteja usando o stack, lembre-se de adicionar o framework na lista de dependencias:
+O objetivo deste capítulo é implementarmos estes testes. Para tanto, eu irei guardar essa implementação em um novo repositório, para que vocês possam utiliza-lo como referência se algo der errado. Porém, é importante que execute os passos a seguir a partir deste repositório sem os testes implmentados. Então, primeiro removi o repositorio atual do remote e depois associei a outro repositório
+```
+$git remote rm origin
+$git remote add origin git@github.com:profsergiocosta/hs2json-test.git
+$git push origin master
+```
 
-```yaml
-dependencies:
-- base >= 4.7 && < 5
-- QuickCheck
+### QuickCheck: Teste baseado em tipos
+
+Para obter uma ideia geral sobre como funcionam os testes baseado em tipos, iremos começar com um cenário simples: você escreveu uma função específica de ordenação e deseja testar o seu comportamento. Para entendermos melhor, criem um novo módulo `QuickTestes` aonde iremos usar um novo tipo de dado para a lógica ternária:
+
+```haskell
+-- file: src/QuickTestes.hs
+module QuickTestes where
 ```
 E a função que nós queremos testar – uma rotina personalizada de ordenação:: 
 
 ```haskell
--- file: ch11/QC-basics.hs
+-- file: src/QuickTestes.hs
 qsort :: Ord a => [a] -> [a]
 qsort []     = []
 qsort (x:xs) = qsort lhs ++ [x] ++ qsort rhs
@@ -46,13 +69,14 @@ qsort (x:xs) = qsort lhs ++ [x] ++ qsort rhs
 Esta é a clássica implementação de ordenação em Haskell: um estudo sobre a elegância em programação funcional, não em eficiência (este não é um algoritmo de ordenação in-place, que altera a estrutura). Agora, nós queremos checar se esta função obedece às regras básicas que uma boa ordenação deveria seguir. Uma invariante útil para começar e uma que aparece com frequência em códigos puramente funcionais, é a idempotência – uma função aplicada duas vezes deve ter o mesmo resultado quando aplicada apenas uma vez. Para a nossa rotina de ordenação – um algoritmo estável de ordenação – isso deve ser sempre verdadeiro, ou a situação irá ficar feia. A invariante pode ser codificada como uma simples propriedade, da seguinte maneira
 
 ```haskell
-\-- file: ch11/QC-basics.hs
+-- file: src/RandomTest.hs
 prop_idempotent xs = qsort (qsort xs) == qsort xs
 ```
 
 Iremos usar a conveção de QuickCheck de prefixar as propriedades de teste com `prop_` para diferenciá-las de código normal. A propriedade de idempotência é escrita simplesmente como uma função Haskell declarando uma igualdade que deve valer para todos os dados da entrada que é ordenada. Podemos checar manualmente se isso faz sentido para alguns casos simples:
 
 ```
+$stack ghci
 ghci> prop_idempotent []       
 True
 ghci> prop_idempotent [1,1,1,1]  
@@ -62,9 +86,20 @@ True
 ghci> prop_idempotent [1,5,2,1,2,0,9]
 True
 ```
-Parece estar certo. Entretanto, escrever os dados de entrada à mão é tedioso e viola o código moral dos programadores funcionais eficientes: deixe a máquina fazer o trabalho! Para automatizar isto, a biblioteca QuickCheck provê um conjunto de geradores de dados para todos os tipos de dados básicos do Haskell. QuickCheck usa o `typeclass` Arbitrary para apresentar uma interface uniforme a um pseudo aleatório gerador de dados com o tipo do sistema usado para resolver a questão de qual gerador usar. QuickCheck normalmente esconde o funcionamento da geração de dados, entretanto, nós podemos também executar os geradores à mão para obter uma ideia dos dados que o QuickCheck produz. Por exemplo, gerar uma lista aleatória de valores booleanos:
+Parece estar certo. Entretanto, escrever os dados de entrada à mão é tedioso e viola o código moral dos programadores funcionais eficientes: deixe a máquina fazer o trabalho! Para automatizar isto, a biblioteca QuickCheck provê um conjunto de geradores de dados para todos os tipos de dados básicos do Haskell. QuickCheck usa o `typeclass` Arbitrary para apresentar uma interface uniforme a um pseudo aleatório gerador de dados com o tipo do sistema usado para resolver a questão de qual gerador usar. QuickCheck normalmente esconde o funcionamento da geração de dados, entretanto, nós podemos também executar os geradores à mão para obter uma ideia dos dados que o QuickCheck produz. Primeiro, é necessário incluí-lo nas dependecias:
+
+```yaml
+#file: package.yaml
+dependencies:
+- base >= 4.7 && < 5
+- QuickCheck
+```
+
+Por exemplo, gerar uma lista aleatória de valores booleanos:
 
 ```
+$stack ghci
+ghci>:module +Test.QuickCheck
 ghci> generate  arbitrary :: IO [Bool]
 [False,True,True,True,False,True,False,True]
 ```
@@ -73,14 +108,13 @@ ghci> generate  arbitrary :: IO [Bool]
 QuickCheck gera dados de teste desta maneira e os passa à propriedade de nossa escolha, por meio da função quickCheck. O tipo da propriedade em si determina qual gerador de dados é usado. O `quickCheck` então checa para todos os dados de teste produzido, que a propriedade foi satisfeita. Agora, uma vez que nosso teste de idempotência é polimórfico na lista de tipos de elementos, precisamos escolher um tipo particular para o qual desejamos gerar os dados de teste, o qual iremos escrever como uma restrição de tipo da propriedade. Para executar o teste, apenas chamando quickCheck com a nossa função de propriedade, que está configurada para o tipo de dado requerido (caso contrário, o tipo de elemento da lista irá ser o padrão desinteressante tipo ())
 
 ```
-ghci> (prop_idempotent :: [Integer] -> Bool)
-
+ghci>quickCheck (prop_idempotent :: [Integer] -> Bool)
 +++ OK, passed 100 tests.
 ```
 Para as diferentes 100 listas geradas, a nossa propriedade foi um sucesso. Quando escrever testes, geralmente é útil olhar os dados reais gerados para cada teste. Para fazer isso, iremos substituir quickCheck pelo seu irmão, verboseCheck, para ver a saída de cada teste. Por exemplo, mostrando apenas parte da saída:
 
 ```
-ghci> verboseCheck (prop_idempotent :: [Integer] -> Bool)
+ghci> verboseCheck (prop_idempotent :: [Integer] -> Bool) 
 Passed:  
 []
 
@@ -107,7 +141,7 @@ Boas bibliotecas consistem de um conjunto de primitivas ortogonais que possuem r
 A função de ordenação de lista deve certamente conter um número de propriedades interessantes que se relacionam com outras operações de lista. Por exemplo, o primeiro elemento em uma lista ordenada deve sempre ser o menor elemento da lista de entrada. Ficamos tentados a especificar essa intuição em Haskell, usando a função `minimum` da biblioteca `List:
 
 ```haskell
--- file: ch11/QC-basics.hs
+-- file: src/QuickTestes.hs
 prop_minimum xs         = head (qsort xs) == minimum xs
 ```
 Testando isso, no entanto, revela um erro:
@@ -132,7 +166,7 @@ Portanto esta propriedade irá funcionar apenas para listas não-vazias. QuickCh
 
 ```haskell
 \-- file: ch11/QC-basics.hs
-prop\_minimum' xs         = not (null xs) ==> head (qsort xs) == minimum xs
+prop_minimum' xs         = not (null xs) ==> head (qsort xs) == minimum xs
 ```
 O resultado é claro. Removendo o caso da lista vazia, podemos confirmar que a propriedade de fato funciona:
 
@@ -181,12 +215,13 @@ Testar as propriedades naturais de  funções individuais é um das mais básica
 
 *N.dT.: Pretty-printing é o nome que se dá à apresentação de um conteúdo de maneira em que a estrutura da apresentação intensifica o sentido do próprio conteúdo
 
+
 #### Gerando dados de teste
 
 Lembre-se que a pretty printer é construída de acordo com o Doc, um tipo de dado algébrico que representa documentos bem-estruturados.
 
 ```haskell
-\-- file: ch11/Prettify2.hs
+\-- file: src/Prettify.hs
 data Doc = Empty
          | Char Char
          | Text String
@@ -215,10 +250,14 @@ choose   :: Random a => (a, a) -> Gen a
 oneof    :: [Gen a] -> Gen a
 ```
 
-A função `elements`, por exemplo, recebe uma lista de valores e retorna um gerador de valores randômicos a partir daquela lista. Usaremos `choose` e `oneof` depois. Com isso, podemos começar a escrever realmente nossos geradores para tipos de dados simples. Por exemplo, considere um novo tipo de dado para a lógica ternária:
+A função `elements`, por exemplo, recebe uma lista de valores e retorna um gerador de valores randômicos a partir daquela lista. Usaremos `choose` e `oneof` depois. Com isso, podemos começar a escrever realmente nossos geradores para tipos de dados simples. Para entendermos melhor, iremos usar novamene o módulo `RandomTest` aonde iremos usar um novo tipo de dado para a lógica ternária:
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: src/RandomTest.hs
+module RandomTest where
+
+import Test.QuickCheck
+
 data Ternary
     = Yes
     | No
@@ -229,7 +268,7 @@ data Ternary
 Podemos escrever uma instância de Arbitrary para o tipo Ternary definindo uma função que escolhe um elemento da lista dos possíveis valores do tipo Ternary:
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: src/RandomTest.hs
 instance Arbitrary Ternary where
   arbitrary     = elements [Yes, No, Unknown]
 ```
@@ -266,8 +305,6 @@ ghci> generate  arbitrary :: IO [(Int,Int)]
 [(27,-24),(-3,-13),(17,24),(28,-1),(-24,5),(-14,-25)]
 ```
 Vamos escrever um gerador para todas as diferentes variantes do tipo Doc. Começaremos quebrando o problema em problemas menores, inicialmente gerando construtores randômicos para cada tipo, e então, dependendo do resultado, os componentes de cada campo. Os casos mais complicados são as variantes de concatenação e união.
-
-First, though, we need to write an instance for generating random characters — QuickCheck doesn't have a default instance for characters, due to the abundance of different text encodings we might want to use for character tests. We'll write our own, and, as we don't care about the actual text content of the document, a simple generator of alphabetic characters and punctuation will suffice (richer generators are simple extensions of this basic approach): [1 comment](comments: show / hide)
 
 Quando este livro foi escrito originalmente, o QuickCheck não tem uma instância padrão para caracteres, devido à abundância de diferentes codificações de texto que podemos querer usar para testes de caracteres. Nas versões mais recentes já existe essa implementação definida em `Test.QuickCheck`:
 
