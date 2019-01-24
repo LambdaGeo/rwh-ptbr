@@ -452,7 +452,25 @@ main :: IO ()
 main = runTests >>= \passed -> if passed then putStrLn "Passou em todos testes."
                                              else putStrLn "Alguns testes falharam"
 ```
-Com essas modificações, podemos então executar nossos testes. Observe que para o quickCheckAll executar os testes, as funções precisam iniciar com `prop_`.
+
+O quickcheck irá avaliar todas as funções que iniciam com `prop_`. Então, a seguinte linha de código irá fazer o trabalho de buscar todas essas funções:
+
+```haskell
+-- file: rwhptbr/Ch11.hs
+return []
+runTests = $quickCheckAll
+```
+
+Tudo o que precisamos é executar todos os testes e verificar se passou em todos os testes:
+
+```haskell
+-- file: test/Spec.hs
+main :: IO ()
+main = runTests >>= \passed -> if passed then putStrLn "All tests passed."
+                                         else putStrLn "Some tests failed."
+```
+
+Com essas modificações, podemos então executar nossos testes. Observe novamente que para o quickCheckAll executar os testes, as funções precisam iniciar com `prop_`.
 
 ```
 $stack test
@@ -545,7 +563,7 @@ Completed 2 action(s).
 A biblioteca de pretty-printing otimiza documentos vazios redundantes, algo que o modelo de implementação não faz, logo precisaremos aumentar o nosso modelo para satisfazer a realidade. Primeiro, intercalamos a pontuação pela lista de documentos, e então eliminamos os documentos Empty espalhados pela lista, desta maneira:
 
 ```haskell
--- file: rwhptbr/Ch11.hs
+-- file: test/Spec.hs
 prop_punctuate' s xs = punctuate s xs == combine (intersperse s xs)
     where
         combine []           = []
@@ -559,113 +577,68 @@ prop_punctuate' s xs = punctuate s xs == combine (intersperse s xs)
 Executando isso no GHCi, podemos confirmar o resultado. É reconfortante que o framework de testes consiga localizar falhas em nossa lógica expressa no código – exatamente o que estamos procurando:
 
 ```
-ghci> quickCheck prop_punctuate'
+=== prop_punctuate' from test/Spec.hs:39 ===
 +++ OK, passed 100 tests.
+
+Passou em todos testes.
+
+hs2json-0.1.0.0: Test suite hs2json-test passed
+Completed 2 action(s).
 ```
-
-[1 comment](comments: show / hide)
-
-### Juntando todas as peças
-
-Podemos colocar todos estes testes juntos em um único arquivo e executá-los simplesmente usando uma das funções de processamento de QuickCheck. Existem várias, inclusive ligadas a paralelismo. Entretanto, o processamento serial normalmente é bom o suficiente. Na versão em Inglês, foi utilizado o módulo Batch, que não mais existe nas versões mais recentes. Ao invés disso é o uso o módulo `QuickCheck.All`. Para funcionar, é requerido ainda o uso de template, adicionando a seguinte código no ínício do arquivo:
-
-```haskell
--- file: rwhptbr/Ch11.hs
-{-# LANGUAGE TemplateHaskell #-}
-
-module Ch11 where
-import Test.QuickCheck.All
-```
-
-O quickcheck irá avaliar todas as funções que iniciam com `prop_`. Então, a seguinte linha de código irá fazer o trabalho de buscar todas essas funções:
-
-```haskell
--- file: rwhptbr/Ch11.hs
-return []
-runTests = $quickCheckAll
-```
-
-Tudo o que precisamos é executar todos os testes e verificar se passou em todos os testes:
-
-```haskell
--- file: test/Spec.hs
-main :: IO ()
-main = runTests >>= \passed -> if passed then putStrLn "All tests passed."
-                                         else putStrLn "Some tests failed."
-```
-
-
-Para verificar se está tudo ok, basta então executar a função main:
-
-```
-$ stack test 
-=== prop_empty_id from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:120 ===
-+++ OK, passed 100 tests.
-
-=== prop_char from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:125 ===
-+++ OK, passed 100 tests.
-
-=== prop_text from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:126 ===
-+++ OK, passed 100 tests.
-
-=== prop_line from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:127 ===
-+++ OK, passed 1 test.
-
-=== prop_double from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:128 ===
-+++ OK, passed 100 tests.
-
-=== prop_hcat from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:130 ===
-+++ OK, passed 100 tests.
-
-=== prop_punctuate' from /home/sergiosouzacosta/tmp/rwhptbr/src/Ch11.hs:140 ===
-+++ OK, passed 100 tests.
-
-All tests passed.
-```
-
-A total of 1400 individual tests were created, which is comforting. We can increase the depth easily enough, but to find out exactly how well the code is being tested we should turn to the built in code coverage tool, HPC, which can state precisely what is going on. [1 comment](comments: show / hide)
 
 ## Medindo a cobertura de teste com HPC
 
-Atualmente esse processo é bem distinto nas versões mais novas, o que irá requerer uma revisão completa desta seção. Para uma visão básica do processo, basta adicionar o parâmetro coverage:
+(ESSA PARTE PRECISA SER REESCRITA, DADAS TODAS MUDANÇAS NAS NOVAS VERSOES)
+
+Atualmente esse processo é bem distinto nas versões mais novas, o que irá requerer uma revisão completa desta seção. 
+
+
+O HPC (Haskell Program Coverage) é uma extensão para que o compilador observe quais partes do código foram realmente executadas durante a execução do programa dado. Isso é útil no contexto de teste, pois nos permite observar com precisão quais as funções, ramos e expressões foram avaliadas. O resultado é um conhecimento preciso sobre o percentual de código testado que é facilmente obtido. O HPC vem com um utilitário simples para gerar gráficos úteis de cobertura do programa, tornando mais fácil para verificar os pontos fracos no conjunto de testes.
+
+Para a obtenção de dados de cobertura de testes, tudo o que precisamos fazer é adicionar o parâmetro coverage que fará gerar um relatório sobre a cobertura dos testes:
 
 ```
 $ stack test --coverage
-=== prop_empty_id from src/Ch11.hs:121 ===
+hs2json-0.1.0.0: test (suite: hs2json-test)
+
+=== prop_empty_id from test/Spec.hs:23 ===
 +++ OK, passed 100 tests.
 
-=== prop_char from src/Ch11.hs:126 ===
+=== prop_char from test/Spec.hs:29 ===
 +++ OK, passed 100 tests.
 
-=== prop_text from src/Ch11.hs:127 ===
+=== prop_text from test/Spec.hs:30 ===
 +++ OK, passed 100 tests.
 
-=== prop_line from src/Ch11.hs:128 ===
+=== prop_line from test/Spec.hs:31 ===
 +++ OK, passed 1 test.
 
-=== prop_double from src/Ch11.hs:129 ===
+=== prop_double from test/Spec.hs:32 ===
 +++ OK, passed 100 tests.
 
-=== prop_hcat from src/Ch11.hs:131 ===
+=== prop_hcat from test/Spec.hs:34 ===
 +++ OK, passed 100 tests.
 
-=== prop_punctuate' from src/Ch11.hs:141 ===
+=== prop_punctuate' from test/Spec.hs:39 ===
 +++ OK, passed 100 tests.
 
-All tests passed.
+Passou em todos testes.
 
-rwhptbr-0.1.0.0: Test suite rwhptbr-test passed
-Generating coverage report for rwhptbr's test-suite "rwhptbr-test"
- 92% expressions used (150/162)
-100% boolean coverage (1/1)
-     100% guards (0/0)
-     100% 'if' conditions (1/1)
+hs2json-0.1.0.0: Test suite hs2json-test passed
+Generating coverage report for hs2json's test-suite "hs2json-test"
+ 19% expressions used (30/154)
+  0% boolean coverage (0/3)
+       0% guards (0/3), 3 unevaluated
+     100% 'if' conditions (0/0)
      100% qualifiers (0/0)
- 85% alternatives used (17/20)
-100% local declarations used (2/2)
- 82% top-level declarations used (19/23)
-The coverage report for rwhptbr's test-suite "rwhptbr-test" is available at /home/sergiosouzacosta/tmp/rwhptbr/.stack-work/install/x86_64-linux-tinfo6/lts-13.4/8.6.3/hpc/rwhptbr/rwhptbr-test/hpc_index.html
-Only one tix file found in /home/sergiosouzacosta/tmp/rwhptbr/.stack-work/install/x86_64-linux-tinfo6/lts-13.4/8.6.3/hpc/, so not generating a unified coverage report.
+ 23% alternatives used (8/34)
+  0% local declarations used (0/4)
+ 52% top-level declarations used (10/19)
+The coverage report for hs2json's test-suite "hs2json-test" is available at /home/sergiosouzacosta/tmp/ch11/hs2json/.stack-work/install/x86_64-linux-tinfo6/lts-13.4/8.6.3/hpc/hs2json/hs2json-test/hpc_index.html
+Only one tix file found in /home/sergiosouzacosta/tmp/ch11/hs2json/.stack-work/install/x86_64-linux-tinfo6/lts-13.4/8.6.3/hpc/, so not generating a unified coverage report.
 
-An index of the generated HTML coverage reports is available at /home/sergiosouzacosta/tmp/rwhptbr/.stack-work/install/x86_64-linux-tinfo6/lts-13.4/8.6.3/hpc/index.html
+An index of the generated HTML coverage reports is available at /home/sergiosouzacosta/tmp/ch11/hs2json/.stack-work/install/x86_64-linux-tinfo6/lts-13.4/8.6.3/hpc/index.html
+
 ```
+
+(FALTA DISCUTIR ESSE RELATÓRIO)
