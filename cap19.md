@@ -67,7 +67,7 @@ Nothing
 ```
 A função `divBy'` agora usa uma declaração `case` para verificar se a chamada foi bem-sucedido, assim como `divBy'` faz quando chama a si mesmo.
 
-#### Loss and Preservation of Laziness
+#### Mantendo a avaliação preguiçosa
 
 O uso de `Maybe` é conveniente, mas tem um custo. A função `divBy` já não pode lidar com as listas infinitas como entrada. Como o resultado é `Maybe [a]`, a lista de entrada inteira deve ser examinada antes de podermos ter a certeza que não vamos retornar `Nothing` devido a um zero em algum lugar. Você pode verificar se este for o caso, tentando um dos exemplos anteriores.
 
@@ -84,6 +84,7 @@ safeTail (_:xs) = Just xs
 
 Isso simplesmente retorna `Nothing` se lhe for dada uma lista de entrada vazia ou `Just` com o resultado de qualquer outra coisa. Como temos apenas que garantir que a lista não esteja vazia antes de saber se temos ou não um erro, usar `Maybe` manter a avaliação preguiçosa. Nós podemos testar isso em **ghci** e ver como ele se compara com o regular `tail`: 
 
+```
 Ch9> tail [1,2,3,4,5]
 [2,3,4,5]
 Ch9> safeTail [1,2,3,4,5]
@@ -92,6 +93,7 @@ Ch9> tail []
 *** Exception: Prelude.tail: empty list
 Ch9> safeTail []
 Nothing
+```
 
 Aqui, podemos ver o nosso `safeTail` executado como esperado. Mas que tal listas infinitas? Não queremos imprimir um número infinito de resultados, portanto podemos testar com `take 5 (tail [1..])` e uma construção semelhante com `safeTail`:
 
