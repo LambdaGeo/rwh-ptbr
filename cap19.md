@@ -233,47 +233,55 @@ Left DivBy0
 
 No capítulo chamado "Uso da Mônada Maybe", mostramos como usar `Maybe` em uma mônada. `Either` pode ser usado em uma mônada também, mas pode ser um pouco mais complicado. A razão é que `fail` é codificado para aceitar apenas uma `String` como o código de falha, portanto temos que ter uma forma de mapear tal sequência de caracteres em qualquer tipo que usamos para `Left`. Como você viu anteriormente, `Control.Monad.Error` fornece suporte embutido para `Either String a`, que não envolve nenhum mapeamento para o argumento `fail`. Veja como podemos montar o nosso exemplo, para trabalhar com `Either` no estilo monádico:
 
-\-\- file: ch19/divby8.hs
+```haskell
+-- arquivo: src/Ch19/EitherMonadico.hs
 {-# LANGUAGE FlexibleContexts #-}
- 
-import Control.Monad.Error
- 
-data Show a => 
-    DivByError a = DivBy0
-                  | ForbiddenDenominator a
-                  | OtherDivByError String
-                    deriving (Eq, Read, Show)
- 
-instance Error (DivByError a) where
-    strMsg x = OtherDivByError x
- 
-divBy :: Integral a => a -> \[a\] -> Either (DivByError a) \[a\]
+
+module Ch19.EitherMonadico where
+
+
+import Control.Monad.Except
+
+data DivByError a = DivBy0 
+    | ForbiddenDenominator a 
+    | OtherDivByError String 
+    deriving (Eq, Read, Show)
+
+
+divBy :: Integral a => a -> [a] -> Either (DivByError a) [a]
 divBy = divByGeneric
- 
-divByGeneric :: (Integral a, MonadError (DivByError a) m) =>
-                 a -> \[a\] -> m \[a\]
-divByGeneric _ \[\] = return \[\]
+
+divByGeneric :: (Integral a,  MonadError (DivByError a) m) =>
+                 a -> [a] -> m [a]
+divByGeneric _ [] = return []
 divByGeneric _ (0:_) = throwError DivBy0
 divByGeneric _ (10:_) = throwError (ForbiddenDenominator 10)
 divByGeneric _ (20:_) = throwError (ForbiddenDenominator 20)
 divByGeneric numerator (denom:xs) =
     do next <- divByGeneric numerator xs
-       return ((numerator \`div\` denom) : next)
+       return ((numerator `div` denom) : next)
+```
 
-Aqui, precisamos ligar o `FlexibleContexts` extensão da linguagem, a fim de fornecer o tipo de assinatura para `divByGeneric`. A função `divBy` funciona exatamente como antes. Para `divByGeneric`, fazemos `divByError` um membro do `Error` de classe, definindo o que acontece quando alguém chama `fail` (o `strMsg` função). Também convertemos `Right` a return e `Left` a `throwError` permitir que o código seja genérico.
 
-Exceções
---------
+Aqui, precisamos usar a extensão da linguagem `FlexibleContexts`, a fim de fornecer o tipo de assinatura para `divByGeneric`. A função `divBy` funciona exatamente como antes. Para `divByGeneric`, fazemos `divByError` um membro do `Error` de classe, definindo o que acontece quando alguém chama `fail` (o `strMsg` função). Também convertemos `Right` para return e `Left` para `throwError` permitir que o código seja genérico. Foi ainda necessário adicionar mais uma dependencia ao pacote:
+
+```
+dependencies:
+- base >= 4.7 && < 5
+- mtl
+```
+
+### Exceções
 
 A manipulação de exceção é encontrada em muitas linguagens de programação, incluindo Haskell. Pode ser útil, porque, quando ocorre um problema, ela pode fornecer uma maneira fácil de manipulá-la, mesmo que tenha ocorrido várias camadas para baixo através de uma cadeia de chamadas de função. Com algumas exceções, não é necessário para verificar o valor de retorno de cada chamada de função para verificar se há erros, e tomar cuidado para produzir um valor de retorno que reflete o erro, como programadores C deve fazer. Em Haskell, graças a mônadas e aos tipos `Either` e `Maybe`, muitas vezes você pode atingir os mesmos efeitos em código puro, sem a necessidade usar tratamento de exceção.
 
 Alguns problemas -principalmente aqueles que envolvem I/ O –envolvem chamadas para trabalhar com exceções.Em Haskell, exceções podem ser lançadas a partir de qualquer local do programa. No entanto, devido à ordem de avaliação especificada, eles só podem ser capturados na mônada IO.  A manipulação de exceção em Haskell não envolve sintaxe especial como faz em Python ou Java.Os mecanismos para capturar e manipular exceções são funções surpresas.
 
-### Primeiros passos com exceções
+#### Primeiros passos com exceções
 
 No módulo `Control.Exception`, várias funções e tipos relacionados com as exceções são definidas. Há uma `Exception` tipo definido lá, todas as exceções são do tipo `Exception`. Há também funções para captura e tratamento de exceções. Vamos começar por olhar para `try`, que tem tipo `IO a -> IO (Either Exception a)`. Isto envolve uma ação IO com manipulação de exceção. Se uma exceção foi lançada, ele irá retornar um `Left` valor, como exceção, caso contrário, um `Right` de valor com o resultado original. Vamos tentar isso no **ghci**. Iremos acionar uma exceção não tratada:
 
-    ghci> 
+    ghci> try (evaluate $ 1 `div` 0) :: IO (Either ArithException Int)
 
 Observe que nenhuma exceção foi acionada pelo `let` declarações. Isso é de se esperar devido à avaliação preguiçosa, a divisão por zero não será tentado até que seja exigido pela tentativa de imprimir `x`. Além disso, observe que existem duas linhas de produção de `try (print y)`. A primeira linha foi produzida pela `print`, que exibiu os 5 dígitos no terminal. O segundo foi produzido por **ghci**, que está mostrando que `print y` retorna `()` e não lança uma exceção.
 
