@@ -65,41 +65,33 @@ Just [50,25,10,6,5]
 Ch19> divBy 50 [1,2,0,8,10]
 Nothing
 ```
-A função que chama `divBy` agora podem usar um `case` declaração para ver se a chamada foi bem-sucedido, assim como `divBy` faz quando chama a si mesmo.
+A função `divBy'` agora usa uma declaração `case` para verificar se a chamada foi bem-sucedido, assim como `divBy'` faz quando chama a si mesmo.
 
-![[Tip]](imagens/tip.png)
+#### Loss and Preservation of Laziness
 
-Dica
+O uso de `Maybe` é conveniente, mas tem um custo. A função `divBy` já não pode lidar com as listas infinitas como entrada. Como o resultado é `Maybe [a]`, a lista de entrada inteira deve ser examinada antes de podermos ter a certeza que não vamos retornar `Nothing` devido a um zero em algum lugar. Você pode verificar se este for o caso, tentando um dos exemplos anteriores.
 
-Você pode utilizar o método monádica para implementar o exemplo anterior.
+Observe que você não pode ver um resultado parcial aqui, ou seja, você _não_ obteve nenhuma saída. Observe que em cada etapa `divBy'` (exceto para o caso de uma lista de entrada vazia ou um zero no início da lista), os resultados de cada elemento subseqüente devem ser conhecidos antes dos resultados do elemento atual poder ser conhecido. Assim, este algoritmo não pode trabalhar com listas infinitas, e também não é muito eficiente em termos de espaço para grandes listas finitas.
 
-\-\- file: ch19/divby2m.hs
-divBy :: Integral a => a -> \[a\] -> Maybe \[a\]
-divBy numerator denominators = 
-    mapM (numerator \`safeDiv\`) denominators
-    where safeDiv _ 0 = Nothing
-          safeDiv x y = x \`div\` y
+Entre tanto, `Maybe` ainda é uma ótima opção. Neste caso particular, não sabemos se vai haver um problema até chegarmos em avaliar a entrada inteira. Às vezes sabemos de um problema na frente, por exemplo: `tail[]` definido em **prelude** produz uma exceção. Nós podemos facilmente poderíamos escrever várias versões do `tail` que não possui esse problema: 
 
-Evitaremos a aplicação monádica neste capítulo, para simplificar, mas queríamos salientar que ela existe.
-
-#### Perda e Preservação da Preguiça
-
-O uso de `Maybe` é conveniente, mas tem um custo. `divBy` já não pode lidar com as listas infinitas como entrada. Como o resultado é `Maybe [a]`, a lista de entrada inteira deve ser examinada antes de podermos ter a certeza que não vamos retornar `Nothing` devido à zero em algum lugar . Você pode verificar se este for o caso, tentando um dos exemplos anteriores:
-
-    ghci> 
-
-Observe que você não pode ver um resultado parcial aqui, ou seja, você _não_ obteve saída. Observe que em cada etapa `divBy` (exceto para o caso de uma lista de entrada vazia ou um zero no início da lista), os resultados de cada elemento subseqüente devem ser conhecidos antes dos resultados do elemento atual pode ser conhecido. Assim, este algoritmo não pode trabalhar com listas infinitas, e também não é muito eficiente em termos de espaço para grandes listas finitas.
-
-Entre tanto , `Maybe` ainda é uma ótima opção. Neste caso particular, não sabemos se vai haver um problema até chegarmos em avaliar a entrada inteira. Às vezes sabemos de um problema na frente, por exemplo: `tail[]` em **ghci** produz uma exceção capaz. Facilmente poderíamos escrever um infinito- `tail` que não possui esse problema: 
-
-\-\- file: ch19/safetail.hs
-safeTail :: \[a\] -> Maybe \[a\]
-safeTail \[\] = Nothing
+```haskell
+-- arquivo: src/Ch19.hs
+safeTail :: [a] -> Maybe [a]
+safeTail [] = Nothing
 safeTail (_:xs) = Just xs
+```
 
-Isso simplesmente retorna `Nothing` se lhe for dada uma lista de entrada vazia ou `Just` com o resultado de qualquer outra coisa. Como temos apenas que garantir que a lista não esteja vazia antes de saber se temos ou não um erro, usar `Maybe` aqui não reduzir a nossa preguiça. Nós podemos testar isso em **ghci** e ver como ele se compara com o regular `tail`: 
+Isso simplesmente retorna `Nothing` se lhe for dada uma lista de entrada vazia ou `Just` com o resultado de qualquer outra coisa. Como temos apenas que garantir que a lista não esteja vazia antes de saber se temos ou não um erro, usar `Maybe` manter a avaliação preguiçosa. Nós podemos testar isso em **ghci** e ver como ele se compara com o regular `tail`: 
 
-    ghci> 
+Ch9> tail [1,2,3,4,5]
+[2,3,4,5]
+Ch9> safeTail [1,2,3,4,5]
+Just [2,3,4,5]
+Ch9> tail []
+*** Exception: Prelude.tail: empty list
+Ch9> safeTail []
+Nothing
 
 Aqui, podemos ver o nosso `safeTail` executado como esperado. Mas que tal listas infinitas? Não queremos imprimir um número infinito de resultados, portanto podemos testar com `take 5 (tail [1..])` e uma construção semelhante com `safeTail`:
 
