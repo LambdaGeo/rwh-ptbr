@@ -85,54 +85,76 @@ safeTail (_:xs) = Just xs
 Isso simplesmente retorna `Nothing` se lhe for dada uma lista de entrada vazia ou `Just` com o resultado de qualquer outra coisa. Como temos apenas que garantir que a lista não esteja vazia antes de saber se temos ou não um erro, usar `Maybe` manter a avaliação preguiçosa. Nós podemos testar isso em **ghci** e ver como ele se compara com o regular `tail`: 
 
 ```
-Ch9> tail [1,2,3,4,5]
+Ch19> tail [1,2,3,4,5]
 [2,3,4,5]
-Ch9> safeTail [1,2,3,4,5]
+Ch19> safeTail [1,2,3,4,5]
 Just [2,3,4,5]
-Ch9> tail []
+Ch19> tail []
 *** Exception: Prelude.tail: empty list
-Ch9> safeTail []
+Ch19> safeTail []
 Nothing
 ```
 
 Aqui, podemos ver o nosso `safeTail` executado como esperado. Mas que tal listas infinitas? Não queremos imprimir um número infinito de resultados, portanto podemos testar com `take 5 (tail [1..])` e uma construção semelhante com `safeTail`:
 
-    ghci> 
+```
+Ch19> take 5 (tail [1..])
+[2,3,4,5,6]
+Ch19> case safeTail [1..] of {Nothing -> Nothing; Just x -> Just (take 5 x)}
+Just [2,3,4,5,6]
+Ch19> take 5 (tail [])
+*** Exception: Prelude.tail: empty list
+Ch19> case safeTail [] of {Nothing -> Nothing; Just x -> Just (take 5 x)}
+Nothing
+```
+Aqui você pode ver que tanto o tail e `safeTail` tratadas as listas infinitas apenas multa. Nota-se que fomos capazes de lidar melhor com uma lista de entrada vazia, em vez de lançar uma exceção, nós decidimos retornar `Nothing` nessa situação. Fomos capazes de atingir o tratamento de erros, sem perder a avaliação preguiçosa.
 
-Aqui você pode ver que tanto o tail e `safeTail` tratadas as listas infinitas apenas multa. Nota-se que fomos capazes de lidar melhor com uma lista de entrada vazia, em vez de lançar uma exceção, nós decidimos voltar `Nothing` nessa situação. Fomos capazes de atingir o tratamento de erros, sem qualquer uso para preguiça.
+Mas como aplicamos isso ao nosso exemplo divBy? Vamos considerar a situação lá: falha é uma propriedade de uma entrada ruim individual, não da própria lista de entrada. Que tal tornar a falha uma propriedade de um elemento de saída individual, em vez da própria lista de saída? Ou seja, em vez de uma função do tipo `a -> [a] -> Maybe [a]`, em vez disso, teremos `a -> [a] -> [Maybe a]`. Isso trará o benefício de preservar a avaliação preguiçosa, além de determinar exatamente onde estava o problema - ou até mesmo filtrar os resultados do problema, se desejado. Aqui está uma implementação:
 
-Mas como fazem aplicamos isto ao nosso `divBy` exemplo? Vamos considerar a situação lá: o fracasso é uma propriedade causada pelo indivíduo mal entrada, não da própria lista de entrada.  Isto é, em vez de uma função de tipo `a -> [a] -> Maybe [a],  teremos a -> [a] -> [Maybe a]`. Isto terá o benefício de conservar a preguiça, mais o chamador será capaz de determinar exatamente onde na lista o problema foi - ou até somente filtrar os resultados de problema se desejado. Aqui está uma implementação:
 
-\-\- file: ch19/divby3.hs
-divBy :: Integral a => a -> \[a\] -> \[Maybe a\]
-divBy numerator denominators =
-    map worker denominators
-    where worker 0 = Nothing
-          worker x = Just (numerator \`div\` x)
-
-Dê uma olhada nesta função. Estamos de volta a usar `map`, que é uma opção para ambos preguiça e simplicidade. Nós podemos testá-lo em **ghci** e ver que ele funciona para listas finito e infinito muito bem:
-
-    ghci> 
-
-Esperamos que você possa tomar desta discussão o ponto que há uma distinção entre a entrada que não é bem-formada (como em caso de `safeTail`) e a entrada que potencialmente contém alguns dados ruins, como em caso de `divBy`. Estes dois casos muitas vezes podem justificar o manejo diferente dos resultados.
+```haskell
+-- arquivo: src/Ch19.hs
+divBy'' :: Integral a => a -> [a] -> [Maybe a]
+divBy'' numerator denominators =
+    map safeDiv denominators
+    where safeDiv 0 = Nothing
+          safeDiv x = Just (numerator `div` x)
+```
+Dê uma olhada nesta função. Voltamos a usar o `map`, o que é bom tanto para a avaliação preguiçosa quanto para a simplicidade. Podemos experimentá-la em ghci e ver que funciona para listas finitas e infinitas
+```
+Ch19> divBy 50 [1,2,5,8,10]
+[Just 50,Just 25,Just 10,Just 6,Just 5]
+Ch19> divBy 50 [1,2,0,8,10]
+[Just 50,Just 25,Nothing,Just 6,Just 5]
+Ch19> take 5 (divBy 100 [1..])
+[Just 100,Just 50,Just 33,Just 25,Just 20]
+```
+Esperamos que você possa tirar dessa discussão o ponto de que há uma distinção entre a entrada não estar bem formada (como no caso do `safeTail`) e a entrada potencialmente contendo alguns dados inválidos, como no caso do `divBy`. Esses dois casos podem muitas vezes justificar um tratamento diferente dos resultados.
 
 #### Uso do Maybe Mônada
 
-Anteriormente na seção "Utilização de Maybe", denominamos um programa de `exemplodivby2.hs`. Este exemplo não conservou a preguiça, mas devolveu um valor do tipo `Maybe [a]`. O mesmo algoritmo pode ser expresso usando um estilo monadista. Para mais informação e contexto importante em mônadas, por favor refira-se ao Capítulo 14, Mônadas. Aqui está o nosso novo algoritmo de estilo mônada:
+De volta à seção chamada "Uso do Maybe", nós tivemos um programa de exemplo chamado `divby''`. Este exemplo não preservou a avaliação preguiçosa, mas retornou um valor do tipo `Maybe [a]`. O mesmo algoritmo exato poderia ser expresso usando um estilo monádico. Para mais informações e informações importantes sobre as mônadas, consulte o Capítulo 14, Monads. Aqui está nosso novo algoritmo de estilo monádico:
 
-\-\- file: ch19/divby4.hs
-divBy :: Integral a => a -> \[a\] -> Maybe \[a\]
-divBy _ \[\] = return \[\]
-divBy _ (0:_) = fail "division by zero in divBy"
-divBy numerator (denom:xs) =
-    do next <- divBy numerator xs
-       return ((numerator \`div\` denom) : next)
+```haskell
+-- arquivo: src/Ch19.hs
+divBy''' :: Integral a => a -> [a] -> Maybe [a]
+divBy''' _ [] = return []
+divBy''' _ (0:_) = fail "division by zero in divBy"
+divBy''' numerator (denom:xs) =
+    do next <- divBy''' numerator xs
+       return ((numerator `div` denom) : next)
+```
+A mônada `Maybe`  deixou o código mais agradável. Para uma mônada Maybe, `return` é o mesmo que `Just`, e `fail _ = Nothing` Podemos agora testar este algoritmo com os mesmos testes que usamos contra o divby'' se quisermos:
+```
+ghci> divBy''' 50 [1,2,5,8,10]
+Just [50,25,10,6,5]
+ghci> divBy''' 50 [1,2,0,8,10]
+Nothing
+ghci> divBy''' 100 [1..] 
+*** Exception: stack overflow
+```
 
-O `Maybe` a mônada fez a expressão deste algoritmo parecer mais bonita. Para o `Maybe` mônada, `return` é o mesmo que `Just`, e `fail _ = Nothing`, portanto a nossa cadeia de explicação incorreta não ocorre sempre. Podemos testar este algoritmo com os mesmos testes contra os quais usamos `divby2.hs`:
-
-    ghci> 
-
-O código que escrevemos na verdade não é específico para o `Maybe` mônada. Simplesmente mudando o tipo, nós podemos fazê-la funcionar para _qualquer_ mônada. Vamos tentar: 
+O código que escrevemos na verdade não é específico para a mônada `Maybe` . Simplesmente mudando o tipo, nós podemos fazê-la funcionar para _qualquer_ mônada. Vamos tentar: 
 
 \-\- file: ch19/divby5.hs
 divBy :: Integral a => a -> \[a\] -> Maybe \[a\]
