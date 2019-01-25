@@ -156,16 +156,7 @@ ghci> divBy''' 100 [1..]
 
 O código que escrevemos na verdade não é específico para a mônada `Maybe` . Simplesmente mudando o tipo, nós podemos fazê-la funcionar para _qualquer_ mônada. Vamos tentar: 
 
-\-\- file: ch19/divby5.hs
-divBy :: Integral a => a -> \[a\] -> Maybe \[a\]
-divBy = divByGeneric
- 
-divByGeneric :: (Monad m, Integral a) => a -> \[a\] -> m \[a\]
-divByGeneric _ \[\] = return \[\]
-divByGeneric _ (0:_) = fail "division by zero in divByGeneric"
-divByGeneric numerator (denom:xs) =
-    do next <- divByGeneric numerator xs
-       return ((numerator \`div\` denom) : next)
+
 
 A função `divByGeneric` contém o mesmo código que `divBy` fez antes; somente demos-lhe um tipo mais geral. Também definimos uma função de conveniência `divBy` com um tipo mais específico.
 
@@ -183,49 +174,60 @@ Isto nos leva para o próximo tópico de discussão: usar `Either` para retornar
 
 ### Utilização do Either
 
-`Either` é um tipo semelhante ao tipo `Maybe`, com uma diferença fundamental: pode transportar dados ligados tanto para um erro como para um sucesso ("o `Right` de resposta"). Apesar da linguagem não impor nenhuma restrição, por convenção, uma função retornando `Either` usa uma `Left` como valor de retorno para indicar um erro, e `Right` para indicar o sucesso. Podemos começar com a nossa `divby2.hs` exemplo da seção anterior sobre `Maybe` e adaptá-lo para trabalhar com `Either`:
+O tipo `Either` é semelhante ao tipo Maybe, com uma diferença fundamental: pode carregar dados que pode representar tanto um erro quanto um sucesso. Embora a linguagem não imponha restrições, por convenção, uma função retornando um `Either` usa um valor de retorno `Left` para indicar um erro e `Right` para indicar sucesso. Se isso ajudar você a lembrar, pode pensar em obter a resposta certa (_Right_). Podemos começar com o nosso exemplo da seção anterior usando Maybe e adaptá-lo para trabalhar com o Either:
 
-\-\- file: ch19/divby6.hs
-divBy :: Integral a => a -> \[a\] -> Either String \[a\]
-divBy _ \[\] = Right \[\]
-divBy _ (0:_) = Left "divBy: division by 0"
-divBy numerator (denom:xs) =
-    case divBy numerator xs of
+```haskell
+-- arquivo: src/Ch19.hs
+eDivBy :: Integral a => a -> [a] -> Either String [a]
+eDivBy _ [] = Right []
+eDivBy _ (0:_) = Left "divBy: division by 0"
+eDivBy numerator (denom:xs) =
+    case eDivBy numerator xs of
       Left x -> Left x
-      Right results -> Right ((numerator \`div\` denom) : results)
+      Right results -> Right ((numerator `div` denom) : results)
+```
 
-Este código é praticamente idêntico ao `Maybe` código, substituímos `Right` por `Just`. E `Left` pode ser comparado a `Nothing`, mas agora pode levar uma mensagem. Vamos checar a saida no **ghci**:
+Este código é praticamente idêntico ao código com `Maybe`, substituindo `Right` por `Just`. E `Left` pode ser comparado ao `Nothing`, mas agora pode levar uma mensagem. Vamos checar a saida no **ghci**:
 
-    ghci> 
+```
+ghci> divBy 50 [1,2,5,8,10]
+Right [50,25,10,6,5]
+ghci> divBy 50 [1,2,0,8,10]
+Left "divBy: division by 0" 
+```
 
 #### Tipos de dados personalizados para erros
 
 Enquanto uma `String` indica a causa de um erro pode ser útil para os seres humanos abaixo da estrada, é freqüentemente útil usá-la para definir um tipo de erro personalizado que podemos usar na programação para decidir sobre um curso de ação baseado no problema inicial. Por exemplo, digamos que por alguma razão, além de 0, nós também não iremos dividir por 10 ou 20. Nós poderiamos definir um tipo de erro personalizado, assim:
 
-\-\- file: ch19/divby7.hs
+```haskell
+-- arquivo: src/Ch19.hs
 data DivByError a = DivBy0
                  | ForbiddenDenominator a
                    deriving (Eq, Read, Show)
- 
-divBy :: Integral a => a -> \[a\] -> Either (DivByError a) \[a\]
-divBy _ \[\] = Right \[\]
-divBy _ (0:_) = Left DivBy0
-divBy _ (10:_) = Left (ForbiddenDenominator 10)
-divBy _ (20:_) = Left (ForbiddenDenominator 20)
-divBy numerator (denom:xs) =
-    case divBy numerator xs of
+
+eDivBy' :: Integral a => a -> [a] -> Either (DivByError a) [a]
+eDivBy' _ [] = Right []
+eDivBy' _ (0:_) = Left DivBy0
+eDivBy' _ (10:_) = Left (ForbiddenDenominator 10)
+eDivBy' _ (20:_) = Left (ForbiddenDenominator 20)
+eDivBy' numerator (denom:xs) =
+    case eDivBy' numerator xs of
       Left x -> Left x
-      Right results -> Right ((numerator \`div\` denom) : results)
+      Right results -> Right ((numerator `div` denom) : results)
+```
 
 Agora, no caso de um erro, por meio do comando `Left`, dados podem ser inspecionados para descobrir a causa exata. Ou podem simplesmente ser impressas com `show`, que vai gerar uma idéia razoável do problema também. Aqui está essa função em ação: 
 
-    ghci> 
+```
+ghci> divBy 50 [1,2,5,8]
+Right [50,25,10,6]
+ghci> divBy 50 [1,2,5,8,10]
+Left (ForbiddenDenominator 10)
+ghci> divBy 50 [1,2,0,8,10]
+Left DivBy0
+```
 
-![[Warning]](imagens/warning.png)
-
-Atenção
-
-Todos estes exemplos com `Either` sofrem da falta preguiça que nossos primeiros exemplo com `Maybe` sofreram. Colocamos está questão no final deste capítulo.
 
 #### Utilização da Mônada Either
 
@@ -613,5 +615,5 @@ Modifique seu `int` parser para lançar uma exceção `NumericOverflow`, veja se
   
 
 * * *
+https://www.schoolofhaskell.com/school/starting-with-haskell/basics-of-haskell/10_Error_Handling
 
-Traduzido por André, Mikaele, Rosiane e Tiago
