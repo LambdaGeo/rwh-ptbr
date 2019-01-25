@@ -6,48 +6,65 @@ de Bryan O'Sullivan, Don Stewart, and John Goerzen
 
 ## Capítulo 19. Manipulação de Erro
 
-A manipulação de erros é uma dos temas mais importantes e negligenciados para os programadores, independente da linguagem utilizada. Em Haskell, você vai encontrar dois tipos principais de erro de manipulação empregado: "erro de manipulação pura" e exceções.
+A manipulação de erros é uma dos temas mais importantes e negligenciados pelos programadores, independente da linguagem utilizada. Em Haskell, você vai encontrar dois tipos principais manipulação de erro: puro e exceções.
 
-Quando falamos de "erro de manipulação pura", estamos nos referindo a algoritmos que não exigem nada da mônada IO. A vantagem do Haskell é que muitas vezes podemos implementar tratamento de erros usando simplesmente a expressão tipo de sistema de dados. As exceções em Haskell podem ser lançadas em qualquer lugar, mas só pegadas dentro da mônada de IO.
+Quando falamos de manipulação de erro puro, estamos nos referindo a algoritmos que não requer o emprego de _IO monad_. A vantagem do Haskell é que muitas vezes podemos implementar tratamento de erros apenas usando a expressividade do sistema de tipos ao nosso favor. As exceções em Haskell podem ser lançadas em qualquer lugar, mas só pegadas dentro de um _IO monad_.
 
-Tratamento de erro com tipos de dados
--------------------------------------
+
+### Tratamento de erro através do sistema de tipos
+
 
 Vamos começar nossa discussão sobre tratamento de erros com uma função muito simples. Digamos que queremos fazer a divisão de uma série de números. Temos um numerador constante, mas gostaríamos de variar o denominador. Poderíamos chegar a uma função como esta:
 
-\-\- file: ch19/divby1.hs
-divBy :: Integral a => a -> \[a\] -> \[a\]
-divBy numerator = map (numerator \`div\`)
+```haskell
+-- arquivo: src/Ch19.hs
+module Ch19 where
+divBy :: Integral a => a -> [a] -> [a]
+divBy numerator = map (numerator `div`)
+```
 
-Exemplo de utilização da função: **ghci**:
+Exemplo de utilização da função: **stack ghci**:
 
-    ghci> 
+```
+$stack ghci src/Ch19.hs
+Ch19> divBy 50 [1,2,5,8,10]
+[50,25,10,6,5]
+Ch19> take 5 (divBy 100 [1..])
+[100,50,33,25,20]
+```
 
-Funciona como esperado: `50 / 1` é `50` , `50 / 2` é `25` , e assim por diante.Este ainda trabalhou com a lista infinita `[1..]` um. O que acontece se aparecer 0 em nossa lista em algum lugar? 
+Funciona como esperado: `50 / 1` é `50` , `50 / 2` é `25` , e assim por diante. Este ainda trabalhou com a lista infinita `[1..]`. O que acontece se aparecer um 0 em algum lugar da lista? 
 
-    ghci> 
+```
+*Ch19> divBy 50 [1,2,0,8,10]
+[50,25,*** Exception: divide by zero
+```
+Não é interessante? **ghci** começou exibindo a saída, então, parou com uma exceção quando ele chegou no zero. Essa é a avaliação preguiçosa em funcionamento - calculou os resultados conforme necessário.
 
-Não é interessante? **ghci** começou exibindo a saída, então, parou com uma exceção quando ele chegou ao zero. Essa é a avaliação preguiçosa no trabalho, que os resultados calculados conforme a necessidade.
-
-Como veremos mais adiante neste capítulo, na ausência de um manipulador de exceção explícita, essa exceção será a falha do programa. Isso obviamente não é desejável, então vamos considerar as melhores formas que pode indicar um erro nesta função pura.
+Como veremos mais adiante neste capítulo, na ausência de um manipulador de exceção explícito, essa exceção irá travar o programa. Isso obviamente não é desejável, então vamos considerar maneiras melhores de podermos indicar um erro nesta função pura.
 
 ### Uso do Maybe
 
-Uma maneira fácil, reconhecível de imediato para indicar falha é usar `Maybe`. Ao invés de apenas retornar uma lista e gerar uma exceção em caso de falha, podemos voltar `Nothing`  se a entrada contivesse uma lista de zero em qualquer lugar, ou `Just` com os resultados de outra maneira. Aqui está uma implementação de tal algoritmo:
+Uma maneira fácil e imediatamente reconhecível de indicar falha é usar `Maybe`. Em vez de apenas retornar uma lista e lançar uma exceção na falha, podemos retornar Nothing se a lista de entrada contivesse um zero em qualquer lugar, ou apenas com os resultados. Aqui está uma implementação de tal algoritmo:
 
-\-\- file: ch19/divby2.hs
-divBy :: Integral a => a -> \[a\] -> Maybe \[a\]
-divBy _ \[\] = Just \[\]
-divBy _ (0:_) = Nothing
-divBy numerator (denom:xs) =
-    case divBy numerator xs of
+```haskell
+-- arquivo: src/Ch19.hs
+divBy' :: Integral a => a -> [a] -> Maybe [a]
+divBy' _ [] = Just []
+divBy' _ (0:_) = Nothing
+divBy' numerator (denom:xs) =
+    case (divBy' numerator xs) of
       Nothing -> Nothing
-      Just results -> Just ((numerator \`div\` denom) : results)
+      Just results -> Just ((numerator `div` denom) : results)
+```
 
 Exemplo de utilização da função:
-
-    ghci> 
-
+```
+Ch19> divBy 50 [1,2,5,8,10]
+Just [50,25,10,6,5]
+Ch19> divBy 50 [1,2,0,8,10]
+Nothing
+```
 A função que chama `divBy` agora podem usar um `case` declaração para ver se a chamada foi bem-sucedido, assim como `divBy` faz quando chama a si mesmo.
 
 ![[Tip]](imagens/tip.png)
