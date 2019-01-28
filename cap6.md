@@ -3,55 +3,6 @@ Chapter 6. Using Typeclasses
 
 **Table of Contents**
 
-Load all comments (**slow**)
-
-[The need for typeclasses](using-typeclasses.html#typeclasses.need)
-
-[What are typeclasses?](using-typeclasses.html#typeclasses.whatarethey)
-
-[Declaring typeclass instances](using-typeclasses.html#typeclasses.instances)
-
-[Important Built-In Typeclasses](using-typeclasses.html#typeclasses.wellknown)
-
-[Show](using-typeclasses.html#typeclasses.wellknown.show)
-
-[Read](using-typeclasses.html#typeclasses.wellknown.read)
-
-[Serialization with Read and Show](using-typeclasses.html#typeclasses.wellknown.serialization)
-
-[Numeric Types](using-typeclasses.html#typeclasses.wellknown.numeric)
-
-[Equality, Ordering, and Comparisons](using-typeclasses.html#typeclasses.wellknown.equality)
-
-[Automatic Derivation](using-typeclasses.html#typeclasses.auto.derivation)
-
-[Typeclasses at work: making JSON easier to use](using-typeclasses.html#jsonclass)
-
-[More helpful errors](using-typeclasses.html#id607846)
-
-[Making an instance with a type synonym](using-typeclasses.html#id607949)
-
-[Living in an open world](using-typeclasses.html#id608052)
-
-[When do overlapping instances cause problems?](using-typeclasses.html#id608148)
-
-[Relaxing some restrictions on typeclasses](using-typeclasses.html#id608327)
-
-[How does show work for strings?](using-typeclasses.html#id608550)
-
-[How to give a type a new identity](using-typeclasses.html#id608689)
-
-[Differences between data and newtype declarations](using-typeclasses.html#id608962)
-
-[Summary: the three ways of naming types](using-typeclasses.html#id609334)
-
-[JSON typeclasses without overlapping instances](using-typeclasses.html#jsonclass.instances)
-
-[Exercises](using-typeclasses.html#id609889)
-
-[The dreaded monomorphism restriction](using-typeclasses.html#id609960)
-
-[Conclusion](using-typeclasses.html#typeclasses.conclusion)
 
 Typeclasses are among the most powerful features in Haskell. They allow you to define generic interfaces that provide a common feature set over a wide variety of types. Typeclasses are at the heart of some basic language features such as equality testing and numeric operators. Before we talk about what exactly typeclasses are, though, we'd like to explain the need for them. [14 comments](comments: show / hide)
 
