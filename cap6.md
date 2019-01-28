@@ -328,88 +328,64 @@ Haskell has a powerful set of numeric types. You can use everything from fast 32
 Let's begin our discussion of the typeclasses surrounding numeric types with an examination of the types themselves. [Table 6.1, “Selected Numeric Types”](using-typeclasses.html#numerictypes.summary "Table 6.1. Selected Numeric Types") describes the most commonly-used numeric types in Haskell. Note that there are also many more numeric types available for specific purposes such as interfacing to C. [9 comments](comments: show / hide)
 
 **Table 6.1. Selected Numeric Types**
-
-|Type|Description|
-|--- |--- |
-|Double|Double-precision floating point.  A common choice
-              for floating-point data.|
-|Float|Single-precision floating point.  Often used when
-              interfacing with C.|
-|Int|Fixed-precision signed integer; minimum range
-                [-2^29..2^29-1].  Commonly used.|
-|Int8|8-bit signed integer|
-|Int16|16-bit signed integer|
-|Int32|32-bit signed integer|
-|Int64|64-bit signed integer|
-|Integer|Arbitrary-precision signed integer; range limited only by
-                machine resources.  Commonly used.|
-|Rational|Arbitrary-precision rational numbers.  Stored as a
-                ratio of two Integers.|
-|Word|Fixed-precision unsigned integer; storage size same as
-                Int|
-|Word8|8-bit unsigned integer|
-|Word16|16-bit unsigned integer|
-|Word32|32-bit unsigned integer|
-|Word64|64-bit unsigned integer|
+| Type     | Description                                                                                 |
+|----------|---------------------------------------------------------------------------------------------|
+| Double   | Double-precision floating point. A common choice for floating-point data.                   |
+| Float    | Single-precision floating point. Often used when interfacing with C.                        |
+| Int      | Fixed-precision signed integer; minimum range [-2^29..2^29-1]. Commonly used.               |
+| Int8     | 8-bit signed integer                                                                        |
+| Int16    | 16-bit signed integer                                                                       |
+| Int32    | 32-bit signed integer                                                                       |
+| Int64    | 64-bit signed integer                                                                       |
+| Integer  | Arbitrary-precision signed integer; range limited only by machine resources. Commonly used. |
+| Rational | Arbitrary-precision rational numbers. Stored as a ratio of two Integers.                    |
+| Word     | Fixed-precision unsigned integer; storage size same as Int                                  |
+| Word8    | 8-bit unsigned integer                                                                      |
+| Word16   | 16-bit unsigned integer                                                                     |
+| Word32   | 32-bit unsigned integer                                                                     |
+| Word64   | 64-bit unsigned integer                                                                     |
 
 
 These are quite a few different numeric types. There are some operations, such as addition, that work with all of them. There are others, such as `asin`, that only apply to floating-point types. [Table 6.2, “Selected Numeric Functions and Constants”](using-typeclasses.html#numerictypes.funcs "Table 6.2. Selected Numeric Functions and Constants") summarizes the different functions that operate on numeric types, and [Table 6.3, “Typeclass Instances for Numeric Types”](using-typeclasses.html#numerictypes.typeclasses "Table 6.3. Typeclass Instances for Numeric Types") matches the types with their respective typeclasses. As you read that table, keep in mind that Haskell operators are just functions: you can say either `(+) 2 3` or `2 + 3` with the same result. By convention, when referring to an operator as a function, it is written in parenthesis as seen in this table. [10 comments](comments: show / hide)
 
 **Table 6.2. Selected Numeric Functions and Constants**
-|Item|Type|Module|Description|
-|--- |--- |--- |--- |
-|(+)|Num a => a -> a -> a|Prelude|Addition|
-|(-)|Num a => a -> a -> a|Prelude|Subtraction|
-|(*)|Num a => a -> a -> a|Prelude|Multiplication|
-|(/)|Fractional a => a -> a -> a|Prelude|Fractional division|
-|(**)|Floating a => a -> a -> a|Prelude|Raise to the power of|
-|(^)|(Num a, Integral b) => a -> b -> a|Prelude|Raise a number to a non-negative,
-                  integral power|
-|(^^)|(Fractional a, Integral b) => a -> b ->
-              a|Prelude|Raise a fractional number to any integral
-              power|
-|(%)|Integral a => a -> a -> Ratio a|Data.Ratio|Ratio composition|
-|(.&.)|Bits a => a -> a -> a|Data.Bits|Bitwise and|
-|(.|.)|Bits a => a -> a -> a|Data.Bits|Bitwise or|
-|abs|Num a => a -> a|Prelude|Absolute value|
-|approxRational|RealFrac a => a -> a ->
-                  Rational|Data.Ratio|Approximate rational composition based on fractional numerators and
-                denominators|
-|cos|Floating a => a -> a|Prelude|Cosine.  Also provided are acos,
-                cosh, and acosh, with
-                the same type.|
-|div|Integral a => a -> a -> a|Prelude|Integer division always truncated down; see also
-                quot|
-|fromInteger|Num a => Integer -> a|Prelude|Conversion from an Integer to any numeric type|
-|fromIntegral|(Integral a, Num b) => a -> b|Prelude|More general conversion from any Integral to
-              any numeric type|
-|fromRational|Fractional a => Rational -> a|Prelude|Conversion from a Rational.  May be lossy.|
-|log|Floating a => a -> a|Prelude|Natural logarithm|
-|logBase|Floating a => a -> a -> a|Prelude|Log with explicit base|
-|maxBound|Bounded a => a|Prelude|The maximum value of a bounded
-                  type|
-|minBound|Bounded a => a|Prelude|The minimum value of a bounded
-                  type|
-|mod|Integral a => a -> a -> a|Prelude|Integer modulus|
-|pi|Floating a => a|Prelude|Mathematical constant pi|
-|quot|Integral a => a -> a -> a|Prelude|Integer division; fractional part of quotient
-                  truncated towards zero|
-|recip|Fractional a => a -> a|Prelude|Reciprocal|
-|rem|Integral a => a -> a -> a|Prelude|Remainder of integer division|
-|round|(RealFrac a, Integral b) => a -> b|Prelude|Rounds to nearest integer|
-|shift|Bits a => a -> Int -> a|Bits|Shift left by the specified number of bits,
-                  which may be negative for a right shift.|
-|sin|Floating a => a -> a|Prelude|Sine.  Also provided are asin,
-                sinh, and asinh, with
-                the same type.|
-|sqrt|Floating a => a -> a|Prelude|Square root|
-|tan|Floating a => a -> a|Prelude|Tangent.  Also provided are atan,
-                tanh, and atanh, with
-                the same type.|
-|toInteger|Integral a => a -> Integer|Prelude|Convert any Integral to an Integer|
-|toRational|Real a => a -> Rational|Prelude|Convert losslessly to Rational|
-|truncate|(RealFrac a, Integral b) => a -> b|Prelude|Truncates number towards zero|
-|xor|Bits a => a -> a -> a|Data.Bits|Bitwise exclusive or|
+| Type           | Module                                    | Description |                                                                                      |
+|----------------|-------------------------------------------|-------------|--------------------------------------------------------------------------------------|
+| (+)            | Num a => a -> a -> a                      | Prelude     | Addition                                                                             |
+| (-)            | Num a => a -> a -> a                      | Prelude     | Subtraction                                                                          |
+| (*)            | Num a => a -> a -> a                      | Prelude     | Multiplication                                                                       |
+| (/)            | Fractional a => a -> a -> a               | Prelude     | Fractional division                                                                  |
+| (**)           | Floating a => a -> a -> a                 | Prelude     | Raise to the power of                                                                |
+| (^)            | (Num a, Integral b) => a -> b -> a        | Prelude     | Raise a number to a non-negative, integral power                                     |
+| (^^)           | (Fractional a, Integral b) => a -> b -> a | Prelude     | Raise a fractional number to any integral power                                      |
+| (%)            | Integral a => a -> a -> Ratio a           | Data.Ratio  | Ratio composition                                                                    |
+| (.&.)          | Bits a => a -> a -> a                     | Data.Bits   | Bitwise and                                                                          |
+| (.|.)          | Bits a => a -> a -> a                     | Data.Bits   | Bitwise or                                                                           |
+| abs            | Num a => a -> a                           | Prelude     | Absolute value                                                                       |
+| approxRational | RealFrac a => a -> a -> Rational          | Data.Ratio  | Approximate rational composition based on fractional numerators and denominators     |
+| cos            | Floating a => a -> a                      | Prelude     | Cosine. Also provided are acos, cosh, and acosh, with the same type.                 |
+| div            | Integral a => a -> a -> a                 | Prelude     | Integer division always truncated down; see alsoquot                                 |
+| fromInteger    | Num a => Integer -> a                     | Prelude     | Conversion from an Integer to any numeric type                                       |
+| fromIntegral   | (Integral a, Num b) => a -> b             | Prelude     | More general conversion from any Integral to any numeric type                        |
+| fromRational   | Fractional a => Rational -> a             | Prelude     | Conversion from a Rational. May be lossy.                                            |
+| log            | Floating a => a -> a                      | Prelude     | Natural logarithm                                                                    |
+| logBase        | Floating a => a -> a -> a                 | Prelude     | Log with explicit base                                                               |
+| maxBound       | Bounded a => a                            | Prelude     | The maximum value of a bounded type                                                  |
+| minBound       | Bounded a => a                            | Prelude     | The minimum value of a bounded type                                                  |
+| mod            | Integral a => a -> a -> a                 | Prelude     | Integer modulus                                                                      |
+| pi             | Floating a => a                           | Prelude     | Mathematical constant pi                                                             |
+| quot           | Integral a => a -> a -> a                 | Prelude     | Integer division; fractional part of quotient truncated towards zero                 |
+| recip          | Fractional a => a -> a                    | Prelude     | Reciprocal                                                                           |
+| rem            | Integral a => a -> a -> a                 | Prelude     | Remainder of integer division                                                        |
+| round          | (RealFrac a, Integral b) => a -> b        | Prelude     | Rounds to nearest integer                                                            |
+| shift          | Bits a => a -> Int -> a                   | Bits        | Shift left by the specified number of bits, which may be negative for a right shift. |
+| sin            | Floating a => a -> a                      | Prelude     | Sine. Also provided are asin, sinh, and asinh, with the same type.                   |
+| sqrt           | Floating a => a -> a                      | Prelude     | Square root                                                                          |
+| tan            | Floating a => a -> a                      | Prelude     | Tangent. Also provided are atan, tanh, and atanh, with the same type.                |
+| toInteger      | Integral a => a -> Integer                | Prelude     | Convert any Integral to an Integer                                                   |
+| toRational     | Real a => a -> Rational                   | Prelude     | Convert losslessly to Rational                                                       |
+| truncate       | (RealFrac a, Integral b) => a -> b        | Prelude     | Truncates number towards zero                                                        |
+| xor            | Bits a => a -> a -> a                     | Data.Bits   | Bitwise exclusive or                                                                 |
 
 
 **Table 6.3. Typeclass Instances for Numeric Types**
