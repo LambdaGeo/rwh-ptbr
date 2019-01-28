@@ -1,110 +1,108 @@
-Chapter 6. Using Typeclasses
-----------------------------
-
-**Table of Contents**
+## Chapter 6. Using Typeclasses
 
 
-Typeclasses are among the most powerful features in Haskell. They allow you to define generic interfaces that provide a common feature set over a wide variety of types. Typeclasses are at the heart of some basic language features such as equality testing and numeric operators. Before we talk about what exactly typeclasses are, though, we'd like to explain the need for them. [14 comments](comments: show / hide)
+Typeclasses are among the most powerful features in Haskell. They allow you to define generic interfaces that provide a common feature set over a wide variety of types. Typeclasses are at the heart of some basic language features such as equality testing and numeric operators. Before we talk about what exactly typeclasses are, though, we'd like to explain the need for them. 
 
-The need for typeclasses
-------------------------
+### The need for typeclasses
 
 Let's imagine that for some unfathomable reason, the designers of the Haskell language neglected to implement the equality test `==`. Once you got over your shock at hearing this, you resolved to implement your own equality tests. Your application consisted of a simple `Color` type, and so your first equality test is for this type. Your first attempt might look like this: [1 comment](comments: show / hide)
 
-\-- file: ch06/naiveeq.hs
+```haskell
+-- arquivo: src/Ch06.hs
 data Color = Red | Green | Blue
 
 colorEq :: Color -> Color -> Bool
 colorEq Red   Red   = True
 colorEq Green Green = True
 colorEq Blue  Blue  = True
-colorEq \_     \_     = False
+colorEq _     _     = False
+```
 
-[8 comments](comments: show / hide)
+You can test this with **ghci**: 
 
-You can test this with **ghci**: [2 comments](comments: show / hide)
+```
+$ stack ghci src/Ch06.hs
+ghci> colorEq Red Red
+True
+ghci> colorEq Red Green
+False
+```
+Now, let's say that you want to add an equality test for `String`s. Since a Haskell `String` is a list of characters, we can write a simple function to perform that test. For simplicity, we cheat a bit and use the `==` operator here to illustrate. 
 
-    ghci> 
-
-[No comments](comment: add)
-
-Now, let's say that you want to add an equality test for `String`s. Since a Haskell `String` is a list of characters, we can write a simple function to perform that test. For simplicity, we cheat a bit and use the `==` operator here to illustrate. [15 comments](comments: show / hide)
-
-\-- file: ch06/naiveeq.hs
-stringEq :: \[Char\] -> \[Char\] -> Bool
-
--- Match if both are empty
-stringEq \[\] \[\] = True
-
--- If both start with the same char, check the rest
+```haskell
+-- arquivo: src/Ch06.hs
+stringEq :: [Char] -> [Char] -> Bool
+stringEq [] [] = True
 stringEq (x:xs) (y:ys) = x == y && stringEq xs ys
+stringEq _ _ = False
+```
 
--- Everything else doesn't match
-stringEq \_ \_ = False
+You should now be able to see a problem: we have to use a function with a different name for every different type that we want to be able to compare. That's inefficient and annoying. It's much more convenient to be able to just use `==` to compare anything. It may also be useful to write generic functions such as `/=` that could be implemented in terms of `==`, and valid for almost anything. By having a generic function that can compare anything, we can also make our code generic: if a piece of code only needs to compare things, then it ought to be able to accept any data type that the compiler knows how to compare. And, what's more, if new data types are added later, the existing code shouldn't have to be modified. 
 
-[3 comments](comments: show / hide)
+Haskell's typeclasses are designed to address all of these things. 
 
-You should now be able to see a problem: we have to use a function with a different name for every different type that we want to be able to compare. That's inefficient and annoying. It's much more convenient to be able to just use `==` to compare anything. It may also be useful to write generic functions such as `/=` that could be implemented in terms of `==`, and valid for almost anything. By having a generic function that can compare anything, we can also make our code generic: if a piece of code only needs to compare things, then it ought to be able to accept any data type that the compiler knows how to compare. And, what's more, if new data types are added later, the existing code shouldn't have to be modified. [10 comments](comments: show / hide)
+### What are typeclasses?
 
-Haskell's typeclasses are designed to address all of these things. [1 comment](comments: show / hide)
 
-What are typeclasses?
----------------------
-
-Typeclasses define a set of functions that can have different implementations depending on the type of data they are given. Typeclasses may look like the objects of object-oriented programming, but they are truly quite different. [19 comments](comments: show / hide)
+Typeclasses define a set of functions that can have different implementations depending on the type of data they are given. Typeclasses may look like the objects of object-oriented programming, but they are truly quite different.
 
 Let's use typeclasses to solve our equality dilemma from earlier in the chapter. To begin with, we must define the typeclass itself. We want a function that takes two parameters, both the same type, and returns a `Bool` indicating whether or not they are equal. We don't care what that type is, but we just want two items of that type. Here's our first definition of a typeclass: [4 comments](comments: show / hide)
 
-\-- file: ch06/eqclasses.hs
+```haskell
+-- arquivo: src/Ch06.hs
 class BasicEq a where
     isEqual :: a -> a -> Bool
+```
 
-[5 comments](comments: show / hide)
+This says that we are declaring a typeclass named `BasicEq`, and we'll refer to instance types with the letter `a`. An instance type of this typeclass is any type that implements the functions defined in the typeclass. This typeclass defines one function. That function takes two parameters—both corresponding to instance types—and returns a `Bool`. 
 
-This says that we are declaring a typeclass named `BasicEq`, and we'll refer to instance types with the letter `a`. An instance type of this typeclass is any type that implements the functions defined in the typeclass. This typeclass defines one function. That function takes two parameters—both corresponding to instance types—and returns a `Bool`. [1 comment](comments: show / hide)
+>**NOTA**
+>When is a class not a class?
+>
+>The keywoard to define a typeclass in Haskell is `class`. Unfortunately, this may be confusing for those of you coming from an object-oriented background, as we are not really defining the same thing. 
 
-![[Note]](/support/figs/note.png)
+On the first line, the name of the parameter `a` was chosen arbitrarily. We could have used any name. The key is that, when you list the types of your functions, you must use that name to refer to instance types. 
 
-When is a class not a class?
+Let's look at this in **ghci**. Recall that you can type **:type** in **ghci** to have it show you the type of something. Let's see what it says about `isEqual`: 
 
-The keywoard to define a typeclass in Haskell is `class`. Unfortunately, this may be confusing for those of you coming from an object-oriented background, as we are not really defining the same thing. [27 comments](comments: show / hide)
-
-On the first line, the name of the parameter `a` was chosen arbitrarily. We could have used any name. The key is that, when you list the types of your functions, you must use that name to refer to instance types. [4 comments](comments: show / hide)
-
-Let's look at this in **ghci**. Recall that you can type **:type** in **ghci** to have it show you the type of something. Let's see what it says about `isEqual`: [3 comments](comments: show / hide)
-
-\*Main> **`:type isEqual`**
+```
+Ch06> :type isEqual
 isEqual :: (BasicEq a) => a -> a -> Bool
-    
+``` 
 
-[No comments](comment: add)
+You can read that this way: "For all types `a`, so long as `a` is an instance of `BasicEq`, `isEqual` takes two parameters of type `a` and returns a `Bool`". Let's take a quick look at defining `isEqual` for a particular type. 
 
-You can read that this way: "For all types `a`, so long as `a` is an instance of `BasicEq`, `isEqual` takes two parameters of type `a` and returns a `Bool`". Let's take a quick look at defining `isEqual` for a particular type. [2 comments](comments: show / hide)
-
-\-- file: ch06/eqclasses.hs
+```haskell
+-- arquivo: src/Ch06.hs
 instance BasicEq Bool where
     isEqual True  True  = True
     isEqual False False = True
-    isEqual \_     \_     = False
+    isEqual _     _     = False
+```
+You can also use **ghci** to verify that we can now use `isEqual` on `Bool`s, but not on any other type: 
 
-[3 comments](comments: show / hide)
+```
+Ch06> isEqual False False
+True
+Ch06> isEqual False True
+False
+<interactive>:5:1: error:
+    • No instance for (BasicEq [Char]) arising from a use of ‘isEqual’
+    • In the expression: isEqual "Hi" "Hi"
+      In an equation for ‘it’: it = isEqual "Hi" "Hi"
+``` 
 
-You can also use **ghci** to verify that we can now use `isEqual` on `Bool`s, but not on any other type: [1 comment](comments: show / hide)
+Notice that when we tried to compare two strings, **ghci** noticed that we hadn't provided an instance of `BasicEq` for `String`. It therefore didn't know how to compare a `String`, and suggested that we could fix the problem by defining an instance of `BasicEq` for `[Char]`, which is the same as `String`. 
 
-    ghci> 
+We'll go into more detail on defining instances in [the section called “Declaring typeclass instances”](using-typeclasses.html#typeclasses.instances "Declaring typeclass instances"). First, though, let's continue to look at ways to define typeclasses. In this example, a not-equal-to function might be useful. Here's what we might say to define a typeclass with two functions: 
 
-[1 comment](comments: show / hide)
-
-Notice that when we tried to compare two strings, **ghci** noticed that we hadn't provided an instance of `BasicEq` for `String`. It therefore didn't know how to compare a `String`, and suggested that we could fix the problem by defining an instance of `BasicEq` for `[Char]`, which is the same as `String`. [6 comments](comments: show / hide)
-
-We'll go into more detail on defining instances in [the section called “Declaring typeclass instances”](using-typeclasses.html#typeclasses.instances "Declaring typeclass instances"). First, though, let's continue to look at ways to define typeclasses. In this example, a not-equal-to function might be useful. Here's what we might say to define a typeclass with two functions: [No comments](comment: add)
-
-\-- file: ch06/eqclasses.hs
+```haskell
+-- arquivo: src/Ch06.hs
 class BasicEq2 a where
     isEqual2    :: a -> a -> Bool
     isNotEqual2 :: a -> a -> Bool
+```
 
-[2 comments](comments: show / hide)
 
 Someone providing an instance of `BasicEq2` will be required to define two functions: `isEqual2` and `isNotEqual2`. [No comments](comment: add)
 
