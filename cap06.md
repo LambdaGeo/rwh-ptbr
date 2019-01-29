@@ -122,6 +122,8 @@ People implementing this class must provide an implementation of at least one fu
 
 With `BasicEq3`, we have provided a class that does very much the same thing as Haskell's built-in `==` and `/=` operators. In fact, these operators are defined by a typeclass that looks almost identical to `BasicEq3`. The Haskell 98 Report defines a typeclass that implements equality comparison. Here is the code for the built-in `Eq` typeclass. Note how similar it is to our `BasicEq3` typeclass. [5 comments](comments: show / hide)
 
+```haskell
+-- definido em Prelude.hs
 class  Eq a  where
     (==), (/=) :: a -> a -> Bool
 
@@ -129,153 +131,199 @@ class  Eq a  where
        --     (==) or (/=)
     x /= y     =  not (x == y)
     x == y     =  not (x /= y)
-   
+ ```
+ 
+#### Declaring typeclass instances
 
-[No comments](comment: add)
+Now that you know how to define typeclasses, it's time to learn how to define instances of typeclasses. Recall that types are made instances of a particular typeclass by implementing the functions necessary for that typeclass. 
 
-Declaring typeclass instances
------------------------------
+Recall our attempt to create a test for equality over a `Color` type back in [the section called “The need for typeclasses”](using-typeclasses.html#typeclasses.need "The need for typeclasses"). Now let's see how we could make that same `Color` type a member of the `BasicEq3` class. 
 
-Now that you know how to define typeclasses, it's time to learn how to define instances of typeclasses. Recall that types are made instances of a particular typeclass by implementing the functions necessary for that typeclass. [3 comments](comments: show / hide)
-
-Recall our attempt to create a test for equality over a `Color` type back in [the section called “The need for typeclasses”](using-typeclasses.html#typeclasses.need "The need for typeclasses"). Now let's see how we could make that same `Color` type a member of the `BasicEq3` class. [No comments](comment: add)
-
-\-- file: ch06/eqclasses.hs
+```haskell
+-- arquivo: src/Ch06.hs
 instance BasicEq3 Color where
     isEqual3 Red Red = True
     isEqual3 Green Green = True
     isEqual3 Blue Blue = True
-    isEqual3 \_ \_ = False
+    isEqual3 _ _ = False
+```
 
-[5 comments](comments: show / hide)
-
-Notice that we provide essentially the same function as we used back in [the section called “The need for typeclasses”](using-typeclasses.html#typeclasses.need "The need for typeclasses"). In fact, the implementation is identical. However, in this case, we can use `isEqual3` on _any_ type that we declare is an instance of `BasicEq3`, not just this one color type. We could define equality tests for anything from numbers to graphics using the same basic pattern. In fact, as you will see in [the section called “Equality, Ordering, and Comparisons”](using-typeclasses.html#typeclasses.wellknown.equality "Equality, Ordering, and Comparisons"), this is exactly how you can make Haskell's `==` operator work for your own custom types. [4 comments](comments: show / hide)
+Notice that we provide essentially the same function as we used back in [the section called “The need for typeclasses”](using-typeclasses.html#typeclasses.need "The need for typeclasses"). In fact, the implementation is identical. However, in this case, we can use `isEqual3` on _any_ type that we declare is an instance of `BasicEq3`, not just this one color type. We could define equality tests for anything from numbers to graphics using the same basic pattern. In fact, as you will see in [the section called “Equality, Ordering, and Comparisons”](using-typeclasses.html#typeclasses.wellknown.equality "Equality, Ordering, and Comparisons"), this is exactly how you can make Haskell's `==` operator work for your own custom types. 
 
 Note also that the `BasicEq3` class defined both `isEqual3` and `isNotEqual3`, but we implemented only one of them in the `Color` instance. That's because of the default implementation contained in `BasicEq3`. Since we didn't explicitly define `isNotEqual3`, the compiler automatically uses the default implementation given in the `BasicEq3` declaration. [2 comments](comments: show / hide)
 
-Important Built-In Typeclasses
-------------------------------
+### Important Built-In Typeclasses
 
 Now that we've discussed defining your own typeclasses and making your types instances of typeclasses, it's time to introduce you to typeclasses that are a standard part of the Haskell Prelude. As we mentioned at the beginning of this chapter, typeclasses are at the core of some important aspects of the language. We'll cover the most common ones here. For more details, the Haskell library reference is a good resource. It will give you a description of the typeclasses, and usually also will tell you which functions you must implement to have a complete definition. [7 comments](comments: show / hide)
 
-### Show
+####Show
 
 The `Show` typeclass is used to convert values to `String`s. It is perhaps most commonly used to convert numbers to `String`s, but it is defined for so many types that it can be used to convert quite a bit more. If you have defined your own types, making them instances of `Show` will make it easy to display them in **ghci** or print them out in programs. [4 comments](comments: show / hide)
 
-The most important function of `Show` is `show`. It takes one argument: the data to convert. It returns a `String` representing that data. **ghci** reports the type of `show` like this: [3 comments](comments: show / hide)
+```
+*Ch06> :info show
+class Show a where
+  ...
+  show :: a -> String
+  ...
+        -- Defined in ‘GHC.Show’
+```
 
-    ghci> 
+The most important function of `Show` is `show`. It takes one argument: the data to convert. It returns a `String` representing that data. **ghci** reports the type of `show` like this: 
 
-[No comments](comment: add)
+```
+ghci>:type show
+show :: (Show a) => a -> String
+```
 
-Let's look at some examples of converting values to strings: [No comments](comment: add)
+Let's look at some examples of converting values to strings: 
 
-    ghci> 
-
-[No comments](comment: add)
+```
+ghci> show 1
+"1"
+ghci> show [1, 2, 3]
+"[1,2,3]"
+ghci> show (1, 2)
+"(1,2)" 
+```
 
 Remember that **ghci** displays results as they would be entered into a Haskell program. So the expression `show 1` returns a single-character string containing the digit `1`. That is, the quotes are not part of the string itself. We can make that clear by using `putStrLn`: [7 comments](comments: show / hide)
 
-    ghci> 
+```
+ghci> putStrLn (show 1)
+1
+ghci> putStrLn (show [1,2,3])
+[1,2,3]
+```
 
-[No comments](comment: add)
+You can also use `show` on `String`s: 
 
-You can also use `show` on `String`s: [No comments](comment: add)
+```
+ghci> show "Hello!"
+"\"Hello!\""
+ghci> putStrLn (show "Hello!")
+"Hello!"
+ghci> show ['H', 'i']
+"\"Hi\""
+ghci> putStrLn (show "Hi")
+"Hi"
+ghci> show "Hi, \"Jane\""
+"\"Hi, \\\"Jane\\\"\""
+ghci> putStrLn (show "Hi, \"Jane\"")
+"Hi, \"Jane\""
+```
 
-    ghci> 
+Running `show` on `String`s can be confusing. Since `show` generates a result that is suitable for a Haskell literal, `show` adds quotes and escaping suitable for inclusion in a Haskell program. **ghci** also uses `show` to display results, so quotes and escaping get added twice. Using `putStrLn` can help make this difference clear. 
 
-[1 comment](comments: show / hide)
+You can define a `Show` instance for your own types easily. Here's an example: 
 
-Running `show` on `String`s can be confusing. Since `show` generates a result that is suitable for a Haskell literal, `show` adds quotes and escaping suitable for inclusion in a Haskell program. **ghci** also uses `show` to display results, so quotes and escaping get added twice. Using `putStrLn` can help make this difference clear. [1 comment](comments: show / hide)
-
-You can define a `Show` instance for your own types easily. Here's an example: [No comments](comment: add)
-
-\-- file: ch06/eqclasses.hs
+```haskell
+-- arquivo: src/Ch06.hs
 instance Show Color where
     show Red   = "Red"
     show Green = "Green"
     show Blue  = "Blue"
+```
 
-[4 comments](comments: show / hide)
+This example defines an instance of `Show` for our type `Color` (see [the section called “The need for typeclasses”](using-typeclasses.html#typeclasses.need "The need for typeclasses")). The implementation is simple: we define a function `show` and that's all that's needed. 
 
-This example defines an instance of `Show` for our type `Color` (see [the section called “The need for typeclasses”](using-typeclasses.html#typeclasses.need "The need for typeclasses")). The implementation is simple: we define a function `show` and that's all that's needed. [3 comments](comments: show / hide)
 
-![[Note]](/support/figs/note.png)
+> The Show typeclass
+>
+>`Show` is usually used to define a `String` representation for data that is useful for a machine to parse back with `Read`. Haskell programmers generally write custom functions to format data in pretty ways for displaying to end users, if this representation would be different than expected via `Show`. [3 comments](comments: show / hide)
 
-The Show typeclass
+#### Read
 
-`Show` is usually used to define a `String` representation for data that is useful for a machine to parse back with `Read`. Haskell programmers generally write custom functions to format data in pretty ways for displaying to end users, if this representation would be different than expected via `Show`. [3 comments](comments: show / hide)
+The `Read` typeclass is essentially the opposite of `Show`: it defines functions that will take a `String`, parse it, and return data in any type that is a member of `Read`. The most useful function in `Read` is `read`. You can ask **ghci** for its type like this: 
 
-### Read
+```
+:type read
+read :: (Read a) => String -> a
+```
 
-The `Read` typeclass is essentially the opposite of `Show`: it defines functions that will take a `String`, parse it, and return data in any type that is a member of `Read`. The most useful function in `Read` is `read`. You can ask **ghci** for its type like this: [6 comments](comments: show / hide)
-
-    ghci> 
-
-[3 comments](comments: show / hide)
 
 Here's an example illustrating the use of `read` and `show`: [No comments](comment: add)
 
-\-- file: ch06/read.hs
+```haskell
+-- arquivo: src/Ch06.hs
 main = do
         putStrLn "Please enter a Double:"
         inpStr <- getLine
         let inpDouble = (read inpStr)::Double
-        putStrLn ("Twice " ++ show inpDouble ++ " is " ++ show (inpDouble \* 2))
-
-[12 comments](comments: show / hide)
+        putStrLn ("Twice " ++ show inpDouble ++ " is " ++ show (inpDouble * 2))
+```
 
 This is a simple example of `read` and `show` together. Notice that we gave an explicit type of `Double` when processing the `read`. That's because `read` returns a value of type `Read a => a` and `show` expects a value of type `Show a => a`. There are many types that have instances defined for both `Read` and `Show`. Without knowing a specific type, the compiler must guess from these many types which one is needed. In situations like this, it may often choose `Integer`. If we wanted to accept floating-point input, this wouldn't work, so we provided an explicit type. [6 comments](comments: show / hide)
 
 ![[Tip]](/support/figs/tip.png)
 
-A note about defaulting
+> A note about defaulting
 
-In most cases, if the explicit `Double` type annotation were omitted, the compiler would refuse to guess a common type and simply give an error. The fact that it could default to `Integer` here is a special case arising from the fact that the literal `2` is treated as an `Integer` unless a different type of expected for it. [7 comments](comments: show / hide)
+> In most cases, if the explicit `Double` type annotation were omitted, the compiler would refuse to guess a common type and simply give an error. The fact that it could default to `Integer` here is a special case arising from the fact that the literal `2` is treated as an `Integer` unless a different type of expected for it. 
 
-You can see the same effect at work if you try to use `read` on the **ghci** command line. **ghci** internally uses `show` to display results, meaning that you can hit this ambiguous typing problem there as well. You'll need to explicitly give types for your `read` results in **ghci** as shown here: [5 comments](comments: show / hide)
+You can see the same effect at work if you try to use `read` on the **ghci** command line. **ghci** internally uses `show` to display results, meaning that you can hit this ambiguous typing problem there as well. You'll need to explicitly give types for your `read` results in **ghci** as shown here: 
 
-    ghci> 
+```
+*Ch06> read "5"
+*** Exception: Prelude.read: no parse
+*Ch06> read "5" :: Int
+5
+*Ch06> read "5" :: Double
+5.0
+```
 
-[3 comments](comments: show / hide)
+Recall the type of `read`: `(Read a) => String -> a`. The `a` here is the type of each instance of `Read`. Which particular parsing function is called depends upon the type that is expected from the return value of `read`. Let's see how that works: 
 
-Recall the type of `read`: `(Read a) => String -> a`. The `a` here is the type of each instance of `Read`. Which particular parsing function is called depends upon the type that is expected from the return value of `read`. Let's see how that works: [No comments](comment: add)
-
-    ghci> 
-
-[1 comment](comments: show / hide)
+```
+*Ch06> read "5.0" :: Double
+5.0
+*Ch06> read "5.0" :: Int
+*** Exception: Prelude.read: no parse
+```
 
 Notice the error when trying to parse `5.0` as an `Integer`. The interpreter selected a different instance of `Read` when the return value was expected to be `Integer` than it did when a `Double` was expected. The `Integer` parser doesn't accept decimal points, and caused an exception to be raised. [2 comments](comments: show / hide)
 
 The `Read` class provides for some fairly complicated parsers. You can define a simple parser by providing an implementation for the `readsPrec` function. Your implementation can return a list containing exactly one tuple on a successful parse, or an empty list on an unsuccessful parse. Here's an example implementation: [7 comments](comments: show / hide)
 
-\-- file: ch06/eqclasses.hs
+```haskell
+-- arquivo: src/Ch06.hs
 instance Read Color where
     -- readsPrec is the main function for parsing input
-    readsPrec \_ value = 
+    readsPrec _ value = 
         -- We pass tryParse a list of pairs.  Each pair has a string
         -- and the desired return value.  tryParse will try to match
         -- the input to one of these strings.
-        tryParse \[("Red", Red), ("Green", Green), ("Blue", Blue)\]
-        where tryParse \[\] = \[\]    -- If there is nothing left to try, fail
+        tryParse [("Red", Red), ("Green", Green), ("Blue", Blue)]
+        where tryParse [] = []    -- If there is nothing left to try, fail
               tryParse ((attempt, result):xs) =
                       -- Compare the start of the string to be parsed to the
                       -- text we are looking for.
                       if (take (length attempt) value) == attempt
                          -- If we have a match, return the result and the
                          -- remaining input
-                         then \[(result, drop (length attempt) value)\]
+                         then [(result, drop (length attempt) value)]
                          -- If we don't have a match, try the next pair
                          -- in the list of attempts.
                          else tryParse xs
-
-[19 comments](comments: show / hide)
+```
 
 This example handles the known cases for the three colors. It returns an empty list (resulting in a "no parse" message) for others. The function is supposed to return the part of the input that was not parsed, so that the system can integrate the parsing of different types together. Here's an example of using this new instance of `Read`: [1 comment](comments: show / hide)
 
-    ghci> 
+```
+ghci> (read "Red")::Color
+Red
+ghci> (read "Green")::Color
+Green
+ghci> (read "Blue")::Color
+Blue
+ghci> (read "[Red]")::[Color]
+[Red]
+ghci> (read "[Red,Red,Blue]")::[Color]
+[Red,Red,Blue]
+ghci> (read "[Red, Red, Blue]")::[Color]
+*** Exception: Prelude.read: no parse
+```
 
-[6 comments](comments: show / hide)
 
 Notice the error on the final attempt. That's because our parser is not smart enough to handle leading spaces yet. If we modified it to accept leading spaces, that attempt would work. You could rectify this by modifying your `Read` instance to discard any leading spaces, which is common practice in Haskell programs. [3 comments](comments: show / hide)
 
@@ -285,7 +333,7 @@ Read is not widely used
 
 While it is possible to build sophisticated parsers using the `Read` typeclass, many people find it easier to do so using Parsec, and rely on `Read` only for simpler tasks. Parsec is covered in detail in [Chapter 16, _Using Parsec_](using-parsec.html "Chapter 16. Using Parsec"). [No comments](comment: add)
 
-### Serialization with Read and Show
+#### Serialization with Read and Show
 
 You may often have a data structure in memory that you need to store on disk for later retrieval or to send across the network. The process of converting data in memory to a flat series of bits for storage is called _serialization_. [6 comments](comments: show / hide)
 
@@ -299,25 +347,26 @@ String handling in Haskell is normally lazy, so `read` and `show` can be used on
 
 Let's try it out in **ghci**: [No comments](comment: add)
 
-    ghci> 
+```
+```
 
-[2 comments](comments: show / hide)
 
 First, we assign `d1` to be a list. Next, we print out the result of `show d1` so we can see what it generates. Then, we write the result of `show d1` to a file named `test`. [No comments](comment: add)
 
 Let's try reading it back. _FIXME: xref to explanation of variable binding in ghci_ [1 comment](comments: show / hide)
 
-    ghci> 
+```
+```
 
-[1 comment](comments: show / hide)
 
 First, we ask Haskell to read the file back.\[[13](#ftn.id604799)\] Then, we try to assign the result of `read input` to `d2`. That generates an error. The reason is that the interpreter doesn't know what type `d2` is meant to be, so it doesn't know how to parse the input. If we give it an explicit type, it works, and we can verify that the two sets of data are equal. [6 comments](comments: show / hide)
 
 Since so many different types are instances of `Read` and `Show` by default (and others can be made instances easily; see [the section called “Automatic Derivation”](using-typeclasses.html#typeclasses.auto.derivation "Automatic Derivation")), you can use it for some really complex data structures. Here are a few examples of slightly more complex data structures: [2 comments](comments: show / hide)
 
-    ghci> 
 
-[17 comments](comments: show / hide)
+```
+```
+
 
 ### Numeric Types
 
@@ -461,7 +510,8 @@ The Haskell standard requires compilers to be able to automatically derive insta
 
 Let's take a look at how these derived instances work for us: [No comments](comment: add)
 
-    ghci> 
+```
+```
 
 [1 comment](comments: show / hide)
 
@@ -832,39 +882,33 @@ Because a `newtype`'s constructor is used only at compile time and does not even
 
 To understand the difference, let's first review what we might expect with a normal datatype. We are already familiar with the idea that if `undefined` is evaluated at runtime, it causes a crash. [No comments](comment: add)
 
-    ghci> 
+```
+```
 
-[No comments](comment: add)
 
 Here is a pattern match where we construct a DataInt using the `D` constructor, and put `undefined` inside. [No comments](comment: add)
 
-    ghci> 
-
-[2 comments](comments: show / hide)
+```
+```
 
 Since our pattern matches against the constructor but doesn't inspect the payload, the `undefined` remains unevaluated and does not cause an exception to be thrown. [No comments](comment: add)
 
 In this example, we're not using the `D` constructor, so the unprotected `undefined` is evaluated when the pattern match occurs, and we throw an exception. [5 comments](comments: show / hide)
 
-    ghci> 
-
-[No comments](comment: add)
+```
+```
 
 When we use the `N` constructor for the NewtypeInt type, we see the same behaviour as with the DataInt type's `D` constructor: no exception. [No comments](comment: add)
 
-    ghci> 
-
-[No comments](comment: add)
+```
+```
 
 The crucial difference arises when we get rid of the `N` constructor from the expression, and match against an unprotected `undefined`. [No comments](comment: add)
 
-    ghci> 
+```
+```
 
-[No comments](comment: add)
-
-We don't crash! Because there's no constructor present at runtime, matching against `N _` is in fact equivalent to matching against the plain wild card `_`: since the wild card always matches, the expression does not need to be evaluated. [8 comments](comments: show / hide)
-
-![[Tip]](/support/figs/tip.png)
+We don't crash! Because there's no constructor present at runtime, matching against `N _` is in fact equivalent to matching against the plain wild card `_`: since the wild card always matches, the expression does not need to be evaluated. 
 
 Another perspective on newtype constructors
 
