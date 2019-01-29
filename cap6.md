@@ -328,6 +328,7 @@ Haskell has a powerful set of numeric types. You can use everything from fast 32
 Let's begin our discussion of the typeclasses surrounding numeric types with an examination of the types themselves. [Table 6.1, “Selected Numeric Types”](using-typeclasses.html#numerictypes.summary "Table 6.1. Selected Numeric Types") describes the most commonly-used numeric types in Haskell. Note that there are also many more numeric types available for specific purposes such as interfacing to C. [9 comments](comments: show / hide)
 
 **Table 6.1. Selected Numeric Types**
+
 | Type     | Description                                                                                 |
 |----------|---------------------------------------------------------------------------------------------|
 | Double   | Double-precision floating point. A common choice for floating-point data.                   |
@@ -349,6 +350,7 @@ Let's begin our discussion of the typeclasses surrounding numeric types with an 
 These are quite a few different numeric types. There are some operations, such as addition, that work with all of them. There are others, such as `asin`, that only apply to floating-point types. [Table 6.2, “Selected Numeric Functions and Constants”](using-typeclasses.html#numerictypes.funcs "Table 6.2. Selected Numeric Functions and Constants") summarizes the different functions that operate on numeric types, and [Table 6.3, “Typeclass Instances for Numeric Types”](using-typeclasses.html#numerictypes.typeclasses "Table 6.3. Typeclass Instances for Numeric Types") matches the types with their respective typeclasses. As you read that table, keep in mind that Haskell operators are just functions: you can say either `(+) 2 3` or `2 + 3` with the same result. By convention, when referring to an operator as a function, it is written in parenthesis as seen in this table. [10 comments](comments: show / hide)
 
 **Table 6.2. Selected Numeric Functions and Constants**
+
 | Type           | Module                                    | Description |                                                                                      |
 |----------------|-------------------------------------------|-------------|--------------------------------------------------------------------------------------|
 | (+)            | Num a => a -> a -> a                      | Prelude     | Addition                                                                             |
@@ -390,239 +392,21 @@ These are quite a few different numeric types. There are some operations, such a
 
 **Table 6.3. Typeclass Instances for Numeric Types**
 
-Type
+| Type                  | Bits | Bounded | Floating | Fractional | Integral | Num | Real | RealFrac |
+|-----------------------|------|---------|----------|------------|----------|-----|------|----------|
+| Double                |      |         | X        | X          |          | X   | X    | X        |
+| Float                 |      |         | X        | X          |          | X   | X    | X        |
+| Int                   | X    | X       |          |            | X        | X   | X    |          |
+| Int16                 | X    | X       |          |            | X        | X   | X    |          |
+| Int32                 | X    | X       |          |            | X        | X   | X    |          |
+| Int64                 | X    | X       |          |            | X        | X   | X    |          |
+| Integer               | X    |         |          |            | X        | X   | X    |          |
+| Rational or any Ratio |      |         |          | X          |          | X   | X    | X        |
+| Word                  | X    | X       |          |            | X        | X   | X    |          |
+| Word16                | X    | X       |          |            | X        | X   | X    |          |
+| Word32                | X    | X       |          |            | X        | X   | X    |          |
+| Word64                | X    | X       |          |            | X        | X   | X    |          |
 
-`Bits`
-
-`Bounded`
-
-`Floating`
-
-`Fractional`
-
-`Integral`
-
-`Num`
-
-`Real`
-
-`RealFrac`
-
-`Double`
-
- 
-
- 
-
-X
-
-X
-
- 
-
-X
-
-X
-
-X
-
-`Float`
-
- 
-
- 
-
-X
-
-X
-
- 
-
-X
-
-X
-
-X
-
-`Int`
-
-X
-
-X
-
- 
-
- 
-
-X
-
-X
-
-X
-
- 
-
-`Int16`
-
-X
-
-X
-
- 
-
- 
-
-X
-
-X
-
-X
-
- 
-
-`Int32`
-
-X
-
-X
-
- 
-
- 
-
-X
-
-X
-
-X
-
- 
-
-`Int64`
-
-X
-
-X
-
- 
-
- 
-
-X
-
-X
-
-X
-
- 
-
-`Integer`
-
-X
-
- 
-
- 
-
- 
-
-X
-
-X
-
-X
-
- 
-
-`Rational` or any `Ratio`
-
- 
-
- 
-
- 
-
-X
-
- 
-
-X
-
-X
-
-X
-
-`Word`
-
-X
-
-X
-
- 
-
- 
-
-X
-
-X
-
-X
-
- 
-
-`Word16`
-
-X
-
-X
-
- 
-
- 
-
-X
-
-X
-
-X
-
- 
-
-`Word32`
-
-X
-
-X
-
- 
-
- 
-
-X
-
-X
-
-X
-
- 
-
-`Word64`
-
-X
-
-X
-
- 
-
- 
-
-X
-
-X
-
-X
-
- 
 
   
 
@@ -630,58 +414,14 @@ Converting between numeric types is another common need. [Table 6.2, “Selecte
 
 **Table 6.4. Conversion Between Numeric Types**
 
-Source Type
-
-Destination Type
-
-`Double`, `Float`
-
-`Int`, `Word`
-
-`Integer`
-
-`Rational`
-
-`Double`, `Float`
-
-`fromRational . toRational`
-
-`truncate` \*
-
-`truncate` \*
-
-`toRational`
-
-`Int`, `Word`
-
-`fromIntegral`
-
-`fromIntegral`
-
-`fromIntegral`
-
-`fromIntegral`
-
-`Integer`
-
-`fromIntegral`
-
-`fromIntegral`
-
-N/A
-
-`fromIntegral`
-
-`Rational`
-
-`fromRational`
-
-`truncate` \*
-
-`truncate` \*
-
-N/A
-
+| Source Type   | Destination Type          |              |              |              |
+|---------------|---------------------------|--------------|--------------|--------------|
+|               | Int, Word                 | Integer      | Rational     |              |
+| Double, Float | fromRational . toRational | truncate *   | truncate *   | toRational   |
+| Int, Word     | fromIntegral              | fromIntegral | fromIntegral | fromIntegral |
+| Integer       | fromIntegral              | fromIntegral | N/A          | fromIntegral |
+| Rational      | fromRational              | truncate *   | truncate *   | N/A          |
+|               |                           |              |              |              |
   
 
 \* Instead of `truncate`, you could also use `round`, `ceiling`, or `floor`. [2 comments](comments: show / hide)
