@@ -108,15 +108,15 @@ Someone providing an instance of `BasicEq2` will be required to define two funct
 
 While our definition of `BasicEq2` is fine, it seems that we're making extra work for ourselves. Logically speaking, if we know what `isEqual` or `isNotEqual` would return, we know how to figure out what the other function would return, for all types. Rather than making users of the typeclass define both functions for all types, we can provide default implementations for them. Then, users will only have to implement one function. \[[12](#ftn.id603171)\] Here's an example that shows how to do this. [3 comments](comments: show / hide)
 
-\-- file: ch06/eqclasses.hs
+```haskell
+-- arquivo: src/Ch06.hs
 class BasicEq3 a where
     isEqual3 :: a -> a -> Bool
     isEqual3 x y = not (isNotEqual3 x y)
 
     isNotEqual3 :: a -> a -> Bool
     isNotEqual3 x y = not (isEqual3 x y)
-
-[7 comments](comments: show / hide)
+```
 
 People implementing this class must provide an implementation of at least one function. They can implement both if they wish, but they will not be required to. While we did provide defaults for both functions, each function depends on the presence of the other to calculate an answer. If we don't specify at least one, the resulting code would be an endless loop. Therefore, at least one function must always be implemented. [15 comments](comments: show / hide)
 
