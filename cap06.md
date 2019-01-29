@@ -187,7 +187,7 @@ ghci> show (1, 2)
 "(1,2)" 
 ```
 
-Remember that **ghci** displays results as they would be entered into a Haskell program. So the expression `show 1` returns a single-character string containing the digit `1`. That is, the quotes are not part of the string itself. We can make that clear by using `putStrLn`: [7 comments](comments: show / hide)
+Remember that **ghci** displays results as they would be entered into a Haskell program. So the expression `show 1` returns a single-character string containing the digit `1`. That is, the quotes are not part of the string itself. We can make that clear by using `putStrLn`: 
 
 ```
 ghci> putStrLn (show 1)
@@ -255,7 +255,6 @@ main = do
 
 This is a simple example of `read` and `show` together. Notice that we gave an explicit type of `Double` when processing the `read`. That's because `read` returns a value of type `Read a => a` and `show` expects a value of type `Show a => a`. There are many types that have instances defined for both `Read` and `Show`. Without knowing a specific type, the compiler must guess from these many types which one is needed. In situations like this, it may often choose `Integer`. If we wanted to accept floating-point input, this wouldn't work, so we provided an explicit type. [6 comments](comments: show / hide)
 
-![[Tip]](/support/figs/tip.png)
 
 > A note about defaulting
 
@@ -327,27 +326,29 @@ ghci> (read "[Red, Red, Blue]")::[Color]
 
 Notice the error on the final attempt. That's because our parser is not smart enough to handle leading spaces yet. If we modified it to accept leading spaces, that attempt would work. You could rectify this by modifying your `Read` instance to discard any leading spaces, which is common practice in Haskell programs. [3 comments](comments: show / hide)
 
-![[Tip]](/support/figs/tip.png)
 
-Read is not widely used
 
-While it is possible to build sophisticated parsers using the `Read` typeclass, many people find it easier to do so using Parsec, and rely on `Read` only for simpler tasks. Parsec is covered in detail in [Chapter 16, _Using Parsec_](using-parsec.html "Chapter 16. Using Parsec"). [No comments](comment: add)
+> Read is not widely used
+>
+>While it is possible to build sophisticated parsers using the `Read` typeclass, many people find it easier to do so using Parsec, and rely on `Read` only for simpler tasks. Parsec is covered in detail in [Chapter 16, _Using Parsec_](using-parsec.html "Chapter 16. Using Parsec"). [No comments](comment: add)
 
 #### Serialization with Read and Show
 
-You may often have a data structure in memory that you need to store on disk for later retrieval or to send across the network. The process of converting data in memory to a flat series of bits for storage is called _serialization_. [6 comments](comments: show / hide)
+You may often have a data structure in memory that you need to store on disk for later retrieval or to send across the network. The process of converting data in memory to a flat series of bits for storage is called _serialization_. 
 
-It turns out that `read` and `show` make excellent tools for serialization. `show` produces output that is both human-readable and machine-readable. Most `show` output is also syntactically-valid Haskell, though it is up to people that write `Show` instances to make it so. [3 comments](comments: show / hide)
+It turns out that `read` and `show` make excellent tools for serialization. `show` produces output that is both human-readable and machine-readable. Most `show` output is also syntactically-valid Haskell, though it is up to people that write `Show` instances to make it so. 
 
-![[Tip]](/support/figs/tip.png)
+>Parsing large strings
+>
+>String handling in Haskell is normally lazy, so `read` and `show` can be used on quite large data structures without incident. The built-in `read` and `show` instances in Haskell are efficient and implemented in pure Haskell. For information on how to handle parsing exceptions, refer to [Chapter 19, _Error handling_](error-handling.html "Chapter 19. Error handling"). 
 
-Parsing large strings
-
-String handling in Haskell is normally lazy, so `read` and `show` can be used on quite large data structures without incident. The built-in `read` and `show` instances in Haskell are efficient and implemented in pure Haskell. For information on how to handle parsing exceptions, refer to [Chapter 19, _Error handling_](error-handling.html "Chapter 19. Error handling"). [2 comments](comments: show / hide)
-
-Let's try it out in **ghci**: [No comments](comment: add)
+Let's try it out in **ghci**: 
 
 ```
+ghci> let d1 = [Just 5, Nothing, Nothing, Just 8, Just 9]::[Maybe Int]
+ghci> putStrLn (show d1)
+[Just 5,Nothing,Nothing,Just 8,Just 9]
+ghci> writeFile "teste.txt" (show d1)
 ```
 
 
@@ -355,7 +356,20 @@ First, we assign `d1` to be a list. Next, we print out the result of `show d1` s
 
 Let's try reading it back. _FIXME: xref to explanation of variable binding in ghci_ [1 comment](comments: show / hide)
 
+
 ```
+*Ch06> input <- readFile "teste.txt"
+*Ch06> input
+"[Just 5,Nothing,Nothing,Just 8,Just 9]"
+*Ch06> let d2 = read input
+*Ch06> d2
+*** Exception: Prelude.read: no parse
+*Ch06> let d2 = read input :: [Maybe Int]
+*Ch06> d2
+[Just 5,Nothing,Nothing,Just 8,Just 9]
+*Ch06> d1
+[Just 5,Nothing,Nothing,Just 8,Just 9]
+*Ch06>
 ```
 
 
@@ -365,6 +379,14 @@ Since so many different types are instances of `Read` and `Show` by default (and
 
 
 ```
+ghci> putStrLn $ show [("hi", 1), ("there", 3)]
+[("hi",1),("there",3)]
+ghci> putStrLn $ show [[1, 2, 3], [], [4, 0, 1], [], [503]]
+[[1,2,3],[],[4,0,1],[],[503]]
+ghci> putStrLn $ show [Left 5, Right "three", Left 0, Right "nine"]
+[Left 5,Right "three",Left 0,Right "nine"]
+ghci> putStrLn $ show [Left 0, Right [1, 2, 3], Left 5, Right []]
+[Left 0,Right [1,2,3],Left 5,Right []]
 ```
 
 
