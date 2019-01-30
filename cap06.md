@@ -1066,6 +1066,12 @@ data JValue = JString String
               deriving (Eq, Ord, Show)
 ```
 
+Definição de um JValue:
+
+```
+objeto =  JObject $ JObj [("nome", JString "Sergio"), 
+                            ("idade", JNumber 36)]
+```
 
 With these types defined, we make small changes to the definition of our `JValue` type. 
 
