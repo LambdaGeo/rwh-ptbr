@@ -430,7 +430,7 @@ These are quite a few different numeric types. There are some operations, such a
 | (^^)           | (Fractional a, Integral b) => a -> b -> a | Prelude    | Raise a fractional number to any integral power                                      |
 | (%)            | Integral a => a -> a -> Ratio a           | Data.Ratio | Ratio composition                                                                    |
 | (.&.)          | Bits a => a -> a -> a                     | Data.Bits  | Bitwise and                                                                          |
-| (.|.)          | Bits a => a -> a -> a                     | Data.Bits  | Bitwise or                                                                           |
+| (.\|.)          | Bits a => a -> a -> a                     | Data.Bits  | Bitwise or                                                                           |
 | abs            | Num a => a -> a                           | Prelude    | Absolute value                                                                       |
 | approxRational | RealFrac a => a -> a -> Rational          | Data.Ratio | Approximate rational composition based on fractional numerators and denominators     |
 | cos            | Floating a => a -> a                      | Prelude    | Cosine. Also provided are acos, cosh, and acosh, with the same type.                 |
