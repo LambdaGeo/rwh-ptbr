@@ -354,8 +354,6 @@ ghci> writeFile "teste.txt" (show d1)
 
 First, we assign `d1` to be a list. Next, we print out the result of `show d1` so we can see what it generates. Then, we write the result of `show d1` to a file named `test`. [No comments](comment: add)
 
-Let's try reading it back. _FIXME: xref to explanation of variable binding in ghci_ [1 comment](comments: show / hide)
-
 
 ```
 *Ch06> input <- readFile "teste.txt"
@@ -392,7 +390,6 @@ ghci> putStrLn $ show [Left 0, Right [1, 2, 3], Left 5, Right []]
 
 ### Numeric Types
 
-_FIXME: some of these tables don't render well under sgml2x. Will need to verify that they look good under the O'Reilly renderer._
 
 Haskell has a powerful set of numeric types. You can use everything from fast 32-bit or 64-bit integers to arbitrary-precision rational numbers. You probably know that operators such as `+` can work with just about all of these. This feature is implemented using typeclasses. As a side benefit, it allows you to define your own numeric types and make them first-class citizens in Haskell. [5 comments](comments: show / hide)
 
@@ -507,35 +504,46 @@ There are also comparison operators such as `>=` and `<=`. These are declared by
 
 Almost all Haskell types are instances of `Eq`, and nearly as many are instances of `Ord`. [2 comments](comments: show / hide)
 
-![[Tip]](/support/figs/tip.png)
 
-Tip
+> Tip
+>
+> Sometimes, the ordering in `Ord` is arbitrary. For instance, for `Maybe`, `Nothing` sorts before `Just x`, but this was a somewhat arbitrary decision. [8 comments](comments: show / hide)
 
-Sometimes, the ordering in `Ord` is arbitrary. For instance, for `Maybe`, `Nothing` sorts before `Just x`, but this was a somewhat arbitrary decision. [8 comments](comments: show / hide)
+#### Automatic Derivation
 
-Automatic Derivation
---------------------
 
-For many simple data types, the Haskell compiler can automatically derive instances of `Read`, `Show`, `Bounded`, `Enum`, `Eq`, and `Ord` for us. This saves us the effort of having to manually write code to compare or display our own types. [5 comments](comments: show / hide)
+For many simple data types, the Haskell compiler can automatically derive instances of `Read`, `Show`, `Bounded`, `Enum`, `Eq`, and `Ord` for us. This saves us the effort of having to manually write code to compare or display our own types. 
 
-\-- file: ch06/colorderived.hs
+```haskell
 data Color = Red | Green | Blue
      deriving (Read, Show, Eq, Ord)
-
-[No comments](comment: add)
-
-![[Note]](/support/figs/note.png)
-
-Which types can be automatically derived?
-
-The Haskell standard requires compilers to be able to automatically derive instances of these specific typeclasses. This automation is not available for other typeclasses. [3 comments](comments: show / hide)
-
-Let's take a look at how these derived instances work for us: [No comments](comment: add)
-
-```
 ```
 
-[1 comment](comments: show / hide)
+> Which types can be automatically derived?
+>
+>The Haskell standard requires compilers to be able to automatically derive instances of these specific typeclasses. This automation is not available for other typeclasses. 
+
+Let's take a look at how these derived instances work for us: 
+
+```
+ghci> show Red
+"Red"
+ghci> (read "Red")::Color
+Red
+ghci> (read "[Red,Red,Blue]")::[Color]
+[Red,Red,Blue]
+ghci> (read "[Red, Red, Blue]")::[Color]
+[Red,Red,Blue]
+ghci> Red == Red
+True
+ghci> Red == Blue
+False
+ghci> Data.List.sort [Blue,Green,Blue,Red]
+[Red,Green,Blue,Blue]
+ghci> Red < Blue
+True
+```
+
 
 Notice that the sort order for `Color` was based on the order that the constructors were defined. [4 comments](comments: show / hide)
 
@@ -543,35 +551,33 @@ Automatic derivation is not always possible. For instance, if you defined a type
 
 When we automatically derive an instance of some typeclass, the types that we refer to in our `data` declaration must also be instances of that typeclass (manually or automatically). [No comments](comment: add)
 
-\-- file: ch06/AutomaticDerivation.hs
+```haskell
+-- arquivo: src/Ch06.hs
 data CannotShow = CannotShow
-                deriving (Show)
-
+                
 -- will not compile, since CannotShow is not an instance of Show
-data CannotDeriveShow = CannotDeriveShow CannotShow
-                        deriving (Show)
+--data CannotDeriveShow = CannotDeriveShow CannotShow deriving (Show)
 
 data OK = OK
 
 instance Show OK where
-    show \_ = "OK"
+    show _ = "OK"
 
 data ThisWorks = ThisWorks OK
                  deriving (Show)
 
-[19 comments](comments: show / hide)
+```
 
-Typeclasses at work: making JSON easier to use
-----------------------------------------------
+#### Typeclasses at work: making JSON easier to use
 
 The JValue type that we introduced in [the section called “Representing JSON data in Haskell”](writing-a-library-working-with-json-data.html#library.jvalue "Representing JSON data in Haskell") is not especially easy to work with. Here is a truncated and tidied snippet of some real JSON data, produced by a well known search engine. [6 comments](comments: show / hide)
-
+```
 {
   "query": "awkward squad haskell",
   "estimatedCount": 3920,
   "moreResults": true,
   "results":
-  \[{
+  [{
     "title": "Simon Peyton Jones: papers",
     "snippet": "Tackling the awkward squad: monadic input/output ...",
     "url": "http://research.microsoft.com/~simonpj/papers/marktoberdorf/",
@@ -580,36 +586,44 @@ The JValue type that we introduced in [the section called “Representing JSON d
     "title": "Haskell for C Programmers | Lambda the Ultimate",
     "snippet": "... the best job of all the tutorials I've read ...",
     "url": "http://lambda-the-ultimate.org/node/724",
-   }\]
+   }]
 }
+```
+And here's a further slimmed down fragment of that data, represented in Haskell. 
 
-[1 comment](comments: show / hide)
+https://github.com/profsergiocosta/hs2json-cap6
 
-And here's a further slimmed down fragment of that data, represented in Haskell. [No comments](comment: add)
 
-\-- file: ch05/SimpleResult.hs
+```haskell
+-- arquivo: app/Main.hs
+module Main (main) where
+
 import SimpleJSON
 
 result :: JValue
-result = JObject \[
+result = JObject [
   ("query", JString "awkward squad haskell"),
   ("estimatedCount", JNumber 3920),
   ("moreResults", JBool True),
-  ("results", JArray \[
-     JObject \[
+  ("results", JArray [
+     JObject [
       ("title", JString "Simon Peyton Jones: papers"),
       ("snippet", JString "Tackling the awkward ..."),
       ("url", JString "http://.../marktoberdorf/")
-     \]\])
-  \]
+     ]])
+  ]
 
-[No comments](comment: add)
+main :: IO ()
+main = do
+    putStrLn (show result)
+```
 
 Because Haskell doesn't natively support lists that contain types of different value, we can't directly represent a JSON object that contains values of different types. Instead, we must wrap each value with a JValue constructor. This limits our flexibility: if we want to change the number `3920` to a string `"3,920"`, we must change the constructor that we use to wrap it from `JNumber` to `JString`. [6 comments](comments: show / hide)
 
 Haskell's typeclasses offer a tempting solution to this problem. [4 comments](comments: show / hide)
 
-\-- file: ch06/JSONClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 type JSONError = String
 
 class JSON a where
@@ -619,20 +633,21 @@ class JSON a where
 instance JSON JValue where
     toJValue = id
     fromJValue = Right
+```
 
-[20 comments](comments: show / hide)
 
 Now, instead of applying a constructor like `JNumber` to a value to wrap it, we apply the `toJValue` function. If we change a value's type, the compiler will choose a suitable implementation of toJValue to use with it. [7 comments](comments: show / hide)
 
 We also provide a `fromJValue` function, which attempts to convert a JValue into a value of our desired type. [No comments](comment: add)
 
-### More helpful errors
+#### More helpful errors
 
 The return type of our `fromJValue` function uses the Either type. Like Maybe, this type is predefined for us, and we'll often use it to represent a computation that could fail. [No comments](comment: add)
 
 While Maybe is useful for this purpose, it gives us no information if a failure occurs: we literally have `Nothing`. The Either type has a similar structure, but instead of `Nothing`, the “something bad happened” constructor is named `Left`, and it takes a parameter. [6 comments](comments: show / hide)
 
-\-- file: ch06/DataEither.hs
+```haskell
+-- definido em Prelude.hs
 data Maybe a = Nothing
              | Just a
                deriving (Eq, Ord, Read, Show)
@@ -640,52 +655,52 @@ data Maybe a = Nothing
 data Either a b = Left a
                 | Right b
                   deriving (Eq, Ord, Read, Show)
-
-[No comments](comment: add)
+```
 
 Quite often, the type we use for the `a` parameter value is String, so we can provide a useful description if something goes wrong. To see how we use the Either type in practice, let's look at a simple instance of our typeclass. [No comments](comment: add)
 
-\-- file: ch06/JSONClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 instance JSON Bool where
     toJValue = JBool
     fromJValue (JBool b) = Right b
     fromJValue \_ = Left "not a JSON boolean"
+```
 
-[7 comments](comments: show / hide)
-
-### Making an instance with a type synonym
+#### Making an instance with a type synonym
 
 The Haskell 98 standard does not allow us to write an instance of the following form, even though it seems perfectly reasonable. [No comments](comment: add)
 
-\-- file: ch06/JSONClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 instance JSON String where
     toJValue               = JString
 
     fromJValue (JString s) = Right s
-    fromJValue \_           = Left "not a JSON string"
-
-[No comments](comment: add)
+    fromJValue _           = Left "not a JSON string"
+```
 
 Recall that String is a synonym for \[Char\], which in turn is the type \[a\] where Char is substituted for the type parameter `a`. According to Haskell 98's rules, we are not allowed to supply a type in place of a type parameter when we write an instance. In other words, it would be legal for us to write an instance for \[a\], but not for \[Char\]. [24 comments](comments: show / hide)
 
-While GHC follows the Haskell 98 standard by default, we can relax this particular restriction by placing a specially formatted comment at the top of our source file. [1 comment](comments: show / hide)
+While GHC follows the Haskell 98 standard by default, we can relax this particular restriction by placing a specially formatted comment at the top of our source file. (rever essa explicacao para o haskell2010)
 
-\-- file: ch06/JSONClass.hs
-{-# LANGUAGE TypeSynonymInstances #-}
+```haskell
+-- arquivo: src/SimpleJSON.hs
+{-# LANGUAGE FlexibleInstances #-}
+```
 
-[4 comments](comments: show / hide)
+This comment is a directive to the compiler, called a _pragma_, which tells it to enable a language extension. The `TypeSynonymInstances` language extension makes the above code legal. We'll encounter a few other language extensions in this chapter, and a handful more later in this book. 
 
-This comment is a directive to the compiler, called a _pragma_, which tells it to enable a language extension. The `TypeSynonymInstances` language extension makes the above code legal. We'll encounter a few other language extensions in this chapter, and a handful more later in this book. [9 comments](comments: show / hide)
+#### Living in an open world
 
-Living in an open world
------------------------
 
-Haskell's typeclasses are intentionally designed to let us create new instances of a typeclass whenever we see fit. [2 comments](comments: show / hide)
+Haskell's typeclasses are intentionally designed to let us create new instances of a typeclass whenever we see fit. 
 
-\-- file: ch06/JSONClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 doubleToJValue :: (Double -> a) -> JValue -> Either JSONError a
 doubleToJValue f (JNumber v) = Right (f v)
-doubleToJValue \_ \_ = Left "not a JSON number"
+doubleToJValue _ _ = Left "not a JSON number"
 
 instance JSON Int where
     toJValue = JNumber . realToFrac
@@ -698,19 +713,33 @@ instance JSON Integer where
 instance JSON Double where
     toJValue = JNumber
     fromJValue = doubleToJValue id
+```
 
-[8 comments](comments: show / hide)
+Testando
+
+```
+*Main Prettify PrettyJSON PutJSON SimpleJSON> fromJValue (JNumber 12.6)
+Right 13
+*Main Prettify PrettyJSON PutJSON SimpleJSON> fromJValue (JNumber 12.6) :: Either JSONError Double
+Right 12.6
+*Main Prettify PrettyJSON PutJSON SimpleJSON> fromJValue (JNumber 12.6) :: Either JSONError Int
+Int       Integer   Integral
+*Main Prettify PrettyJSON PutJSON SimpleJSON> fromJValue (JNumber 12.6) :: Either JSONError Integer
+Right 13
+```
+
+
 
 We can add new instances anywhere; they are not confined to the module where we define a typeclass. This feature of the typeclass system is referred to as its _open world assumption_. If we had a way to express a notion of “the following are the only instances of this typeclass that can exist”, we would have a _closed_ world. [No comments](comment: add)
 
 We would like to be able to turn a list into what JSON calls an array. We won't worry about implementation details just yet, so let's use `undefined` as the bodies of the instance's methods. [No comments](comment: add)
 
-\-- file: ch06/BrokenClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 instance (JSON a) => JSON \[a\] where
     toJValue = undefined
     fromJValue = undefined
-
-[8 comments](comments: show / hide)
+```
 
 It would also be convenient if we could turn a list of name/value pairs into a JSON object. [No comments](comment: add)
 
