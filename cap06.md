@@ -1006,66 +1006,71 @@ Enabling GHC's support for overlapping instances is an effective and quick way t
 
 Our first task, then, is to help the compiler to distinguish between \[a\], the representation we use for JSON arrays, and \[(String,\[a\])\], which we use for objects. These were the types that gave us problems before we learned about `OverlappingInstances`. We wrap up the list type so that the compiler will not see it as a list. 
 
-\-- file: ch06/JSONClass.hs
+
+```haskell
+-- arquivo: src/SimpleJSON.hs
 newtype JAry a = JAry {
-      fromJAry :: \[a\]
+      fromJAry :: [a]
     } deriving (Eq, Ord, Show)
 
-
-
+```
 When we export this type from our module, we'll export the complete details of the type. Our module header will look like this: 
 
-\-- file: ch06/JSONClassExport.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 module JSONClass
     (
       JAry(..)
     ) where
-
+```
 
 
 The “`(..)`” following the JAry name means “export all details of this type”. 
 
-![[Note]](/support/figs/note.png)
+> A slight deviation from normal use
+>
+>Usually, when we export a `newtype`, we will _not_ export its data constructor, in order to keep the details of the type 
+abstract. Instead, we would define a function to apply the constructor for us. 
 
-A slight deviation from normal use
-
-Usually, when we export a `newtype`, we will _not_ export its data constructor, in order to keep the details of the type abstract. Instead, we would define a function to apply the constructor for us. 
-
-\-- file: ch06/JSONClass.hs
-jary :: \[a\] -> JAry a
+```haskell
+jary :: [a] -> JAry a
 jary = JAry
+```
+> We would then export the type constructor, the deconstructor function, and our construction function, but not the data constructor. 
 
-
-
-We would then export the type constructor, the deconstructor function, and our construction function, but not the data constructor. 
-
-\-- file: ch06/JSONClassExport.hs
-module JSONClass
+```haskell
+module JSONExemplo
     (
       JAry(fromJAry)
     , jary
     ) where
 
+```
 
+>When we don't export a type's data constructor, clients of our library can only use the functions we provide to construct and deconstruct values of that type. This gives us, the library authors, the liberty to change our internal representation if we need to. 
 
-When we don't export a type's data constructor, clients of our library can only use the functions we provide to construct and deconstruct values of that type. This gives us, the library authors, the liberty to change our internal representation if we need to. 
+>If we export the data constructor, clients are likely to start depending on it, for instance by using it in patterns. If we later wish to change the innards of our type, we'll risk breaking any code that uses the constructor. 
 
-If we export the data constructor, clients are likely to start depending on it, for instance by using it in patterns. If we later wish to change the innards of our type, we'll risk breaking any code that uses the constructor. 
-
-In our circumstances here, we have nothing to gain by making the array wrapper abstract, so we may as well simply export the entire definition of the type. 
+>In our circumstances here, we have nothing to gain by making the array wrapper abstract, so we may as well simply export the entire definition of the type. 
 
 We provide another wrapper type that hides our representation of a JSON object. 
 
-\-- file: ch06/JSONClass.hs
-newtype JObj a = JObj {
-      fromJObj :: \[(String, a)\]
-    } deriving (Eq, Ord, Show)
-
+```haskell
+-- arquivo: src/SimpleJSON.hs
+data JValue = JString String
+            | JNumber Double
+            | JBool Bool
+            | JNull
+            | JObject (JObj JValue)   -- was [(String, JValue)]
+            | JArray (JAry JValue)    -- was [JValue]
+              deriving (Eq, Ord, Show)
+```
 
 
 With these types defined, we make small changes to the definition of our `JValue` type. 
 
-\-- file: ch06/JSONClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 data JValue = JString String
             | JNumber Double
             | JBool Bool
@@ -1073,12 +1078,13 @@ data JValue = JString String
             | JObject (JObj JValue)   -- was \[(String, JValue)\]
             | JArray (JAry JValue)    -- was \[JValue\]
               deriving (Eq, Ord, Show)
-
+```
 
 
 This change doesn't affect the instances of the JSON typeclass that we've already written, but we will want to write instances for our new JAry and JObj types. 
 
-\-- file: ch06/JSONClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 jaryFromJValue :: (JSON a) => JValue -> Either JSONError (JAry a)
 
 jaryToJValue :: (JSON a) => JAry a -> JValue
@@ -1086,74 +1092,81 @@ jaryToJValue :: (JSON a) => JAry a -> JValue
 instance (JSON a) => JSON (JAry a) where
     toJValue = jaryToJValue
     fromJValue = jaryFromJValue
-
+```
 
 
 Let's take a slow walk through the individual steps of converting a JAry a to a JValue. Given a list where we know that everything inside is a JSON instance, converting it to a list of JValues is easy. 
-
-\-- file: ch06/JSONClass.hs
-listToJValues :: (JSON a) => \[a\] -> \[JValue\]
+```haskell
+-- arquivo: src/SimpleJSON.hs
+listToJValues :: (JSON a) => [a] -> [JValue]
 listToJValues = map toJValue
-
+```
 
 
 Taking this and wrapping it to become a JAry JValue is just a matter of applying the `newtype`'s type constructor. 
 
-\-- file: ch06/JSONClass.hs
-jvaluesToJAry :: \[JValue\] -> JAry JValue
-jvaluesToJAry = JAry
-
+```haskell
+-- arquivo: src/SimpleJSON.hs
+jaryOfJValuesToJValue :: JAry JValue -> JValue
+jaryOfJValuesToJValue = JArray
+```
 
 
 (Remember, this has no performance cost. We're just telling the compiler to hide the fact that we're using a list.) To turn this into a JValue, we apply another type constructor. 
 
-\-- file: ch06/JSONClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 jaryOfJValuesToJValue :: JAry JValue -> JValue
 jaryOfJValuesToJValue = JArray
-
+```
 
 
 Assemble these pieces using function composition, and we get a concise one-liner for converting to a JValue. 
 
-\-- file: ch06/JSONClass.hs
+\-- file: c```haskell
+-- arquivo: src/SimpleJSON.hs
 jaryToJValue = JArray . JAry . map toJValue . fromJAry
-
+```
 
 
 We have more work to do to convert _from_ a JValue to a JAry a, but we'll break it into reusable parts. The basic function is straightforward. 
 
-\-- file: ch06/JSONClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 jaryFromJValue (JArray (JAry a)) =
     whenRight JAry (mapEithers fromJValue a)
-jaryFromJValue \_ = Left "not a JSON array"
-
+jaryFromJValue _ = Left "not a JSON array"
+```
 
 
 The `whenRight` function inspects its argument: calls a function on it if it was created with the `Right` constructor, and leaves a `Left` value untouched. 
 
-\-- file: ch06/JSONClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 whenRight :: (b -> c) -> Either a b -> Either a c
-whenRight \_ (Left err) = Left err
+whenRight _ (Left err) = Left err
 whenRight f (Right a) = Right (f a)
-
+```
 
 
 More complicated is `mapEithers`. It acts like the regular `map` function, but if it ever encounters a `Left` value, it returns that immediately, instead of continuing to accumulate a list of `Right` values. 
 
-\-- file: ch06/JSONClass.hs
-mapEithers :: (a -> Either b c) -> \[a\] -> Either b \[c\]
+```haskell
+-- arquivo: src/SimpleJSON.hs
+mapEithers :: (a -> Either b c) -> [a] -> Either b [c]
 mapEithers f (x:xs) = case mapEithers f xs of
                         Left err -> Left err
                         Right ys -> case f x of
                                       Left err -> Left err
                                       Right y -> Right (y:ys)
-mapEithers \_ \_ = Right \[\]
-
+mapEithers _ _ = Right []
+```
 
 
 Because the elements of the list hidden in the JObj type have a little more structure, the code to convert to and from a JValue is a bit more complex. Fortunately, we can reuse the functions that we just defined. 
 
-\-- file: ch06/JSONClass.hs
+```haskell
+-- arquivo: src/SimpleJSON.hs
 import Control.Arrow (second)
 
 instance (JSON a) => JSON (JObj a) where
@@ -1162,62 +1175,11 @@ instance (JSON a) => JSON (JObj a) where
     fromJValue (JObject (JObj o)) = whenRight JObj (mapEithers unwrap o)
       where unwrap (k,v) = whenRight ((,) k) (fromJValue v)
     fromJValue \_ = Left "not a JSON object"
+```
 
-
-
-
-
-The dreaded monomorphism restriction
-------------------------------------
-
-The Haskell 98 standard has a subtle feature that can sometimes bite us in unexpected circumstances. Here's a simple function definition that illustrates the issue. 
-
-\-- file: ch06/Monomorphism.hs
-myShow = show
-
-
-
-If we try to load this definition into **ghci**, it issues a peculiar complaint. 
-
-    ghci> 
-
-
-
-The “monomorphism restriction” to which the error message refers is a part of the Haskell 98 standard. _Monomorphism_ is simply the opposite of polymorphism: it indicates that an expression has exactly one type. The _restriction_ lies in the fact that Haskell sometimes forces a declaration to be less polymorphic than we would expect. 
-
-We mention the monomorphism restriction here because although it isn't specifically related to typeclasses, they usually provide the circumstances in which it crops up. 
-
-![[Tip]](/support/figs/tip.png)
-
-Tip
-
-It's possible that you will not run into the monomorphism restriction in real code for a long time. We don't think you need to try to remember the details of this section. It should suffice to make a mental note of its existence, until eventually GHC complains at you with something like the above error message. If that occurs, simply remember that you read about the error here, and come back for guidance. 
-
-We won't attempt to explain the monomorphism restriction\[[14](#ftn.id610076)\]. The consensus within the Haskell community is that it doesn't arise often; it is tricky to explain; it provides almost no practical benefit; and so it mostly serves to trip people up. For an example of its trickiness, while the definition above falls afoul of it, the following two compile without problems. 
-
-\-- file: ch06/Monomorphism.hs
-myShow2 value = show value
-
-myShow3 :: (Show a) => a -> String
-myShow3 = show
-
-
-
-As these alternative definitions suggest, if GHC complains about the monomorphism restriction, we have three easy ways to address the error. 
-
-*   Make the function's arguments explicit, instead of leaving them implicit. 
-    
-*   Give the definition an explicit type signature, instead of making the compiler infer its type. 
-    
-*   Leave the code untouched, and compile the module with the `NoMonomorphismRestriction` language extension enabled. This disables the monomorphism restriction. 
-    
-
-Because the monomorphism restriction is unwanted and unloved, it will almost certainly be dropped from the next revision of the Haskell standard. This does not quite mean that compiling with `NoMonomorphismRestriction` is always the right thing to do: some Haskell compilers (including older versions of GHC) do not understand this extension, but they'll accept either of the other approaches to making the error disappear. If this degree of portability isn't a concern to you, then by all means enable the language extension. 
 
 Conclusion
 ----------
-
-_FIXME: needs extending to cover JSON_
 
 In this chapter, you learned about the need for typeclasses and how to use them. We talked about defining our own typeclasses and then covered some of the important typeclasses that are defined in the Haskell library. Finally, we showed how to have the Haskell compiler automatically derive instances of certain typeclasses for your types. 
 
