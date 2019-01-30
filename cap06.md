@@ -878,26 +878,30 @@ Although their names are similar, the `type` and `newtype` keywords have differe
 
 In contrast, the `newtype` keyword exists to _hide_ the nature of a type. Consider a UniqueID type. [No comments](comment: add)
 
-\-- file: ch06/Newtype.hs
+```haskell
+-- arquivo: src/Ch06.hs
 newtype UniqueID = UniqueID Int
     deriving (Eq)
-
-[No comments](comment: add)
+```
 
 The compiler treats UniqueID as a different type from Int. As a user of a UniqueID, we know only that we have a unique identifier; we cannot see that it is implemented as an Int. [7 comments](comments: show / hide)
 
 When we declare a `newtype`, we must choose which of the underlying type's typeclass instances we want to expose. Here, we've elected to make NewtypeInt provide Int's instances for Eq, Ord and Show. As a result, we can compare and print values of type NewtypeInt. [4 comments](comments: show / hide)
-
-    ghci> 
-
-[No comments](comment: add)
-
+```
+ghci> N 1 < N 2
+True
+```
 Since we are _not_ exposing Int's Num or Integral instances, values of type NewtypeInt are not numbers. For instance, we can't add them. [1 comment](comments: show / hide)
+```
+ ghci> N 313 + N 37
 
-    ghci> 
-
-[1 comment](comments: show / hide)
-
+<interactive>:1:0:
+    No instance for (Num NewtypeInt)
+      arising from a use of `+' at <interactive>:1:0-11
+    Possible fix: add an instance declaration for (Num NewtypeInt)
+    In the expression: N 313 + N 37
+    In the definition of `it': it = N 313 + N 37
+```
 As with the `data` keyword, we can use a `newtype`'s value constructor to create a new value, or to pattern match on an existing value. [No comments](comment: add)
 
 If a `newtype` does not use automatic deriving to expose the underlying type's implementation of a typeclass, we are free to either write a new instance or leave the typeclass unimplemented. [No comments](comment: add)
@@ -906,7 +910,8 @@ If a `newtype` does not use automatic deriving to expose the underlying type's i
 
 The `newtype` keyword exists to give an existing type a new identity, and it has more restrictions on its uses than the `data` keyword. Specifically, a `newtype` can only have one value constructor, and that constructor must have exactly one field. [2 comments](comments: show / hide)
 
-\-- file: ch06/NewtypeDiff.hs
+```haskell
+-- arquivo: src/Ch06.hs
 -- ok: any number of fields and constructors
 data TwoFields = TwoFields Int Int
 
@@ -922,16 +927,14 @@ newtype Record = Record {
     }
 
 -- bad: no fields
-newtype TooFew = TooFew
+--newtype TooFew = TooFew
 
 -- bad: more than one field
-newtype TooManyFields = Fields Int Int
+--newtype TooManyFields = Fields Int Int
 
 -- bad: more than one constructor
-newtype TooManyCtors = Bad Int
-                     | Worse Int
-
-[No comments](comment: add)
+--newtype TooManyCtors = Bad Int | Worse Int
+```
 
 Beyond this, there's another important difference between `data` and `newtype`. A type created with the `data` keyword has a book-keeping cost at runtime, for example to track which constructor a value was created with. A `newtype` value, on the other hand, can only have one constructor, and so does not need this overhead. This makes it more space- and time-efficient at runtime. [2 comments](comments: show / hide)
 
@@ -940,12 +943,16 @@ Because a `newtype`'s constructor is used only at compile time and does not even
 To understand the difference, let's first review what we might expect with a normal datatype. We are already familiar with the idea that if `undefined` is evaluated at runtime, it causes a crash. [No comments](comment: add)
 
 ```
+ghci> undefined
+*** Exception: Prelude.undefined
 ```
 
 
 Here is a pattern match where we construct a DataInt using the `D` constructor, and put `undefined` inside. [No comments](comment: add)
 
 ```
+ghci> case D undefined of D _ -> 1
+1
 ```
 
 Since our pattern matches against the constructor but doesn't inspect the payload, the `undefined` remains unevaluated and does not cause an exception to be thrown. [No comments](comment: add)
@@ -953,29 +960,35 @@ Since our pattern matches against the constructor but doesn't inspect the payloa
 In this example, we're not using the `D` constructor, so the unprotected `undefined` is evaluated when the pattern match occurs, and we throw an exception. [5 comments](comments: show / hide)
 
 ```
+ghci> case undefined of D _ -> 1
+*** Exception: Prelude.undefined
 ```
 
 When we use the `N` constructor for the NewtypeInt type, we see the same behaviour as with the DataInt type's `D` constructor: no exception. [No comments](comment: add)
 
 ```
+ghci> case N undefined of N _ -> 1
+1
 ```
 
 The crucial difference arises when we get rid of the `N` constructor from the expression, and match against an unprotected `undefined`. [No comments](comment: add)
 
 ```
+ghci> case undefined of N _ -> 1
+1
 ```
 
 We don't crash! Because there's no constructor present at runtime, matching against `N _` is in fact equivalent to matching against the plain wild card `_`: since the wild card always matches, the expression does not need to be evaluated. 
 
-Another perspective on newtype constructors
+>Another perspective on newtype constructors
+>
+>Even though we use the value constructor for a `newtype` in the same way as that of a type defined using the `data` keyword, all it does is coerce a value between its “normal” type and its `newtype` type. [1 comment](comments: show / hide)
 
-Even though we use the value constructor for a `newtype` in the same way as that of a type defined using the `data` keyword, all it does is coerce a value between its “normal” type and its `newtype` type. [1 comment](comments: show / hide)
+>In other words, when we apply the `N` constructor in an expression, we coerce an expression from type Int to type NewtypeInt as far as we and the compiler are concerned, but absolutely nothing occurs at runtime. [No comments](comment: add)
 
-In other words, when we apply the `N` constructor in an expression, we coerce an expression from type Int to type NewtypeInt as far as we and the compiler are concerned, but absolutely nothing occurs at runtime. [No comments](comment: add)
+>Similarly, when we match on the `N` constructor in a pattern, we coerce an expression from type NewtypeInt to Int, but again there's no overhead involved at runtime. [No comments](comment: add)
 
-Similarly, when we match on the `N` constructor in a pattern, we coerce an expression from type NewtypeInt to Int, but again there's no overhead involved at runtime. [No comments](comment: add)
-
-### Summary: the three ways of naming types
+#### Summary: the three ways of naming types
 
 Here's a brief recap of Haskell's three ways to introduce new names for types. [1 comment](comments: show / hide)
 
@@ -986,8 +999,8 @@ Here's a brief recap of Haskell's three ways to introduce new names for types. [
 *   The `newtype` keyword gives an existing type a distinct identity. The original type and the new type are _not_ interchangeable. [4 comments](comments: show / hide)
     
 
-JSON typeclasses without overlapping instances
-----------------------------------------------
+### JSON typeclasses without overlapping instances
+
 
 Enabling GHC's support for overlapping instances is an effective and quick way to make our JSON code happy. In more complex cases, we will occasionally be faced with several equally good instances for some typeclass, in which case overlapping instances will not help us and we will need to put some `newtype` declarations into place. To see what's involved, let's rework our JSON typeclass instances to use `newtype`s instead of overlapping instances. [2 comments](comments: show / hide)
 
@@ -1152,15 +1165,7 @@ instance (JSON a) => JSON (JObj a) where
 
 [8 comments](comments: show / hide)
 
-### Exercises
 
-**1.**
-
-Load the `Control.Arrow` module into **ghci**, and find out what the `second` function does. [17 comments](comments: show / hide)
-
-**2.**
-
-What is the type of `(,)`? When you use it in **ghci**, what does it do? What about `(,,)`? [6 comments](comments: show / hide)
 
 The dreaded monomorphism restriction
 ------------------------------------
