@@ -743,30 +743,37 @@ instance (JSON a) => JSON \[a\] where
 
 It would also be convenient if we could turn a list of name/value pairs into a JSON object. [No comments](comment: add)
 
-\-- file: ch06/BrokenClass.hs
-instance (JSON a) => JSON \[(String, a)\] where
+```haskell
+-- arquivo: src/SimpleJSON.hs
+instance (JSON a) => JSON [(String, a)] where
     toJValue = undefined
     fromJValue = undefined
+```
 
-[5 comments](comments: show / hide)
+#### When do overlapping instances cause problems?
 
-### When do overlapping instances cause problems?
+If we put these definitions into a source file and load them into **ghci**, everything initially seems fine. 
+However, once we try to _use_ the list-of-pairs instance, we run into trouble.
+```
+ghci> toJValue [("foo","bar")]
 
-If we put these definitions into a source file and load them into **ghci**, everything initially seems fine. [4 comments](comments: show / hide)
+<interactive>:40:1: error:
+    • Overlapping instances for JSON [([Char], [Char])]
+        arising from a use of ‘toJValue’
+      Matching instances:
+        instance [safe] JSON a => JSON [(String, a)]
+          -- Defined at /home/sergiosouzacosta/tmp/hs2json-cap6/hs2json/src/SimpleJSON.hs:94:10
+        instance [safe] JSON a => JSON [a]
+          -- Defined at /home/sergiosouzacosta/tmp/hs2json-cap6/hs2json/src/SimpleJSON.hs:90:10
+    • In the expression: toJValue [("foo", "bar")]
+      In an equation for ‘it’: it = toJValue [("foo", "bar")]
 
-    ghci> 
-
-[5 comments](comments: show / hide)
-
-However, once we try to _use_ the list-of-pairs instance, we run into trouble. [No comments](comment: add)
-
-    ghci> 
-
-[3 comments](comments: show / hide)
+```
 
 This problem of _overlapping instances_ is a consequence of Haskell's open world assumption. Here's a simpler example that makes it clearer what's going on. [1 comment](comments: show / hide)
 
-\-- file: ch06/Overlap.hs
+```haskell
+-- arquivo: src/Ch06.hs
 class Borked a where
     bork :: a -> String
 
@@ -778,8 +785,7 @@ instance Borked (Int, Int) where
 
 instance (Borked a, Borked b) => Borked (a, b) where
     bork (a, b) = ">>" ++ bork a ++ " " ++ bork b ++ "<<"
-
-[6 comments](comments: show / hide)
+```
 
 We have two instances of the typeclass Borked for pairs: one for a pair of Ints and another for a pair of anything else that's Borked. [No comments](comment: add)
 
@@ -803,24 +809,23 @@ GHC supports another useful language extension, `OverlappingInstances`, which ad
 
 We frequently use this extension together with `TypeSynonymInstances`. Here's an example. [1 comment](comments: show / hide)
 
-\-- file: ch06/SimpleClass.hs
-{-# LANGUAGE TypeSynonymInstances, OverlappingInstances #-}
-
-import Data.List
+```haskell
+-- arquivo: src/Ch06.hs
 
 class Foo a where
     foo :: a -> String
 
-instance Foo a => Foo \[a\] where
+instance {-# OVERLAPS #-} Foo a => Foo [a] where
     foo = concat . intersperse ", " . map foo
 
 instance Foo Char where
-    foo c = \[c\]
+    foo c = [c]
 
 instance Foo String where
     foo = id
+```
 
-[2 comments](comments: show / hide)
+(no 2010 mudou tambem a forma de fazer overlapping)
 
 If we apply `foo` to a String, the compiler will use the String\-specific implementation. Even though we have an instance of Foo for \[a\] and Char, the instance for String is more specific, so GHC chooses it. For other types of list, we will see the behavior specified for \[a\]. [3 comments](comments: show / hide)
 
@@ -828,6 +833,7 @@ With the `OverlappingInstances` extension enabled, GHC will still reject code if
 
 ![[Note]](/support/figs/note.png)
 
+(reescrever toda essa parte)
 When to use the OverlappingInstances extension
 
 Here's an important point: GHC treats `OverlappingInstances` as affecting the declaration of an instance, _not_ a location where we use the instance. In other words, when we define an instance that we wish to allow to overlap with another instance, we must enable the extension for the module that contains the definition. When it compiles the module, GHC will record that instance as “can be overlapped with other instances”. [1 comment](comments: show / hide)
@@ -836,7 +842,7 @@ Once we import this module and use the instance, we _won't_ need to enable `Over
 
 This behaviour is useful when we are writing a library: we can choose to create overlappable instances, but users of our library do not need to enable any special language extensions. [2 comments](comments: show / hide)
 
-### How does show work for strings?
+#### How does show work for strings?
 
 The `OverlappingInstances` and `TypeSynonymInstances` language extensions are specific to GHC, and by definition were not present in Haskell 98. However, the familiar Show typeclass from Haskell 98 somehow renders a list of Char differently from a list of Int. It achieves this via a clever, but simple, trick. [1 comment](comments: show / hide)
 
@@ -848,19 +854,19 @@ As a result, if someone applies `show` to a \[Char\] value, the implementation o
 
 At least sometimes, then, we can avoid the need for the `OverlappingInstances` extension with a little bit of lateral thinking. [10 comments](comments: show / hide)
 
-How to give a type a new identity
----------------------------------
+#### How to give a type a new identity
+
 
 In addition to the familiar `data` keyword, Haskell provides us with another way to create a new type, using the `newtype` keyword. [3 comments](comments: show / hide)
 
-\-- file: ch06/Newtype.hs
+```haskell
+-- arquivo: src/Ch06.hs
 data DataInt = D Int
     deriving (Eq, Ord, Show)
 
 newtype NewtypeInt = N Int
     deriving (Eq, Ord, Show)
-
-[3 comments](comments: show / hide)
+```
 
 The purpose of a `newtype` declaration is to rename an existing type, giving it a distinct identity. As we can see, it is similar in appearance to a type declared using the `data` keyword. [No comments](comment: add)
 
