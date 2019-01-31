@@ -6,11 +6,12 @@
 
 This simple microbenchmark reads a text file full of numbers, and prints their sum. 
 
-\-- file: ch08/SumFile.hs
+```haskell
 main = do
     contents <- getContents
     print (sumFile contents)
   where sumFile = sum . map read . words
+```
 
 Although the String type is the default used for reading and writing files, it is not efficient, so a simple program like this will perform badly. 
 
@@ -196,8 +197,8 @@ The kinds of patterns we'll be dealing with are commonly referred to as _glob pa
 
 While Haskell doesn't provide a way to match glob patterns among its standard libraries, it provides a good regular expression matching library. Glob patterns are nothing more than cut-down regular expressions with slightly different syntax. It's easy to convert glob patterns into regular expressions, but to do so, we must first understand how to use regular expressions in Haskell. 
 
-Regular expressions in Haskell
-------------------------------
+### Regular expressions in Haskell
+
 
 In this section, we will be assume that you are already familiar with regular expressions by way of some other language, such as Python, Perl, or Java\[[26](#ftn.id617121)\]. 
 
@@ -206,83 +207,156 @@ For brevity, we will abbreviate “regular expression” as _regexp_ from here o
 Rather than introduce regexps as something new, we will focus on what's different about regexp handling in Haskell, compared to other languages. Haskell's regular expression matching libraries are a lot more expressive than those of other languages, so there's plenty to talk about. 
 
 To begin our exploration of the regexp libraries, the only module we'll need to work with is `Text.Regex.Posix`. As usual, the most convenient way to explore this module is by interacting with it via **ghci**. 
-
-    ghci> 
-
-
+(precisa adicionar a dependencia)
+```
+ghci> :module +Text.Regex.Posix
+```
 
 The only function that we're likely to need for normal use is the regexp matching function, an infix operator named `(=~)` (borrowed from Perl). The first hurdle to overcome is that Haskell's regexp libraries make heavy use of polymorphism. As a result, the type signature of the `(=~)` operator is difficult to understand, so we will not explain it here. 
 
 The `=~` operator uses typeclasses for both of its arguments, and also for its return type. The first argument (on the left of the `=~`) is the text to match; the second (on the right) is the regular expression to match against. We can pass either a String or a ByteString as either argument. 
 
-### The many types of result
+#### The many types of result
 
 The `=~` operator is polymorphic in its return type, so the Haskell compiler needs some way to know what type of result we would like. In real code, it may be able to infer the right type, due to the way we subsequently use the result. But such cues are often lacking when we're exploring with **ghci**. If we omit a specific type for the result, we'll get an error from the interpreter, as it does not have enough information to successfuly infer the result type. 
 
 When **ghci** can't infer the `target` type, we tell it what we'd like the type to be. If we want a result of type Bool, we'll get a pass/fail answer. 
-
-    ghci> 
-
+```
+*Ch08 Text.Regex.Posix> "my left foot" =~ "foo" :: Bool
+True
+*Ch08 Text.Regex.Posix> "your right hand" =~ "bar" :: Bool
+False
+*Ch08 Text.Regex.Posix> "your right hand" =~ "(hand|foot)" :: Bool
+True
+*Ch08 Text.Regex.Posix>
+```
 
 
 In the bowels of the regexp libraries, there's a typeclass named `RegexContext` that describes how a `target` type should behave; the base library defines many instances of this typeclass for us. The Bool type is an instance of this typeclass, so we get back a usable result. Another such instance is Int, which gives us a count of the number of times the regexp matches. 
-
-    ghci> 
-
+```
+ghci> "a star called henry" =~ "planet" :: Int
+0
+ghci> "honorificabilitudinitatibus" =~ "[aeiou]" :: Int
+13
+```
 
 
 If we ask for a String result, we'll get the first substring that matches, or an empty string if nothing matches. 
 
-    ghci> 
+```
+ghci> "I, B. Ionsonii, uurit a lift'd batch" =~ "(uu|ii)" :: String
+"ii"
+ghci> "hi ludi, F. Baconis nati, tuiti orbi" =~ "Shakespeare" :: String
+""
+```
 
 
 
 Another valid type of result is \[String\], which returns a list of _all_ matching strings. 
 
-    ghci> 
+```
+*Ch08 Text.Regex.Posix> "I, B. Ionsonii, uurit a lift'd batch" =~ "(uu|ii)" :: [String]
 
-[24 comments]
+<interactive>:12:1: error:
+    • No instance for (RegexContext Regex [Char] [String])
+        arising from a use of ‘=~’
+    • In the expression:
+          "I, B. Ionsonii, uurit a lift'd batch" =~ "(uu|ii)" :: [String]
+      In an equation for ‘it’:
+          it
+            = "I, B. Ionsonii, uurit a lift'd batch" =~ "(uu|ii)" :: [String]
+*Ch08 Text.Regex.Posix> "hi ludi, F. Baconis nati, tuiti orbi" =~ "Shakespeare" :: [String]
 
-![[Note]](/support/figs/note.png)
+<interactive>:13:1: error:
+    • No instance for (RegexContext Regex [Char] [String])
+        arising from a use of ‘=~’
+    • In the expression:
+          "hi ludi, F. Baconis nati, tuiti orbi" =~ "Shakespeare" :: [String]
+      In an equation for ‘it’:
+          it
+            = "hi ludi, F. Baconis nati, tuiti orbi" =~ "Shakespeare" ::
+```
 
-Watch out for String results
 
-If you want a result that's a plain String, beware. Since `(=~)` returns an empty string to signify “no match”, this poses an obvious difficulty if the empty string could also be a valid match for the regexp. If such a case arises, you should use a different return type instead, such as \[String\]. 
+
+
+>Watch out for String results
+
+>If you want a result that's a plain String, beware. Since `(=~)` returns an empty string to signify “no match”, this poses an obvious difficulty if the empty string could also be a valid match for the regexp. If such a case arises, you should use a different return type instead, such as \[String\]. 
 
 That's about it for “simple” result types, but we're not by any means finished. Before we continue, let's use a single pattern for our remaining examples. We can define this pattern as a variable in **ghci**, to save a little typing. 
 
-    ghci> 
+```
+*Ch08 Text.Regex.Posix> let pat = "(foo[a-z]*bar|quux)"
+```
 
 
 
 We can obtain quite a lot of information about the context in which a match occurs. If we ask for a (String, String, String) tuple, we'll get back the text _before_ the first match, the text _of_ that match, and the text that _follows_ it. 
 
-    ghci> 
+```
+*Ch08 Text.Regex.Posix> "before foodiebar after" =~ pat :: (String,String,String)
+("before ","foodiebar"," after")
+```
+
 
 
 
 If the match fails, the entire text is returned as the “before” element of the tuple, with the other two elements left empty. 
 
-    ghci> 
+```
+*Ch08 Text.Regex.Posix> "no match here" =~ pat :: (String,String,String)
+("no match here","","")
+```
+
 
 
 
 Asking for a four-element tuple gives us a fourth element that's a list of all groups in the pattern that matched. 
 
-    ghci> 
-
+```
+ghci> "before foodiebar after" =~ pat :: (String,String,String,[String])
+("before ","foodiebar"," after",["foodiebar"])
+```
 
 
 We can get numeric information about matches, too. A pair of Ints gives us the starting offset of the first match, and its length. If we ask for a list of these pairs, we'll get this information for all matches. 
 
-    ghci> 
+```
+ghci> "before foodiebar after" =~ pat :: (Int,Int)
+(7,9)
+ghci> "i foobarbar a quux" =~ pat :: [(Int,Int)]
+
+<interactive>:1:0:
+    No instance for (RegexContext Regex [Char] [(Int, Int)])
+      arising from a use of `=~' at <interactive>:1:0-26
+    Possible fix:
+      add an instance declaration for
+      (RegexContext Regex [Char] [(Int, Int)])
+    In the expression: "i foobarbar a quux" =~ pat :: [(Int, Int)]
+    In the definition of `it':
+        it = "i foobarbar a quux" =~ pat :: [(Int, Int)]
+```
+
 
 
 
 A failed match is represented by the value `-1` as the first element of the tuple (the match offset) if we've asked for a single tuple, or an empty list if we've asked for a list of tuples. 
 
-    ghci> 
+```
+ghci> "eleemosynary" =~ pat :: (Int,Int)
+(-1,0)
+ghci> "mondegreen" =~ pat :: [(Int,Int)]
 
+<interactive>:1:0:
+    No instance for (RegexContext Regex [Char] [(Int, Int)])
+      arising from a use of `=~' at <interactive>:1:0-18
+    Possible fix:
+      add an instance declaration for
+      (RegexContext Regex [Char] [(Int, Int)])
+    In the expression: "mondegreen" =~ pat :: [(Int, Int)]
+    In the definition of `it': it = "mondegreen" =~ pat :: [(Int, Int)]
+```
 
 
 This is not a comprehensive list of built-in instances of the `RegexContext` typeclass. For a complete list, see the documentation for the `Text.Regex.Base.Context` module. 
@@ -296,31 +370,41 @@ More about regular expressions
 
 As we noted earlier, the `=~` operator uses typeclasses for its argument types and its return type. We can use either String or strict ByteString values for both the regular expression and the text to match against. 
 
-    ghci> 
+```
+```
+
 
 
 
 We can then try using different combinations of String and ByteString. 
 
-    ghci> 
+```
+```
+
 
 
 
 However, we need to be aware that if we want a string value in the result of a match, the text we're matching against must be the same type of string. Let's see what this means in practice. 
 
-    ghci> 
+```
+```
+
 
 
 
 In the above example, we've used the `pack` to turn a String into a ByteString. The type checker accepts this because ByteString appears in the result type. But if we try getting a String out, that _won't_ work. 
 
-    ghci> 
+```
+```
+
 
 
 
 We can easily fix this problem by making the string types of the left hand side and the result match once again. 
 
-    ghci> 
+```
+```
+
 
 
 
