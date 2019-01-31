@@ -363,6 +363,14 @@ This is not a comprehensive list of built-in instances of the `RegexContext` typ
 
 This ability to make a function polymorphic in its result type is an unusual feature for a statically typed language. 
 
+```
+ghci>getAllTextMatches $ "foo foo foo" =~ "foo" :: [String]
+["foo","foo","foo"]
+```
+```
+*Ch08 Text.Regex.Posix> getAllTextMatches $ "varA + varB" =~ "[a-zA-z]+\\w|[+]" :: [String]
+["varA","+","varB"]
+```
 More about regular expressions
 ------------------------------
 
