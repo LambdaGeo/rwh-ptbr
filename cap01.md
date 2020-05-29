@@ -347,9 +347,9 @@ Se nós escrevemos uma série de elementos usando a notação de enumeração, H
 ghci> [1..10]
 [1,2,3,4,5,6,7,8,9,10]
 ```
-Aqui, os .. caracteres denotam uma enumeração. Só podemos usar esta notação para os tipos cujos elementos, podemos enumerar. Não faz sentido para cadeias de texto, por exemplo: não há qualquer sensível, forma geral, para enumerar `["foo".."quux"].`
+Aqui, os caracteres .. denotam uma enumeração. Só podemos usar esta notação para os tipos cujos elementos podemos enumerar. Não faz sentido para cadeias de texto. Por exemplo: `["foo".."quux"].`
 
-De qualquer modo, observe que a utilização acima de notação intervalo nos dá um intervalo fechado; a lista contém os dois pontos finais.
+De qualquer modo, observe que a utilização acima de notação intervalo nos dá um intervalo fechado; a lista inclui o primeiro e último valor.
 
 Quando escrevemos uma enumeração, podemos, opcionalmente, especificar o tamanho do passo para utilização, fornecendo os primeiros dois elementos, seguido pelo valor em que parar de gerar a enumeração.
 ```
@@ -382,20 +382,20 @@ ghci> [3,1,3] ++ [3,7]
 ghci> [] ++ [False,True] ++ [True]
 [False,True,True] 
 ```
-O mais básico operador é o (:), que acrescenta um elemento para a frente de uma lista. Esta é pronunciado como “cons” (abreviação de “construção”).
+O mais básico operador é o (:), que acrescenta um elemento para a frente de uma lista. Este é pronunciado como “cons” (abreviação de “construção”).
 ```
 ghci> 1 : [2,3]
 [1,2,3]
 ghci> 1 : []
 [1]
 ```
-Você pode estar tentado a tentar escrever \[`1,2]:3` para adicionar um elemento ao final de uma lista, mas o ghci irá rejeitar-lo com uma mensagem de erro, porque o primeiro argumento `(:)` deve ser um elemento, e o segundo deve ser uma lista.
+Observe que ao tentar a seguinte expressão \[`1,2]:3` para adicionar um elemento ao final de uma lista, mas o ghci irá rejeitar-lo com uma mensagem de erro, porque o primeiro argumento `(:)` deve ser um elemento, e o segundo deve ser uma lista.
 
 ### Strings e caracteres
 
-Se você conhece uma linguagem como Perl ou C, você vai achar as anotações Haskell para strings familiar.
+Se você conhece alguma linguagem de programação, como Perl ou C, você vai achar a anotação Haskell para string familiar.
 
-Uma cadeia de caracteres é cercada por aspas duplas.
+Uma cadeia de caracteres é delimitada por aspas duplas.
 ```
 ghci> "This is a string."
 "This is a string."
@@ -414,7 +414,7 @@ Haskell faz uma distinção entre um único caracter e cadeias de caracteres. Um
 ghci> 'a'
 'a'
 ```
-De fato, uma cadeia de texto é simplesmente uma lista de caracteres individuais. Aqui está uma maneira dolorosa para escrever uma string curta, que ghci devolve-nos de uma forma mais familiar.
+De fato, uma cadeia de texto é simplesmente uma lista de caracteres individuais. Aqui está uma maneira dolorosa para escrever uma string, que ghci devolve-nos de uma forma mais familiar.
 ```
 ghci> let a = ['l', 'o', 't', 's', ' ', 'o', 'f', ' ', 'w', 'o', 'r', 'k']
 ghci> a
