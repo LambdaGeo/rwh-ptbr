@@ -225,7 +225,7 @@ False
 ```
 #### Precedência de operadores e associatividade
 
-Como em álgebra e outras linguagens de programação que usa operadores infixo, Haskell tem uma noção de precedência de operadores. Podemos usar parênteses para explicitamente agrupar partes de uma expressão, e a precedência nos permite omitir alguns parênteses. Por exemplo, o operador de multiplicação tem precedência maior do que o operador de adição, de modo que Haskell trata as seguinte expressões como equivalentes.
+Como na álgebra e em outras linguagens de programação que usam operadores infixo, Haskell tem uma noção de precedência de operadores. Podemos usar parênteses para explicitamente agrupar partes de uma expressão, e a precedência nos permite omitir alguns parênteses. Por exemplo, o operador de multiplicação tem precedência maior do que o operador de adição, de modo que Haskell trata as seguinte expressões como equivalentes.
 ```
 ghci> 1 + (4 * 4)
 17
@@ -250,7 +250,7 @@ infixl 7 *
 ```
 A informação que nós buscamos é na linha “infixl 6 +”, que indica que o (+) operador tem uma precedência de 6. (Nós vamos explicar a saída de outros em um capítulo posterior.) O “infixl 7 *” diz-nos que o (*) operador tem uma precedência de 7. Desde (*) tem uma precedência maior do que (+), podemos ver agora porque 1 + 4 * 4 é avaliado como 1 + (4 * 4), e não (1 + 4) * 4.
 
-Haskell também define associatividade dos operadores. Isso determina se uma expressão contendo múltiplos usos de um operador é avaliada da esquerda para a direita ou para a direita para a esquerda. Os operadores (+) e (*) ficam associativos esquerdos, que é representado como infixl infixl na saída ghci acima. Um operador de direito associativo é exibida com infixr.
+Haskell também define associatividade dos operadores. Isso determina como uma expressão contendo múltiplos usos de um operador será avaliad. Se da esquerda para a direita ou para a direita para a esquerda. Os operadores (+) e (*) ficam associativos esquerdos, que é representado como infixl infixl na saída ghci acima. Um operador de direito associativo é exibida com infixr.
 ```
 ghci> :info (^)
 (^) :: (Num a, Integral b) => a -> b -> a 	-- Defined in GHC.Real
