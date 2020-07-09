@@ -371,7 +371,6 @@ char c = undefined
 Para evitar conflito com o operador `<>` já existente em Prelude, uma alternativa é esconder esse operador na importação:
 
 ```haskell
--- file: rwhptbr/Ch11.hs
 import Prelude hiding ((<>))
 ```
 
