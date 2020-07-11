@@ -463,7 +463,7 @@ O que `+t` faz é dizer ghci para imprimir o tipo de expressão após a express�
 
 
 
->![[Tip]]({{site.url}}/assets/tip.png) O beleza do “it”**
+>![[Tip]](/assets/tip.png) O beleza do “it”**
 
 > A variavél `it` é um prático atalho do ghci. Ele permite usar o resultado da expressão que acabamos de avaliar em uma nova expressão.
 ```
