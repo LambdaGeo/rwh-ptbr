@@ -6,7 +6,7 @@
 
 Neste capítulo, vamos desenvolver uma pequena, mas completa, biblioteca Haskell. Nossa biblioteca manipulará e serializará dados em uma  popular formato conhecido como JSON.
 
-A linguagem JSON (JavaScript Object Notation) é uma representação pequena e simples para armazenar e transmitir dados estruturados, por exemplo, por meio de uma conexão de rede. É mais comumente usado para transferir dados de um serviço da Web para um aplicativo JavaScript baseado em navegador. O formato JSON é descrito em [www.json.org] (http://www.json.org/), e em maior detalhe por [RFC 4627] ((http://www.ietf.org/rfc/rfc4627.txt).
+A linguagem JSON (JavaScript Object Notation) é uma representação pequena e simples para armazenar e transmitir dados estruturados, por exemplo, por meio de uma conexão de rede. É mais comumente usado para transferir dados de um serviço da Web para um aplicativo JavaScript baseado em navegador. O formato JSON é descrito em [www.json.org](http://www.json.org/), e em maior detalhe por [RFC 4627](http://www.ietf.org/rfc/rfc4627.txt).
 
 O JSON suporta quatro tipos básicos de valor: strings, numbers, booleans e um valor especial chamado `null`.
 
@@ -155,7 +155,7 @@ Se omitirmos as exportações (e os parênteses que as envolvem) de uma declara�
 -- file: src/SimpleJSON.hs
 module ExportEverything where
 ```
-To export no names at all (which is rarely useful), we write an empty export list using a pair of parentheses.
+Para exportar nem um nome (o que raramente é útil), nós escrevemos uma lista vazia de exportação usando um par de parêntesis.
 
 ```haskell
 -- file: src/SimpleJSON.hs
@@ -196,9 +196,9 @@ JObject [("foo",JNumber 1.0),("bar",JBool False)]
 ### Printing JSON data
 
 
-Now that we have a Haskell representation for JSON's types, we'd like to be able to take Haskell values and render them as JSON data.
+Agora que temos uma representação em Haskell para os tipos JSON, nós gostaríamos de ser capazes de pegar valores em Haskell e processá-los como dados JSON.
 
-There are a few ways we could go about this. Perhaps the most direct would be to write a rendering function that prints a value in JSON form. Once we're done, we'll explore some more interesting approaches.
+Há algumas maneiras que podemos fazer isso. Talvez, a mais direta seja escrever uma função que imprima os valores no formato JSON. Quando terminarmos, iremos explorar outras abordagens interessantes. 
 
 ```haskell
 -- file: src/PutJSON.hs
@@ -225,7 +225,7 @@ renderJValue (JArray a) = "[" ++ values a ++ "]"
         values vs = intercalate ", " (map renderJValue vs)
 ```
 
-Good Haskell style involves separating pure code from code that performs I/O. Our `renderJValue` function has no interaction with the outside world, but we still need to be able to print a JValue.
+Uma boa prática em Haskell envolve separar o código puro do código que produz uma saída do tipo `IO ()`. Nossa função `renderJValue` não tem interação com o mundo exterior, mas ainda precisamos ser capazes de imprimir um ****JValue*.
 
 ```haskell
 -- file: src/PutJSON.hs
@@ -233,11 +233,11 @@ putJValue :: JValue -> IO ()
 putJValue v = putStrLn (renderJValue v)
 ```
 
-Printing a JSON value is now easy.
+Imprimir um valor JSON é fácil agora.
 
-Why should we separate the rendering code from the code that actually prints a value? This gives us flexibility. For instance, if we wanted to compress the data before writing it out, and we intermixed rendering with printing, it would be much more difficult to adapt our code to that change in circumstances.
+Por que devemos separar o código de renderização do código que, realmente, imprime um valor? Isto nos dá flexibilidade. Por exemplo, se quisermos compactar os dados antes de imprimi-lo e misturamos o código de renderização com o de impressão, ficaria muito mais difícil adaptar nosso código, nessa circunstância.
 
-This idea of separating pure from impure code is powerful, and pervasive in Haskell code. Several Haskell compression libraries exist, all of which have simple interfaces: a compression function accepts an uncompressed string and returns a compressed string. We can use function composition to render JSON data to a string, then compress to another string, postponing any decision on how to actually display or transmit the data.
+Essa ideia de separar o código puro do código impuro é poderosa e universal no código Haskell. Várias bibliotecas de compressão existe, todas têm uma simples interface: um função de compressão que aceita uma string descompactada e retorna uma string compactada. Nós podemos usar a função de composição para converter dados em JSON para string e compactar para outra string, postergando qualquer decisão de como, efetivamente, mostrar ou transmitir os dados.
 
 Experimentando
 ```
@@ -247,25 +247,25 @@ $stack ghci
 ```
 
 
-#### A more general look at rendering
+#### Uma visão mais geral de renderização
 
-Our JSON rendering code is narrowly tailored to the exact needs of our data types and the JSON formatting conventions. The output it produces can be unfriendly to human eyes. We will now look at rendering as a more generic task: how can we build a library that is useful for rendering data in a variety of situations?
+Nosso código de renderização JSON está adaptado as necessidades do nossos tipos de dados e as convenções de formatação JSON. A saída que ele produz pode não ser amigável aos olhos humanos. agora nós iremos olhar renderização como uma tarefa mais genérica: como podemos construir uma biblioteca útil para renderizar dados em uma variedade de situações?
 
-We would like to produce output that is suitable either for human consumption (e.g. for debugging) or for machine processing. Libraries that perform this job are referred to as _pretty printers_. There already exist several Haskell pretty printing libraries. We are creating one of our own not to replace them, but for the many useful insights we will gain into both library design and functional programming techniques.
+Nós gostaríamos de produzir saídas que são adequadas ou para consumo humano (para debugar, por exemplo) ou para processamento. Bibliotecas que fazem essa tarefa são chamadas de _pretty printers_. Há prontas várias bibliotecas Haskell desse tipo. Nós estamos criando a nossa não para substitui-las, mas por os vários aprendizados que ganharemos em desing de bibliotecas e técnicas de programação funcional.
 
-We will call our generic pretty printing module `Prettify`, so our code will go into a source file named `Prettify.hs`.
+Nós iremos chamar nosso genérico módulo _pretty printers_ como `Prettify`, então nosso código estará no arquivo chamado `Prettify.hs`.
 
-![[Note]](/support/figs/note.png)
+![[Note]](assets/note.png)
 
-Naming
+Nomeando
 
-In our `Prettify` module, we will base our names on those used by several established Haskell pretty printing libraries. This will give us a degree of compatibility with existing mature libraries.
+No nosso `Prettify` módulo, nós iremos basear nossos nomes naqueles usados por várias bibliotecas bem estabelecidas desse tipo. Isso nos dará um grau de compatibilidade com as bibliotecas mais maduras.
 
-To make sure that `Prettify` meets practical needs, we write a new JSON renderer that uses the `Prettify` API. After we're done, we'll go back and fill in the details of the `Prettify` module.
+Para termos certeza que `Prettify` atende às necessidades práticas, iremos escrever um novo renderizador de JSON que use a API `Prettify` `Prettify`. Depois que estiver pronto, nós voltaremos e entramos em detalhes do `Prettify` módulo. 
 
-Instead of rendering straight to a string, our `Prettify` module will use an abstract type that we'll call Doc. By basing our generic rendering library on an abstract type, we can choose an implementation that is flexible and efficient. If we decide to change the underlying code, our users will not be able to tell.
+Ao invés de renderizar direto para string, nosso `Prettify` irá usar um tipo abstrato, que chamaremos de Doc. Baseando-se nossa biblioteca em um tipo abstrato, nó podemos escolher uma implementação flexível e eficiente. Se decidirmos mudar o código sobreposto, nossos usuários não serão capazes de relatar.
 
-We will name our new JSON rendering module `PrettyJSON.hs`, and retain the name `renderJValue` for the rendering function. Rendering one of the basic JSON values is straightforward.
+Nós iremos chamar nosso renderizador JSON de `PrettyJSON.hs`, e manter o nome `renderJValue` para a função de renderização. Renderizar um dos valores básicos do JSON é simples.
 
 ```haskell
 -- file: ch05/PrettyJSON.hs
@@ -282,16 +282,15 @@ renderJValue (JNumber num) = double num
 renderJValue (JString str) = string str
 ```
 
-The Doc, `text`, `double`, and `string` functions will be provided by our `Prettify` module.
+O tipo Doc, e as funções, `text`, `double`, e `string` serão fornecidas pelo nosso `Prettify` módulo.
 
-#### Developing Haskell code without going nuts
+#### Desenvolvendo código Haskell sem quebrar a cabeça
 
+Desdo início, quando nos familiarizamos com o desenvolvimento em Haskell, nós temos muitos conceitos novos e desconhecidos para entender de uma vez que pode ser um desafio escrever código que compile sem erros.
 
-Early on, as we come to grips with Haskell development, we have so many new, unfamiliar concepts to keep track of at one time that it can be a challenge to write code that compiles at all.
+Enquanto escrevemos o corpo inicial do código, é uma grande ajuda parar a cada poucos minutos e tentar compilar o código que produzimos até o momento. Por Haskel ser fortemente tipado, se o código compilar corretamente, estamos assumindo que estamos longe das armadilhas da programação.
 
-As we write our first substantial body of code, it's a _huge_ help to pause every few minutes and try to compile what we've produced so far. Because Haskell is so strongly typed, if our code compiles cleanly, we're assuring ourselves that we're not wandering too far off into the programming weeds.
-
-One useful technique for quickly developing the skeleton of a program is to write placeholder, or _stub_ versions of types and functions. For instance, we mentioned above that our `string`, `text` and `double` functions would be provided by our `Prettify` module. If we don't provide definitions for those functions or the Doc type, our attempts to “compile early, compile often” with our JSON renderer will fail, as the compiler won't know anything about those functions. To avoid this problem, we write stub code that doesn't do anything.
+Uma forma útil para desenvolver o esqueleto de um programa é escrever espaços reservados ou versões de esboço de nossos tipos e funções. Por exemplo, nós mencionamos acima que as funções, `string`, `text` e `double` serão escritas  no nosso `Prettify` módulo, se nós não fornecermos a definição dessas funções ou do tipo Doc, nosso lema "compile cedo, compile frequentemente" irá falhar no nosso renderizador, como o compilador não conhece nada sobre essas funções. Para evitar esse problemas nós escrevemos código de esboço que não faz nada.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -312,7 +311,7 @@ double :: Double -> Doc
 double num = undefined
 ```
 
-The special value `undefined` has the type `a`, so it always typechecks, no matter where we use it. If we attempt to evaluate it, it will cause our program to crash.
+O valor especial `undefined` tem o tipo `a`, então não há erro de verificação de tipos, não importa onde o usamos. Se tentarmos valora-lo, isso causará um erro em nosso programa.
 
 ```
 ghci> :type undefined
@@ -324,12 +323,12 @@ double :: Double -> Doc
 ghci> double 3.14
 *** Exception: Prelude.undefined
 ```
-Even though we can't yet run our stubbed code, the compiler's type checker will ensure that our program is sensibly typed.
+Embora não podemos executar nosso esboço o verificador de tipos do compilador garantirá que nosso programa foi sensivelmente tipado.
 
-#### Pretty printing a string
+#### Impressão bonita de uma string
 
 
-When we must pretty print a string value, JSON has moderately involved escaping rules that we must follow. At the highest level, a string is just a series of characters wrapped in quotes.
+Quando precisamos imprimir uma string, o JSON envolve moderadamente as regras  de escape que devemos seguir. No nível mais alto, uma string é somente uma série de caracteres entre aspas.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -337,27 +336,27 @@ string :: String -> Doc
 string = enclose '"' '"' . hcat . map oneChar
 ```
 
-![[Note]](/support/figs/note.png)
+![[Note]](assets/note.png)
 
-Point-free style
+Estilo ponto livre
 
-This style of writing a definition exclusively as a composition of other functions is called _point-free style_. The use of the word “point” is not related to the “`.`” character used for function composition. The term _point_ is roughly synonymous (in Haskell) with _value_, so a _point-free_ expression makes no mention of the values that it operates on.
+Este estilo de escrever uma definição exclusivamente como uma composição de outras funções é chamado de estilo ponto livre. O uso da palavra "ponto" não e em menção ao carácter "`.`" usado para composição de funções. Este termo é aproximadamente sinônimo (em Haskell) de valor, então uma expressão de ponto livre não faz menção ao valor que ela opera.
 
-Contrast the point-free definition of `string` above with this “pointy” version, which uses a variable `s` to refer to the value on which it operates.
+Compare a definição de `string` (com ponto livre) a cima com a versão "pointy" abaixo, a qual usa a váriavel `s` para se referir ao valor em que opera.
 
 ```haskell
 -- file: src/PrettyJSON.hs
 pointyString :: String -> Doc
 pointyString s = enclose '"' '"' (hcat (map oneChar s))
 ```
-The `enclose` function simply wraps a Doc value with an opening and closing character.
+A função `enclose` simplesmente põe um valor Doc entre um carácter de abertura e um de fechamento.
 
 ```haskell
 -- file: src/PrettyJSON.hs
 enclose :: Char -> Char -> Doc -> Doc
 enclose left right x = char left <> x <> char right
 ```
-We provide a `(<>)` function in our pretty printing library. It appends two Doc values, so it's the Doc equivalent of `(++)`.
+Nós forneceremos a função `(<>)` em nossa biblioteca `Prettify`. Ele concatena dois Doc valores, então, ele é equivalente a função `(++)`.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -374,14 +373,14 @@ Para evitar conflito com o operador `<>` já existente em Prelude, uma alternati
 import Prelude hiding ((<>))
 ```
 
-Our pretty printing library also provides `hcat`, which concatenates multiple Doc values into one: it's the analogue of `concat` for lists.
+Nossa biblioteca `Prettify` também fornece `hcat`, que concatena múltiplos valores Doc em um só, é análogo ao `concat` para listas 
 
 ```haskell
 -- file: src/Prettify.hs
 hcat :: [Doc] -> Doc
 hcat xs = undefined
 ```
-Our `string` function applies the `oneChar` function to every character in a string, concatenates the lot, and encloses the result in quotes. The `oneChar` function escapes or renders an individual character.
+Nossa função `string` aplica a função `oneChar` para todos os caracteres de um string, concatena em lote, e põe o resultado entre aspas. A função `oneChar` escapa ou renderiza um carácter individual.
 
 ```haskell
 -- file: src/PrettyJSON.hs
@@ -396,14 +395,17 @@ simpleEscapes :: [(Char, String)]
 simpleEscapes = zipWith ch "\b\n\f\r\t\\\"/" "bnfrt\\\"/"
     where ch a b = (a, ['\\',b])
 ```
-(ter que jogar essa parte para outro lugar, pois ainda nao roda)
-The `simpleEscapes` value is a list of pairs. We call a list of pairs an _association list_, or _alist_ for short. Each element of our alist associates a character with its escaped representation.
 
+O valor `simpleEscapes` é uma lista de pares. Nós chamamos uma lista de pares de associação de listas, ou simplesmente _alist_(do inglês _association list_). Cada elemento da nossa _alist_ associa um carácter a sua versão de escape.
+
+
+```
     ghci> 
+```
 
-Our `case` expression attempts to see if our character has a match in this alist. If we find the match, we emit it, otherwise we might need to escape the character in a more complicated way. If so, we perform this escaping. Only if neither kind of escaping is required do we emit the plain character. To be conservative, the only unescaped characters we emit are printable ASCII characters.
+Nossa expressão `case` tenta ver se nosso carácter casa com a _alist_. Se encontrarmos uma correspondência nós o emitimos, caso contrário, talvez nós precisamos escapar o carácter de uma forma mais complicada. Nesse caso, realizamos esse escape. Somente se nenhum tipo de escapamento é necessário nós emitimos como texto plano. Para ser conservador, os únicos carácter sem escape que emitiremos são caracteres ASCII imprimíveis.
 
-The more complicated escaping involves turning a character into the string “`\u`” followed by a four-character sequence of hexadecimal digits representing the numeric value of the Unicode character.
+O escapamento mais sofisticado envolve transformar o carácter na string “`\u`”  seguida por a uma sequência de quatro carácteres hexadecimais representando o valor numérico do Unicode carácter.
 
 ```haskell
 -- file: src/PrettyJSON.hs
@@ -417,7 +419,7 @@ Para usar o showHex é preciso importar:
 ```
 import Numeric (showHex)
 ```
-The `showHex` function comes from the `Numeric` library (you will need to import this at the beginning of `Prettify.hs`), and returns a hexadecimal representation of a number.
+A função `showHex` vem da biblioteca `Numeric` (você irá precisar importá-lo no início de `Prettify`), e retorna a representação hexadecimal de um número.
 
 Em outro terminal e em outra pasta, fora do projeto:
 ```
@@ -426,12 +428,13 @@ Prelude> :module Numeric
 Prelude Numeric> showHex 114111 ""
 "1bdbf"
 ```
-The `replicate` function is provided by the Prelude, and builds a fixed-length repeating list of its argument.
+A função `replicate` é providenciada pelo Prelude, e cria uma lista repetida de tamanho fixo, o tamanho é definido pelo seu argumento 
 ```
 *Main> replicate 5 "foo"
 ["foo","foo","foo","foo","foo"]
 ```
-There's a wrinkle: the four-digit encoding that `smallHex` provides can only represent Unicode characters up to `0xffff`. Valid Unicode characters can range up to `0x10ffff`. To properly represent a character above `0xffff` in a JSON string, we follow some complicated rules to split it into two. This gives us an opportunity to perform some bit-level manipulation of Haskell numbers.
+
+Há um problema: a codificação de quatro dígitos fornecida pelo `smallHex` pode representar somente caracteres unicode até `0xffff`. Caracteres Unicode válidos podem ir até `0x10ffff`. Para representar adequadamente um carácter acima de `0xffff` em uma string JSON, nós seguimos algumas regras complicadas para dividir a string em dois. Isto nos dá a oportunidade de executar algumas manipulações a nível de bit dos números Haskell.
 
 ```haskell
 -- file: src/PrettyJSON.hs
@@ -440,14 +443,16 @@ astral n = smallHex (a + 0xd800) <> smallHex (b + 0xdc00)
     where a = (n \`shiftR\` 10) .&. 0x3ff
           b = n .&. 0x3ff
 ```
-The `shiftR` function comes from the `Data.Bits` module, and shifts a number to the right. The `(.&.)` function, also from `Data.Bits`, performs a bit-level _and_ of two values.
+
+A função `shiftR` é fornecida pelo módulo `Data.Bits`, e descola um número a direita. A função `(.&.)` (operador _e_), também de `Data.Bits`, executa uma conjunção binária a nível de bit em dois valores.
+
 ```
 $stack ghci
 Prelude> :module Data.Bits
 Prelude Data.Bits>  0x10000 `shiftR` 4
 4096
 ```
-Now that we've written `smallHex` and `astral`, we can provide a definition for `hexEscape`.
+Agora que escrevemos `smallHex` e `astral`, nós podemos fornecer a definição para `hexEscape`.
 
 ```haskell
 -- file: src/PrettyJSON.hs
