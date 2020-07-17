@@ -623,7 +623,7 @@ Um momento matemático
 
 Se colocarmos brevemente nossos chapéus matemáticos, nós podemos dizer que `Empty` é a identidade sobre a concatenação, pois nada acontece se concatenarmos um valor Doc com `Empty`. De forma semelhante, 0 é a identidade da adição, e o 1 a identidade da multiplicação. A perspectiva matemática tem consequências muito úteis, como veremos em vários lugares ao longo deste livro. 
 
-Nossas funções `hcat` e `fsep` concatenam uma lista de valores Doc em um só. Na seção chamada ["Exercícios"](../cap04#exerc%C3%ADcios-1 "Exercícios"), nós mencionamos que podemos definir concatenação para listar usando `foldr`.
+Nossas funções `hcat` e `fsep` concatenam uma lista de valores Doc em um só. Na seção chamada ["Exercícios"](cap04#exerc%C3%ADcios-1 "Exercícios"), nós mencionamos que podemos definir concatenação para listar usando `foldr`.
 
 ```haskell
 -- file: src/Prettify.hs
