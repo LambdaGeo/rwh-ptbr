@@ -193,7 +193,7 @@ JObject [("foo",JNumber 1.0),("bar",JBool False)]
 ```
 
 
-### Printing JSON data
+### Imprimindo dados JSON
 
 
 Agora que temos uma representação em Haskell para os tipos JSON, nós gostaríamos de ser capazes de pegar valores em Haskell e processá-los como dados JSON.
@@ -325,7 +325,7 @@ ghci> double 3.14
 ```
 Embora não podemos executar nosso esboço o verificador de tipos do compilador garantirá que nosso programa foi sensivelmente tipado.
 
-#### Impressão bonita de uma string
+#### Impressão agradável de uma string
 
 
 Quando precisamos imprimir uma string, o JSON envolve moderadamente as regras  de escape que devemos seguir. No nível mais alto, uma string é somente uma série de caracteres entre aspas.
@@ -479,20 +479,21 @@ series :: Char -> Char -> (a -> Doc) -> [a] -> Doc
 series open close item = enclose open close
                        . fsep . punctuate (char ',') . map item
 ```
-We'll start by interpreting this function's type. It takes an opening and closing character, then a function that knows how to pretty print a value of some unknown type `a`, followed by a list of values of type `a`, and it returns a value of type Doc.
+Começaremos interpretando o tipo dessa função. Ela recebe um carácter de abertura e fechamento, e uma função que sabe como imprimir um valor de algum tipo desconhecido `a`, seguido por uma lista de valores do tipo `a`, e retorna um valor do tipo `Doc`.
 
-Notice that although our type signature mentions four parameters, we have only listed three in the definition of the function. We are simply following the same rule that lets us simplify a definiton like `myLength xs = length xs` to `myLength = length`.
+Note que embora nossa assinatura de tipos mencione quatro parâmetros, nós listamos apenas três na definição da função. Nós estamos simplesmente seguindo a mesma regra que nos permite simplificar uma definição como `myLength xs = length xs` para `myLength = length`.
 
-We have already written `enclose`, which wraps a Doc value in opening and closing characters. The `fsep` function will live in our `Prettify` module. It combines a list of Doc values into one, possibly wrapping lines if the output will not fit on a single line.
+Nós já escrevemos `enclose`, que coloca um valor `Doc` entre um carácter de abertura e outro de fechamento. A função `fsep` estará no nosso módulo `Prettify`. Ela combina uma lista de valores `Doc` em um, possivelmente quebrando linhas caso a saída não caiba em uma linha.
+
 
 ```haskell
 -- file: src/Prettify.hs
 fsep :: [Doc] -> Doc
 fsep xs = undefined
 ```
-By now, you should be able to define your own stubs in `Prettify.hs`, by following the examples we have supplied. We will not explicitly define any more stubs.
+Apartir de agora, você poderá definir seus próprios esboços em `Prettify`, seguindo os exemplos que fornecemos. Não definiremos explicitamente mais nem um esboço.
 
-The `punctuate` function will also live in our `Prettify` module, and we can define it in terms of functions for which we've already written stubs.
+A função `punctuate`  também será definida em nosso módulo `Prettify`, e podemos defini-la em termos de funções, as quais já escrevemos esboços. 
 
 ```haskell
 -- file: src/Prettify.hs
@@ -502,13 +503,13 @@ punctuate p [d]    = [d]
 punctuate p (d:ds) = (d <> p) : punctuate p ds  
 ```
 
-With this definition of `series`, pretty printing an array is entirely straightforward. We add this equation to the end of the block we've already written for our `renderJValue` function.
+Com essa definição de `series`, imprimir arrays é totalmente direto. Nós adicionamos essa equação no final do bloco que escrevemos para a função `renderJValue`. 
 
 ```haskell
 -- file: src/PrettyJSON.hs
 renderJValue (JArray ary) = series '\[' '\]' renderJValue ary
 ```
-To pretty print an object, we need to do only a little more work: for each element, we have both a name and a value to deal with.
+Para imprimir um objeto, nós precisamos fazer apenas um pequeno trabalho: parar cada elemento nós temos um nome e um valor para lidar.
 
 ```haskell
 -- file: src/PrettyJSON.hs
@@ -525,9 +526,9 @@ $ stack build
 ```
 
 
-### Writing a module header
+### Escrevendo o módulo cabeçalho
 
-Now that we have written the bulk of our `PrettyJSON.hs` file, we must go back to the top and add a module declaration.
+Agora que escrevemos a estrutura do nosso arquivo `PrettyJSON.hs`, devemos voltar ao topo e adicionar a declaração do módulo. 
 
 ```haskell
 -- file: src/PrettyJSON.hs
@@ -544,25 +545,25 @@ import SimpleJSON (JValue(..))
 import Prettify (Doc, (<>), char, double, fsep, hcat, punctuate, text,
                  compact, pretty)
 ```
-We export just one name from this module: `renderJValue`, our JSON rendering function. The other definitions in the module exist purely to support `renderJValue`, so there's no reason to make them visible to other modules.
+Nós exportamos apenas uma função desse módulo: `renderJValue`, nossa função de renderização de JSON. AS outras defiinições do módulo existem puramente para dar suporte a `renderJValue`, então não há razão para faze-las visíveis a outros módulos.
 
-Regarding imports, the `Numeric` and `Data.Bits` modules are distributed with GHC. We've already written the `SimpleJSON` module, and filled our `Prettify` module with skeletal definitions. Notice that there's no difference in the way we import standard modules from those we've written ourselves.
+A respeito das importações, os módulos `Numeric` e `Data.Bits` são distribuídos com o GHC. Nós já escrevemos o módulo `SimpleJSON`, e preenchemos nosso `Prettify` módulo com uma definição esquelética. Note que não há diferença na forma como importamos módulos padrões daqueles que escrevemos nós mesmos.
 
-With each `import` directive, we explicitly list each of the names we want to bring into our module's namespace. This is not required: if we omit the list of names, all of the names exported from a module will be available to us. However, it's generally a good idea to write an explicit import list.
+Em cada diretiva `import`, nós explicitamente listamos cada um dos nomes que queremos trazer para o escopo do nosso módulo. Isto não é obrigatório: Se omitirmos a lista de nomes, todos os nomes exportados do módulo serão disponíveis para nós. No entanto, é geralmente uma boa ideia explicitar a lista de importação.
 
-*   An explicit list makes it clear which names we're importing from where. This will make it easier for a reader to look up documentation if they encounter an unfamiliar function.
+*   Uma lista explicita deixa claro quais nomes nós estamos importando. Isto tornará fácil para o leitor buscar na documentação caso encontre uma função desconhecida.
     
-*   Occasionally, a library maintainer will remove or rename a function. If a function disappears from a third party module that we use, any resulting compilation error is likely to happen long after we've written the module. The explicit list of imported names can act as a reminder to ourselves of where we had been importing the missing name from, which will help us to pinpoint the problem more quickly.
-    
-*   It can also occur that someone will add a name to a module that is identical to a name already in our own code. If we don't use an explicit import list, we'll end up with the same name in our module twice. If we use that name, GHC will report an error due to the ambiguity. An explicit list lets us avoid the possibility of accidentally importing an unexpected new name.
-    
-
-This idea of using explicit imports is a guideline that usually makes sense, not a hard-and-fast rule. Occasionally, we'll need so many names from a module that listing each one becomes messy. In other cases, a module might be so widely used that a moderately experienced Haskell programmer will probably know which names come from that module.
-
-### Fleshing out the pretty printing library
+*   Ocasionalmente, o mantedor de uma biblioteca irá remover ou renomear uma função. Se uma função desaparecer de um módulo de terceiros que usamos, qualquer erro de compilação resultante irá ocorrer tempo depois que escrevermos o módulo. A lista explícita de nomes importados pode agir como um lembrete para nós mesmos de onde estávamos importando o nome ausente, o que nos ajudará a identificar o problema maus rápido.
 
 
-In our `Prettify` module, we represent our Doc type as an algebraic data type.
+*   Pode ocorrer que alguém irá adicionar um nome a um módulo que é idêntico a um nome que está em seu código. Se não usarmos uma definição explícita, nós iremos terminar com o mesmo nome em nosso módulo, duas vezes. Se usarmos aquele nome, GHC irá reportar um erro devido a essa ambiguidade. Uma lista explicita nos permite evitar a possibilidade de importar, acidentalmente, um nome inesperado.
+
+A ideia de explicitar importações é uma orientação que normalmente faz sentido, não uma regra rígida. Eventualmente, precisamos de tantos nomes de um módulo que listar cada um deles se torna chato. Em outros casos, um módulo pode ser tão largamente usado que um programador Haskell com experiência moderada sabe quais nomes vem do módulo.
+
+### Criando o biblioteca de impressão agradável
+
+
+Em nosso módulo `Prettify`, nós representamos o tipo Doc como um típo de dado algébrico.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -574,11 +575,11 @@ data Doc = Empty
          | Union Doc Doc
            deriving (Show,Eq)
 ```
-Observe that the Doc type is actually a tree. The `Concat` and `Union` constructors create an internal node from two other Doc values, while the `Empty` and other simple constructors build leaves.
+Observe que o tipo Doc é, na verdade, uma árvore. Os contrutores `Concat` e `Union` criam um nó interno de outros dois valores Doc, enquanto `Empty` e outros construtores simples formam as folhas.
 
-In the header of our module, we will export the name of the type, but not any of its constructors: this will prevent modules that use the Doc type from creating and pattern matching against Doc values.
+No cabeçalho do tipo Doc, nós iremos exportar o nome do tipo, mas não seus construtores. Isso irá prefinir que módulos que usarem o tip Doc criem e correspondam padrões com os valores Doc.
 
-Instead, to create a Doc, a user of the `Prettify` module will call a function that we provide. Here are the simple construction functions. As we add real definitions, we must replace any stubbed versions already in the `Prettify.hs` source file.
+Ao invés de criar um Doc, um usuário do módulo `Prettify` irá chamar uma função que fornecemos. Aqui são as simples funções de construção. A medida que adicionamos a real definição, nós devemos substituir qualquer esboço que está no arquivo `Prettify.hs`. 
 
 ```haskell
 -- file: src/Prettify.hs
@@ -595,14 +596,14 @@ text s  = Text s
 double :: Double -> Doc
 double d = text (show d)
 ```
-The `Line` constructor represents a line break. The `line` function creates _hard_ line breaks, which always appear in the pretty printer's output. Sometimes we'll want a _soft_ line break, which is only used if a line is too wide to fit in a window or page. We'll introduce a `softline` function shortly.
+O construtor `Line` representa uma quebra de linha. A função `line` cria quebra de linha _hard_, as quais sempre aparecem no output da nossa biblioteca. Às vezes nós queremos uma quebra de linha _soft_, as quais são usadas somente se uma linha é muito grande para caber em uma janela ou página. Nós introduziremos a função `softline` em breve.
 
 ```haskell
 -- file: src/Prettify.hs
 line :: Doc
 line = Line
 ```
-Almost as simple as the basic constructors is the `(<>)` function, which concatenates two Doc values.
+Quase tão simples quanto os construtores básicos é a função `(<>)`, que concatena dois valores Doc.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -611,24 +612,25 @@ Empty <> y = y
 x <> Empty = x
 x <> y = x `Concat` y
 ```
-We pattern match against `Empty` so that concatenating a Doc value with `Empty` on the left or right will have no effect. This keeps us from bloating the tree with useless values.
+Nós correspondemos o padrão `Empty` de forma que concatenar um valor Doc com  `Empty` a esquerda ou a direita não terá efeito. Isso nos preveni de acrescentar à árvore valores inúteis.
 ```
     ghci> 
 ```
-![[Tip]](/support/figs/tip.png)
 
-A mathematical moment
+![[Tip]](assets/tip.png)
 
-If we briefly put on our mathematical hats, we can say that `Empty` is the identity under concatenation, since nothing happens if we concatenate a Doc value with `Empty`. In a similar vein, 0 is the identity for adding numbers, and 1 is the identity for multiplying them. Taking the mathematical perspective has useful practical consequences, as we will see in a number of places throughout this book.
+Um momento matemático
 
-Our `hcat` and `fsep` functions concatenate a list of Doc values into one. In [the section called “Exercises”](functional-programming.html#fp.fold.exercises "Exercises"), we mentioned that we could define concatenation for lists using `foldr`.
+Se colocarmos brevemente nossos chapéus matemáticos, nós podemos dizer que `Empty` é a identidade sobre a concatenação, pois nada acontece se concatenarmos um valor Doc com `Empty`. De forma semelhante, 0 é a identidade da adição, e o 1 a identidade da multiplicação. A perspectiva matemática tem consequências muito úteis, como veremos em vários lugares ao longo deste livro. 
+
+Nossas funções `hcat` e `fsep` concatenam uma lista de valores Doc em um só. Na seção chamada ["Exercícios"](../cap04#exerc%C3%ADcios-1 "Exercícios"), nós mencionamos que podemos definir concatenação para listar usando `foldr`.
 
 ```haskell
 -- file: src/Prettify.hs
 concat :: [[a]] -> [a]
 concat = foldr (++) []
 ```
-Since `(<>)` is analogous to `(++)`, and `empty` to `[]`, we can see how we might write `hcat` and `fsep` as folds, too.
+Como `(<>)` é análogo a `(++)`, e `empty` a `[]`, nós veremos como poderiamos escrever  `hcat` e `fsep` como _folds_ também.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -639,7 +641,7 @@ fold :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
 fold f = foldr f empty
 ```
 
-The definition of `fsep` depends on several other functions.
+A definição de `fsep` depende de várias outras funções.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -652,14 +654,14 @@ x </> y = x <> softline <> y
 softline :: Doc
 softline = group line
 ```
-These take a little explaining. The `softline` function should insert a newline if the current line has become too wide, or a space otherwise. How can we do this if our Doc type doesn't contain any information about rendering? Our answer is that every time we encounter a soft newline, we maintain _two_ alternative representations of the document, using the `Union` constructor.
+Isso deve uma pequena explicação. A função `softline` deve inserir uma nova linha se a linha atual ficar muito grande, ou um espaço, caso contrário. Como podemos fazer isso se nosso tipo Doc não conhece nada sobre a renderização? Nossa resposta é que toda vez que encontrarmos uma linha _soft_, nós mantemos duas representações alternativas do documento, usando o construtor `Union`.
 
 ```haskell
 -- file: src/Prettify.hs
 group :: Doc -> Doc
 group x = flatten x \`Union\` x
 ```
-Our `flatten` function replaces a `Line` with a space, turning two lines into one longer line.
+Nossa função `flatten` substitui uma `Line` por um espaço, tranformando duas linhas em apenas uma.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -669,7 +671,7 @@ flatten Line           = Char ' '
 flatten (x \`Union\` _)  = flatten x
 flatten other          = other
 ```
-Notice that we always call `flatten` on the left element of a `Union`: the left of each `Union` is always the same width (in characters) as, or wider than, the right. We'll be making use of this property in our rendering functions below.
+Note que sempre chamamos a função `flatten` no lado esquerdo de uma união: Este lado de cada união é sempre o mesmo tamanho (em caracteres), ou maior, que o lado direito. Nós iremos fazer uso dessa propriedade em nossa função de renderização abaixo.
 
 ### Compact rendering
 
