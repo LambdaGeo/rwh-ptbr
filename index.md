@@ -7,18 +7,18 @@ de Bryan O'Sullivan, Don Stewart, and John Goerzen
 Real World Haskell by Bryan O'Sullivan, Don Stewart, and John Goerzen
 
 
-[Por quê programação funcional? Por quê Haskell?](porque_haskell)
-1. [Começando](cap01)
-2. [Tipos e Funções](cap02)
-3. [Definindo os tipos e entendendo as funções](cap03)
-4. [Programação funcional](cap04)
-5. [Writing a library: working with JSON data](cap05)
-6. [Using typeclasses](cap06)
+[Por que programação funcional? Por que Haskell?](por_que_haskell.md)
+1. [Começando](cap01.md)
+2. [Tipos e Funções](cap02.md)
+3. [Definindo os tipos e entendendo as funções](cap03.md)
+4. [Programação funcional](cap04.md)
+5. [Writing a library: working with JSON data](cap05.md)
+6. [Using typeclasses](cap06.md)
 7. Input and output
 8. Efficient file processing, regular expressions, and file name matching
 9. I/O case study: a library for searching the filesystem
 10. Code case study: parsing a binary data format
-11. [Testes e garantia de qualidade](cap11)
+11. [Testes e garantia de qualidade](cap11.md)
 12. Barcode recognition
 13. Data structures
 14. Monads

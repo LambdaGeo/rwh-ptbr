@@ -1,4 +1,4 @@
-[Sumário](index)
+[Sumário](index.md)
 
 
 ## Por quê programação funcional? Por quê Haskell?

@@ -462,10 +462,9 @@ O que `+t` faz é dizer ghci para imprimir o tipo de expressão após a express�
 
 
 
->![[Tip]]({{site.url}}/assets/tip.png) **The joy of “it”**
+>![[Tip]](/assets/tip.png) O beleza do “it”**
 
->That `it` variable is a handy **ghci** shortcut. It lets us use the result of the expression we just evaluated in a new expression.
-
+> A variavél `it` é um prático atalho do ghci. Ele permite usar o resultado da expressão que acabamos de avaliar em uma nova expressão.
 ```
 ghci> "foo"
 "foo"
@@ -475,7 +474,7 @@ ghci> it ++ "bar"
 it :: [Char]
 ```
 
->When evaluating an expression, **ghci** won't change the value of `it` if the evaluation fails. This lets you write potentially bogus expressions with something of a safety net.
+>Quando avaliamos uma expressão, o ghci não muda o valor de `it` caso a valoração falhe. Isso nos permite escrever expressões potencialmente inválidas com segurança.
 
 ```
 ghci> it
@@ -498,18 +497,18 @@ ghci> it ++ "baz"
 it :: [Char]
 ```
 
->When we couple `it` with liberal use of the arrow keys to recall and edit the last expression we typed, we gain a decent way to experiment interactively: the cost of mistakes is very low. Take advantage of the opportunity to make cheap, plentiful mistakes when you're exploring the language!
+Quando unimos o uso do `it` com o livre uso das setas do teclado para lembrar e editar a última expressão que digitamos, nós ganhamos uma boa maneira de experimentar interativamente: o custo de erros é muito baixo. Aproveite a oportunidade de cometer erros baratos e abundantes quando estiver explorando a linguagem.
 
-Here are a few more of Haskell's names for types, from expressions of the sort we've already seen.
+Aqui está mais alguns nomes de tipos, a partir de expressões que já vimos
 
 ```
 ghci> 7 ^ 80
 40536215597144386832065866109016673800875222251012083746192454448001
 it :: Integer
 ```
-Haskell's integer type is named Integer. The size of an Integer value is bounded only by your system's memory capacity.
+Inteiros em haskell tem o nome Integer. O tamanho de um valor inteiro é limitado apenas pela memória do seu computador. 
 
-Rational numbers don't look quite the same as integers. To construct a rational number, we use the `(%)` operator. The numerator is on the left, the denominator on the right.
+Os números racionais não aparentam ser os mesmos que os inteiros. Para construir um número racional, nós usamos o operador `(%)`. O numerador vai no lado esquerdo, enquanto o denominador no lado direito.  
 
 ```
 ghci> :m +Data.Ratio
@@ -517,9 +516,9 @@ ghci> 11 % 29
 11%29
 it :: Ratio Integer
 ```
-For convenience, **ghci** lets us abbreviate many commands, so we can write **:m** instead of **:module** to load a module.
+Para conveniência, o ghci nos permite abreviar muitos comandos, então podemos escrever :m ao invés de :module para carregar um módulo.
 
-Notice _two_ words on the right hand side of the `::` above. We can read this as a “Ratio of Integer”. We might guess that a Ratio must have values of type Integer as both numerator and denominator. Sure enough, if we try to construct a Ratio where the numerator and denominator are of different types, or of the same non-integral type, **ghci** complains.
+Note as duas palavras no lado direito dos caracteres `::` acima. Nós podemos ler isso como "razão de inteiros". Nós podemos supor que a razão deve conter valores do tipo inteiro no numerador e denominador. Com certeza, se tentarmos construir uma razão onde o numerador e o denominador são de diferentes tipos ou de tipos não inteiros o ghci reclama.
 
 ```
 ghci> 3.14 % 8
@@ -540,7 +539,7 @@ ghci> 1.2 % 3.4
     Probable fix: add a type signature that fixes these type variable(s)
 ```
 
-Although it is initially useful to have **`:set +t`** giving us type information for every expression we enter, this is a facility we will quickly outgrow. After a while, we will often know what type we expect an expression to have. We can turn off the extra type information at any time, using the **:unset** command.
+Embora seja, inicialmente, útil ter o comando **`:set +t`** nos dando informações de todas as expressões que inserimos, este é um recurso que iremos superar rapidamente. Depois de um tempo, frequentemente iremos saber que tipo esperamos que uma expressão tenha. Nós podemos desativar estas informações extras a qualquer momento, usando o comando **`:unset`**.
 
 ```
 ghci> :unset +t
@@ -548,9 +547,10 @@ ghci> 2
 2
 ```
 
-Even with this facility turned off, we can still get that type information easily when we need it, using another **ghci** command.
+Mesmo com este recurso desabilitado, ainda podemos ter informações facilmente quando precisarmos, usando outro comando.
 
 ```
+
 ghci> :type 'a'
 'a' :: Char
 ghci> "foo"
@@ -559,9 +559,9 @@ ghci> :type it
 it :: [Char]
 ```
 
-The **:type** command will print type information for any expression we give it (including `it`, as we see above). It won't actually evaluate the expression; it only checks its type and prints that.
+O comando **:type** irá printar informações sobre o tipo de qualquer  expressão que digitarmos (incluindo `it`, como vimos acima). Na verdade, ele não valora a expressão, apenas checa o seu tipo e o imprime. 
 
-Why are the types reported for these two expressions different?
+Por que os tipos relatados para essas duas expressões são diferentes?
 
 ```
 ghci> 3 + 2
@@ -571,22 +571,21 @@ it :: Integer
 ghci> :type 3 + 2
 3 + 2 :: (Num t) => t
 ```
+Haskell tem vários tipos numéricos. Por exemplo, um número literal como `1` pode (dependendo do contexto em que ele aparece) ser um inteiro ou um ponto flutuante. Quando nós forçamos o ghci a valorar a expressão `3 + 2`, ele  precisa escolher um tipo para poder imprimir o valor da expressão, e por padrão é inteiro. No segundo caso, nós pedimos ao ghci para imprimir o tipo da expressão sem valora-la, portanto, não precisa ser tão específico. A resposta, na verdade, é "seu tipo é numérico". Nós iremos ver mais sobre esta notação de tipos em [Capítulo 6. _Usando Classes de tipos_](cap06.md "Usando Classes de tipos")
 
-Haskell has several numeric types. For example, a literal number such as `1` could, depending on the context in which it appears, be an integer or a floating point value. When we force **ghci** to evaluate the expression `3 + 2`, it has to choose a type so that it can print the value, and it defaults to Integer. In the second case, we ask **ghci** to print the type of the expression without actually evaluating it, so it does not have to be so specific. It answers, in effect, “its type is numeric”. We will see more of this style of type annotation in [Chapter 6, _Using Typeclasses_](using-typeclasses.html "Chapter 6. Using Typeclasses").
+### Um simples programa
 
-### A simple program
-
-
-Let's take a small leap ahead, and write a small program that counts the number of lines in its input. Don't expect to understand this yet; it's just fun to get our hands dirty. In a text editor, enter the following code into a file, and save it as `WC.hs`.
+Vamos da um salto a frente e escrever um pequeno programa que conta o número de linhas do seu input. Não espere entender ele ainda, mas é divertido por a mão na massa. Em um editor de texto, insira o seguinte código em um arquivo e o salve como `WC.hs`.
 
 ```haskell
 -- file: ch01/WC.hs
--- lines beginning with "--" are comments.
+-- linhas que iniciam com "--" são comentários 
 
 main = interact wordCount
     where wordCount input = show (length (lines input)) ++ "\n"
 ```
-Find or create a text file; let's call it `quux.txt`\[[1](#ftn.id577349)\].
+Procure ou crie um arquivo de texto; vamos chamá-lo de `quux.txt`\[[1](#ftn.id577349)\].
+
 ```
 $ cat quux.txt
 Teignmouth, England
@@ -597,19 +596,20 @@ Brunswick, Germany
 Beaumont-en-Auge, France
 Ryazan, Russia
 ```
-From a shell or command prompt, run the following command.
+Em um shell ou linha de comandos, insira o seguinte comando:
+
 ```
 $ runghc WC < quux.txt
 7
 ```
-We have successfully written a simple program that interacts with the real world! In the chapters that follow, we will successively fill the gaps in our understanding until we can write programs of our own.
+Nós escrevemos com sucesso um simples programa que interage com o mundo real. Nos capítulos seguintes, nós iremos remover suas dificuldades até que você possa escrever seus próprios programas 
 
-Exercises
+Exercícios
 ---------
 
 **1.**
 
-Enter the following expressions into **ghci**. What are their types?
+Insira as seguintes expressões no ghci. Quais são seus tipos?
 
 *   `5 + 8`
     
@@ -644,15 +644,15 @@ Enter the following expressions into **ghci**. What are their types?
 
 **2.**
 
-From **ghci**, type **:?** to print some help. Define a variable, such as `let x = 1`, then type `:show bindings`. What do you see?
+No ghci, digite :? para ver uma ajuda. Defina uma variável, como `let x = 1`, então digite `:show bindings`. O que você vê?
 
 **3.**
 
-The `words` function counts the number of words in a string. Modify the `WC.hs` example to count the number of words in a file.
+A função `words` conta o número de palavras em uma string. Modifique o arquivo `WC.hs` para contar o número de palavras em um arquivo.
 
 **4.**
 
-Modify the `WC.hs` example again, to print the number of characters in a file.
+Modifique o exemplo `WC.hs` novamente, para imprimir o número de caracteres em um arquivo.
 
   
 
