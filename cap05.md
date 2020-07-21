@@ -261,7 +261,7 @@ Nomeando
 
 No nosso `Prettify` módulo, nós iremos basear nossos nomes naqueles usados por várias bibliotecas bem estabelecidas desse tipo. Isso nos dará um grau de compatibilidade com as bibliotecas mais maduras.
 
-Para termos certeza que `Prettify` atende às necessidades práticas, iremos escrever um novo renderizador de JSON que use a API `Prettify` `Prettify`. Depois que estiver pronto, nós voltaremos e entramos em detalhes do `Prettify` módulo. 
+Para termos certeza que `Prettify` atende às necessidades práticas, iremos escrever um novo renderizador de JSON que use a API `Prettify`. Depois que estiver pronto, nós voltaremos e entramos em detalhes do `Prettify` módulo. 
 
 Ao invés de renderizar direto para string, nosso `Prettify` irá usar um tipo abstrato, que chamaremos de Doc. Baseando-se nossa biblioteca em um tipo abstrato, nó podemos escolher uma implementação flexível e eficiente. Se decidirmos mudar o código sobreposto, nossos usuários não serão capazes de relatar.
 
@@ -400,7 +400,8 @@ O valor `simpleEscapes` é uma lista de pares. Nós chamamos uma lista de pares 
 
 
 ```
-    ghci> 
+ghci> take 4 simpleEscapes
+[('\b',"\\b"),('\n',"\\n"),('\f',"\\f"),('\r',"\\r")]
 ```
 
 Nossa expressão `case` tenta ver se nosso carácter casa com a _alist_. Se encontrarmos uma correspondência nós o emitimos, caso contrário, talvez nós precisamos escapar o carácter de uma forma mais complicada. Nesse caso, realizamos esse escape. Somente se nenhum tipo de escapamento é necessário nós emitimos como texto plano. Para ser conservador, os únicos carácter sem escape que emitiremos são caracteres ASCII imprimíveis.
@@ -468,10 +469,10 @@ Ok, agora pode compilar:
 $ stack build
 ```
 
-### Arrays and objects, and the module header
+### Arrays, objetos, e o módulo cabeçalho
 
 
-Compared to strings, pretty printing arrays and objects is a snap. We already know that the two are visually similar: each starts with an opening character, followed by a series of values separated with commas, followed by a closing character. Let's write a function that captures the common structure of arrays and objects.
+Comparado com strings, impressão agradável de arrays e objetos é fácil. Nós sabemos que ambos são visualmente similar: cada um inicia com um carácter de abertura, seguido por uma série de valores separados com vírgulas, seguido por um carácter de fechamento. Vamos escrever uma função que captura a estrutura comum de arrays e objetos. 
 
 ```haskell
 -- file: src/PrettyJSON.hs
@@ -623,7 +624,7 @@ Um momento matemático
 
 Se colocarmos brevemente nossos chapéus matemáticos, nós podemos dizer que `Empty` é a identidade sobre a concatenação, pois nada acontece se concatenarmos um valor Doc com `Empty`. De forma semelhante, 0 é a identidade da adição, e o 1 a identidade da multiplicação. A perspectiva matemática tem consequências muito úteis, como veremos em vários lugares ao longo deste livro. 
 
-Nossas funções `hcat` e `fsep` concatenam uma lista de valores Doc em um só. Na seção chamada ["Exercícios"](cap04.md#exerc%C3%ADcios-1 "Exercícios"), nós mencionamos que podemos definir concatenação para listar usando `foldr`.
+Nossas funções `hcat` e `fsep` concatenam uma lista de valores Doc em um só. Na seção chamada ["Exercícios"](../cap04#exerc%C3%ADcios-1 "Exercícios"), nós mencionamos que podemos definir concatenação para listar usando `foldr`.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -673,11 +674,11 @@ flatten other          = other
 ```
 Note que sempre chamamos a função `flatten` no lado esquerdo de uma união: Este lado de cada união é sempre o mesmo tamanho (em caracteres), ou maior, que o lado direito. Nós iremos fazer uso dessa propriedade em nossa função de renderização abaixo.
 
-### Compact rendering
+### Renderização Compactada
 
-We frequently need to use a representation for a piece of data that contains as few characters as possible. For example, if we're sending JSON data over a network connection, there's no sense in laying it out nicely: the software on the far end won't care whether the data is pretty or not, and the added white space needed to make the layout look good would add a lot of overhead.
+Nós frequentemente precisamos usar a representação de um informação com menos caracteres quanto possível. Por exemplo, se estamos enviando um dado JSON por uma conexão de rede, não há sentido em deixar o JSON bonito: o software do outro lado não se preocupa se o dado está bonito ou não, e adicionar espaços em branco necessários para fazer o layout parecer bonito pode causar uma sobrecarga.
 
-For these cases, and because it's a simple piece of code to start with, we provide a bare-bones compact rendering function.
+Por esses casos e porque é um pedaço de código simples de iniciar, nós forneceremos um modelo para uma função de compactar JSON.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -693,53 +694,66 @@ compact x = transform [x]
                 a `Concat` b -> transform (a:b:ds)
                 _ `Union` b  -> transform (b:ds)
 ```
-The `compact` function wraps its argument in a list, and applies the `transform` helper function to it. The `transform` function treats its argument as a stack of items to process, where the first element of the list is the top of the stack.
+A função `compact` envolve seu argumento em uma lista, e aplica a função auxiliar `transform`. A função `transform` trata seu argumento como uma pilha de itens a serem processados, onde o primeiro elemento da lista é o topo da pilha.
 
-The `transform` function's `(d:ds)` pattern breaks the stack into its head, `d`, and the remainder, `ds`. In our `case` expression, the first several branches recurse on `ds`, consuming one item from the stack for each recursive application. The last two branches add items in front of `ds`: the `Concat` branch adds both elements to the stack, while the `Union` branch ignores its left element, on which we called `flatten`, and adds its right element to the stack.
+A função `transform` usa o padrão `(d:ds)` para quebrar a pilha no seu início, `d`, e no restante, `ds`. Na nossa expressão `case`, os primeiros ramos fazem recursão em `ds`, consumindo um item da pilha por recursão. Os dois últimos ramos adicionam itens ao início do `ds`: o ramo `Concat` adiciona ambos os elementos a pilham enquanto o ramo `Union` ignora seu elemento da esquerda, o qual chamamos `flatten`, e adiciona seu elemento da direita a pilha. 
 
-We have now fleshed out enough of our original skeletal definitions that we can try out our `compact` function in **ghci**.
+Agora, desenvolvemos o suficiente das nossas definições esqueléticas originais que podemos tentar usar nossa função `compact` no **ghci**. 
 
-    ghci> 
+```
+ghci> let value = renderJValue (JObject [("f", JNumber 1), ("q", JBool True)])
+ghci> :type value
+value :: Doc
+ghci> putStrLn (compact value)
+{"f": 1.0,
+"q": true
+}
+```
 
-To better understand how the code works, let's look at a simpler example in more detail.
+Para entender melhor como o código funciona, vamos olhar um simples exemplo em mais detalhes.
 
-    ghci> 
+```
+ghci> char 'f' <> text "oo"
+Concat (Char 'f') (Text "oo")
+ghci> compact (char 'f' <> text "oo")
+"foo"
+```
 
-When we apply `compact`, it turns its argument into a list and applies `transform`.
+Quando aplicamos `compact`, ele põe seu argumento em uma lista e aplica `transform`.
 
-*   The `transform` function receives a one-item list, which matches the `(d:ds)` pattern. Thus `d` is the value `Concat (Char 'f') (Text "oo")`, and `ds` is the empty list, `[]`.
+*   A função `transform` recebe um item da lista, o qual casa com o padrão `(d:ds)`. Então `d` é o valor `Concat (Char 'f') (Text "oo")`, e `ds` é a lista vazia, `[]`.
     
-    Since `d`'s constructor is `Concat`, the `Concat` pattern matches in the `case` expression. On the right hand side, we add `Char 'f'` and `Text "oo"` to the stack, and apply `transform`recursively.
+    Como o construtor `d` é `Concat`, o padrão `Concat` corresponde na expressão `case`. No lado direito, nós adicionamos `Char 'f'` e `Text "oo"` na pilha, e aplicamos `transform` recursivamente.
     
-*   *   The `transform` function receives a two-item list, again matching the `(d:ds)` pattern. The variable `d` is bound to `Char 'f'`, and `ds` to `[Text "oo"]`.
+*   *   A função `transform` recebe uma lista de dois itens, novamente casando com o padrão `(d:ds)`. A variável `d` é vinculada a `Char 'f'`, e `ds` a `[Text "oo"]`.
         
-        The `case` expression matches in the `Char` branch. On the right hand side, we use `(:)` to construct a list whose head is `'f'`, and whose body is the result of a recursive application of `transform`.
+        A expressão `case` casa no ramo `Char`. No lado direito, nós usamos `(:)` para construir uma lista onde o início é `'f'`, e o restante é o resultado da aplicação recursiva de `transform`. 
         
-    *   *   The recursive invocation receives a one-item list. The variable `d` is bound to `Text "oo"`, and `ds` to `[]`.
+    *   *   A invocação recursiva recebe um item. A variável `d` e atribuído a `Text "oo"`, e `ds` para `[]`.
             
-            The `case` expression matches in the `Text` branch. On the right hand side, we use `(++)` to concatenate `"oo"` with the result of a recursive application of `transform`.
+            A expressão `case` casa no  ramo `Text`. No lado direito, nós usamos `(++)` para concatenar `"oo"` com o resultado da aplicação recursiva de `transform`.  
             
-        *   *   In the final invocation, `transform` is invoked with an empty list, and returns an empty string.
+        *   *   Na invocação final, `transform` é invocado com uma lista vazia, e retorna uma string vazia. 
                 
             
-        *   The result is `"oo" ++ ""`.
+        *   O resultado é `"oo" ++ ""`.
             
         
-    *   The result is `'f' : "oo" ++ ""`.
+    *   O resultado é `'f' : "oo" ++ ""`.
         
     
 
-### True pretty printing
+### A verdadeira impressão agradável
 
-While our `compact` function is useful for machine-to-machine communication, its result is not always easy for a human to follow: there's very little information on each line. To generate more readable output, we'll write another function, `pretty`. Compared to `compact`, `pretty` takes one extra argument: the maximum width of a line, in columns. (We're assuming that our typeface is of fixed width.)
+Enquanto nossa função `compact` é útil para comunicadão maquina para maquina, seu resultado nem sempre é fácil para um ser humano seguir: há muito pouca informação em cada linha. Para  gerar saídas mais agradáveis, iremos escrever outra função, `pretty`. Comparado com `compact`, `pretty` necessita de um argumento a mais: a largura máxima de uma linha, em colunas. (Nós estamos assumindo que nosso tipo de letra tem tamanho fixo.)
 
 ```haskell
 -- file: src/Prettify.hs
 pretty :: Int -> Doc -> String
 ```
-To be more precise, this Int parameter controls the behaviour of `pretty` when it encounters a `softline`. Only at a `softline` does `pretty` have the option of either continuing the current line or beginning a new line. Elsewhere, we must strictly follow the directives set out by the person using our pretty printing functions.
+Para ser mais precisos, o paramento Int controla o comportamento de `pretty` quando encontra uma `softline`. Somente em uma `softline` a função terá a opção de continuar a na linha atual ou iniciar uma nova linha. Em outros lugares, nós devemos seguir rigorosamente as diretrizes estabelecidas pelo usuário do nosso `Prettify` módulo.
 
-Here's the core of our implementation
+Aqui a parte central da nossa implementação
 
 ```haskell
 -- file: src/Prettify.hs
@@ -759,13 +773,13 @@ pretty width x = best 0 [x]
                          | otherwise                = b
                          where least = min width col
 ```
-Our `best` helper function takes two arguments: the number of columns emitted so far on the current line, and the list of remaining Doc values to process.
+Nossa função auxiliar `best` recebe dois argumentos: o número de colunas usados na linha atual, e uma lista com o restante dos valores Doc para serem processados.
 
-In the simple cases, `best` updates the `col` variable in straightforward ways as it consumes the input. Even the `Concat` case is obvious: we push the two concatenated components onto our stack/list, and don't touch `col`.
+Nos casos simples,`best` atualiza a variável `col` de maneira direta, pois consome a entrada. Até o caso `Concat` é óbvio: Nós colocamos os dois componentes concatenados na pilha e não tocamos em `col`. 
 
-The interesting case involves the `Union` constructor. Recall that we applied `flatten` to the left element, and did nothing to the right. Also, remember that `flatten` replaces newlines with spaces. Therefore, our job is to see which (if either) of the two layouts, the `flatten`ed one or the original, will fit into our `width` restriction.
+O caso interessante envolve o construtor `Union`. Relembre que aplicamos  `flatten` ao elemento da esquerda, e não fizemos nada no da  direita. Relembre também que `flatten` substitui quebras de linhas para espaços. Portanto, nosso trabalho é ver qual dos dois layouts, o da esquerda ou o original, irá caber na nossa restrição de tamanho.
 
-To do this, we write a small helper that determines whether a single line of a rendered Doc value will fit into a given number of columns.
+Para fazer isso, nós escrevemos uma pequena função auxiliar que determina se a linha unica ou o valor Doc irá caber no número de colunas dado.
 
 ```haskell
 -- file: src/Prettify.hs
@@ -776,63 +790,71 @@ w `fits` ('\n':_)  = True
 w `fits` (c:cs)    = (w - 1) `fits` cs
 ```
 
-### Following the pretty printer
+### Seguindo o fluxo de execução
 
-In order to understand how this code works, let's first consider a simple Doc value.
+Para entender como esse código funciona, vamos considerar um simples valor Doc.
 
-*Main Prettify PrettyJSON PutJSON SimpleJSON>  empty </> char 'a'
+```
+ghci>  empty </> char 'a'
 Concat (Union (Char ' ') Line) (Char 'a')
+```
 
-We'll apply `pretty 2` on this value. When we first apply `best`, the value of `col` is zero. It matches the `Concat` case, pushes the values `Union (Char ' ') Line` and `Char 'a'` onto the stack, and applies itself recursively. In the recursive application, it matches on `Union (Char ' ') Line`.
+Vamos aplicar `pretty 2` nesse valor. Na primeira vez que aplicamos `best`, o valor de `col` é zero. E corresponde com o caso `Concat`, coloca o valor  `Union (Char ' ') Line` e `Char 'a'` na pilha, a se aplica recursivamente. Na aplicação recursiva ela casa com `Union (Char ' ') Line`.
 
-At this point, we're going to ignore Haskell's usual order of evaluation. This keeps our explanation of what's going on simple, without changing the end result. We now have two subexpressions, `best 0 [Char ' ', Char 'a']` and `best 0 [Line, Char 'a']`. The first evaluates to `" a"`, and the second to `"\na"`. We then substitute these into the outer expression to give `nicest 0 " a" "\na"`.
+Nesse ponto, vamos ignorar a forma usual de ordem de valoração em Haskell. Isso mantém simples nossa explicação do que está acontecendo, sem mudar o resultado final. Agora temos duas sub expressões, `best 0 [Char ' ', Char 'a']` e `best 0 [Line, Char 'a']`. A primeira é valorada para `" a"` e a segundo para `"\na"`. Então substituímos na expressão externa para obtermos `nicest 0 " a" "\na"`.  
 
-To figure out what the result of `nicest` is here, we do a little substitution. The values of `width` and `col` are 0 and 2, respectively, so `least` is 0, and `width - least` is 2. We quickly evaluate ``2 `fits` " a"`` in **ghci**.
+Para entender o resultado de `nicest` aqui, nós faremos uma pequena substituição. O valor de `width` e `col` são 0 e 2, respectivamente, então `least` é 0, e `width - least` é 2. nós rapidamente valoramos ``2 `fits` " a"`` no **ghci**.
 
-*Main Prettify PrettyJSON PutJSON SimpleJSON> 2 `fits` " a"
+```
+ghci> 2 `fits` " a"
 True
-
-Since this evaluates to `True`, the result of `nicest` here is `" a"`.
-
-If we apply our `pretty` function to the same JSON data as earlier, we can see that it produces different output depending on the width that we give it.
-
-```haskell
--- file: app/Main.hs
-module Main (main) where
-
-import SimpleJSON
-import Prettify
-import PrettyJSON
-
-
-value = renderJValue $ JObject [("f", JNumber 1), ("q", JBool True)]
-main :: IO ()
-main = do
-    putStrLn (pretty 10 value)
-    putStrLn (pretty 20 value)
-    putStrLn (pretty 30 value)
 ```
-    
-Executando
+
+Como é valorado para `True`, o resultado de `nicest` é `" a"`.
+
+Se aplicarmos nosso função `pretty` ao mesmo JSON como antes, podemos ver que ela produz diferentes resultados dependendo da largura que definimos.
+
 ```
-$stack run
+ghci> putStrLn (pretty 10 value)
 {"f": 1.0,
 "q": true
 }
+ghci> putStrLn (pretty 20 value)
 {"f": 1.0, "q": true
 }
+ghci> putStrLn (pretty 30 value)
 {"f": 1.0, "q": true }
 ```
 
+#### Exercícios
 
-### Practical pointers and further reading
+Nossa atual biblioteca de impressão agradável é concisa, de modo que cabe dentro de nossas restrições de espaço, mas há várias melhoras úteis que podemos fazer.
+
+**1.** Escreva a função `fill`, com a seguinte assinatura de tipos:
+```
+-- file: ch05/Prettify.hs
+fill :: Int -> Doc -> Doc
+```
+Ela deve adicionar espaços em branco até que o número dado de colunas do documento esteja preenchido. Se o documento já é maior que o número de colunas determinado, então ele não deve adicionar espaços.
+
+**2.**
+Nosso `Prettify` não leva em indentação em conta. Quando abrimos parêntesis, chaves ou colchetes, todas as linha a seguir deverão ser indentadas para que fiquem alinhadas com seu carácter de abertura até que encontre um carácter de fechamento correspondente.
+Adicione suporte para indentação, com uma quantidade controlável de indentação.
+```
+-- file: ch05/Prettify.hs
+nest :: Int -> Doc -> Doc
+```
+
+### Criando um pacote 
+
+### Dicas práticas e leitura adicional
 
 
-GHC already bundles a pretty printing library, `Text.PrettyPrint.HughesPJ`. It provides the same basic API as our example, but a much richer and more useful set of pretty printing functions. We recommend using it, rather than writing your own.
+GHC já inclui uma biblioteca de impressão agradável, `Text.PrettyPrint.HughesPJ`. Ela fornece as mesmas API básicas como nosso exemplo, porém muito mais rica e mais funções úteis. Nós recomendamos usá-la ao invés de escrever a sua própria. 
 
-The design of the `HughesPJ` pretty printer was introduced by John Hughes in \[[Hughes95](bibliography.html#bib.hughes95 "[Hughes95]")\]. The library was subsequently improved by Simon Peyton Jones, hence the name. Hughes's paper is long, but well worth reading for his discussion of how to design a library in Haskell.
+O desenvolvimento de `HughesPJ` foi introduzido em  \[[Hughes95](bibliography.md#bib.hughes95 "[Hughes95]")\]. Essa biblioteca foi subsequentemente melhorada por Simon Peyton Jones, daí o nome. O artigo de Hughes é longo mais vale a pena ler por sua discussão de como projetar uma biblioteca em Haskell.
 
-In this chapter, our pretty printing library is based on a simpler system described by Philip Wadler in \[[Wadler98](bibliography.html#bib.wadler98 "[Wadler98]")\]. His library was extended by Daan Leijen; this version is available for download from Hackage as `wl-pprint`. If you use the **cabal** command line tool, you can download, build, and install it in one step with **cabal install wl-pprint**.
+Nesse capítulo, nossa biblioteca de impressão agradável é baseada em um simples sistema descrito por Philip Wadler em \[[Wadler98](bibliography.#bib.wadler98 "[Wadler98]")\]. Sua biblioteca foi estendida por Daan Leijen; essa versão  está disponível para download em Hackage como `wl-pprint`. Se você usa a ferramenta de linha de comando **cabal**, vocÊ pode baixar, compilar, e instalar em um passo: **cabal install wl-pprint**.
 
   
 
@@ -846,13 +868,13 @@ In this chapter, our pretty printing library is based on a simpler system descri
 
 Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart, and John Goerzen. This work is licensed under a [Creative Commons Attribution-Noncommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/). Icons by [Paul Davey](mailto:mattahan@gmail.com) aka [Mattahan](http://mattahan.deviantart.com/).
 
-[Prev](functional-programming.html)
+[Prev](functional-programming.md)
 
-[Next](using-typeclasses.html)
+[Next](using-typeclasses.md)
 
 Chapter 4. Functional programming
 
-[Home](index.html)
+[Home](index.md)
 
 Chapter 6. Using Typeclasses
 
