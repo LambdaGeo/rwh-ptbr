@@ -615,7 +615,12 @@ x <> y = x `Concat` y
 ```
 Nós correspondemos o padrão `Empty` de forma que concatenar um valor Doc com  `Empty` a esquerda ou a direita não terá efeito. Isso nos preveni de acrescentar à árvore valores inúteis.
 ```
-    ghci> 
+ghci> text "foo" <> text "bar"
+Concat (Text "foo") (Text "bar")
+ghci> text "foo" <> empty
+Text "foo"
+ghci> empty <> text "bar"
+Text "bar"
 ```
 
 ![[Tip]](assets/tip.png)
@@ -847,6 +852,126 @@ nest :: Int -> Doc -> Doc
 
 ### Criando um pacote 
 
+A comunidade Haskell criou um conjunto padrão de ferramentas, chamado Cabal, que nos ajuda a construir, instalar e distribuir software. Cabal organiza softwares como pacotes. Um pacote contém uma biblioteca e, possívelmente, um conjunto de programas executáveis.
+
+#### Escrevendo a descrição de um pacote
+
+Para fazer algo com um pacote, Cabal precisa da sua descrição. Ela é contida  em um arquivo de texto cujo nome termina com o sufixo `.cabal`. Este  arquivo permanece no diretório com o nível mais alto do seu projeto. Ela tem um formato simples, que será descrito abaixo.
+
+Um pacote Cabal deve ter um nome. Normalmente, o nome do pacote é o mesmo que o nome do arquivo `.cabal`. Frequentemente, o nome do diretório que contém o arquivo `.cabal` tem o mesmo nome que o pacote, por exemplo, `mypretty`. 
+
+A descrição de um pacote inicia com uma série de propriedades globais, que se aplicam a todas as bibliotecas e executáveis no pacote.
+
+```
+Name:          mypretty
+Version:       0.1
+
+-- This is a comment.  It stretches to the end of the line.
+```
+
+Nomes de pacotes devem ser únicos. Se você criar e instalar um pacote que tem o mesmo nome que um pacote já instalado em seu sistema o GHC irá ficar bastante confuso.
+
+As propriedades globais incluem uma quantidade substancial de informações destinadas aos leitores humanos, não ao próprio Cabal.
+
+```
+Synopsis:      My pretty printing library, with JSON support
+Description:
+  A simple pretty printing library that illustrates how to
+  develop a Haskell library.
+Author:        Real World Haskell
+Maintainer:    nobody@realworldhaskell.org
+```
+
+Como o campo `Description` indica, um campo pode conter múltiplas linhas, desde que sejam indentadas.
+
+Também inclusa nas propriedades globais são as informações de licença. A maiorias dos pacotes Haskell estão sob a licença BSD, que o Cabal chama de `BSD3`(Obviamente, você é livre para escolher qualquer licença que você ache apropriada.). O campo opcional `License-File` nos permite especificar o nome do arquivo que contém o texto exato do termo de licença do nosso pacote.
+
+Os recursos suportados por sucessivas versões do Cabal evoluem com o tempo, então, é recomendado  indicar quais versões que esperamos ser compatível. Os recursos que estamos descrevendo são compatíveis com a versão 1.2 (ou maiores) do Cabal. 
+
+```
+Cabal-Version: >= 1.2
+```
+
+Para descrever uma biblioteca individual dentro de um pacote, nós escrevemos a seção `library`. O uso de indentação aqui é relevante: O conteúdo de uma seção deve ser indentado.
+
+```
+library
+  Exposed-Modules: Prettify
+                   PrettyJSON
+                   SimpleJSON
+  Build-Depends:   base >= 2.0
+```
+
+O campo `Exposed-Modules` contém uma lista de módulos que devem estar disponíveis aos usuários desse pacote. Um campo opcional, `Other-Modules`, contém uma lista de módulos internos. Estes são requisitos para que as bibliotecas funcionem, mas não serão visíveis aos usuários. 
+
+O campo `Build-Modules` contém umas lista de pacotes (separados por vírgula) que nossas bibliotecas precisam para compilar. Para cada pacote nos podemos, opcionalmente, especificar uma série de versões que que fazem a biblioteca funcionar.
+
+![[Tip]](assets/tip.png)
+
+Entendendo a compilação de dependências
+
+Nós não precisamos adivinhar ou fazer qualquer pesquisa para estabelecer qual pacotes precisamos. Se você tentar compilar nosso pacote sem o campo `Build-Depends`, a compilação irá falhar com uma mensagem de error útil. Aqui um exemplo onde retiramos a dependência do pacote `base`.
+
+```
+$ runghc Setup build
+Preprocessing library mypretty-0.1...
+Building mypretty-0.1...
+
+PrettyJSON.hs:8:7:
+    Could not find module `Data.Bits':
+      it is a member of package base, which is hidden
+```
+A mensagem de erro deixa claro que precisamos do pacote `base`, mesmo que `base` já esteja instalada. Forçar-nos a explicitar todos os pacotes que dependemos tem um benefício prático: uma ferramenta de linha de comando chamada `cabal-install` irá automaticamente baixar, compilar e instalar o pacote e todos os pacotes que ele depende.
+
+#### Gerenciador de pacotes GHC
+
+GHC inclui um simples gerenciador de pacotes que monitora quais pacotes são instalados e quais são suas versões . Uma ferramenta de linha de comando chamada **ghc-pkg** nos permite trabalhar com seus bancos de dados de pacotes.
+
+Nós falamos _banco de dados_  porque GHC distingue pacotes do sistema, que são disponíveis para todos os usuários, e pacotes por usuário, que são disponíveis apenas para o usuário atual. Os pacotes por usuário nos permitem evitar a necessidade de privilégios administrativos para instalar novos pacotes.
+
+O comando **ghc-pkg** providencia sub comandos para performar diferentes tarefas. Na maioria do tempo, nós precisaremos de apenas duas delas. O comando *ghc-pkg list* nos permite ver quais pacotes estão instalados. Quando queremos desinstalar um pacote, *ghv-pkg unregister* fala ao GHC que não usaremos um pacote nunca mais. (Veremos que teremos que remover manualmente os arquivos instalados.)
+
+#### Configurando, compilando e instalando
+
+Além do arquivo `.cabal`, um pacote deve conter um arquivo _setup_. Isto permite  que o processo de compilação do Cabal seja altamente personalizado, se um pacote precisar. O simples arquivo _setup_ é assim:
+
+```
+-- file: ch05/Setup.hs
+#!/usr/bin/env runhaskell
+import Distribution.Simple
+main = defaultMain
+```
+
+Agora salve esse arquivo com o nome `Setup.hs`.
+
+Uma vez que temos os arquivos `.cabal` e `Setup.hs` escritos, nos resta apenas três passos.
+
+Para instruir o Cabal como compilar e onde instalar um pacote, nos executamos um simples comando:
+
+```
+$ runghc Setup configure
+```
+
+Isto garante que os pacotes que precisamos estão disponíveis e guarda as configurações para ser usadas depois por outros comandos do Cabal.
+
+Se não fornecemos nem um argumento ao `configure`, Cabal irá instalar o pacote no banco de dados de pacotes do sistema. Para instalar no nosso diretório home e no nosso banco de dados pessoal, nós devemos fornecer um pouco mais de informações.
+
+```
+$ runghc Setup configure --prefix=$HOME --user
+```
+
+Seguindo o passo de configuração, nós compilamos o pacote.
+
+```
+$ runghc Setup build
+```
+
+Se isso obter sucesso, nós podemos instalar o pacote. Não precisamos identificar onde instalá-lo: Cabal irá utilizar as configurações que fornecemos anteriormente. Isso irá instalar em nosso diretório a atualizar o banco de dados do GHC por usuário.
+
+```
+$ runghc Setup install
+```
+
 ### Dicas práticas e leitura adicional
 
 
@@ -854,7 +979,7 @@ GHC já inclui uma biblioteca de impressão agradável, `Text.PrettyPrint.Hughes
 
 O desenvolvimento de `HughesPJ` foi introduzido em  \[[Hughes95](bibliography.md#bib.hughes95 "[Hughes95]")\]. Essa biblioteca foi subsequentemente melhorada por Simon Peyton Jones, daí o nome. O artigo de Hughes é longo mais vale a pena ler por sua discussão de como projetar uma biblioteca em Haskell.
 
-Nesse capítulo, nossa biblioteca de impressão agradável é baseada em um simples sistema descrito por Philip Wadler em \[[Wadler98](bibliography.#bib.wadler98 "[Wadler98]")\]. Sua biblioteca foi estendida por Daan Leijen; essa versão  está disponível para download em Hackage como `wl-pprint`. Se você usa a ferramenta de linha de comando **cabal**, vocÊ pode baixar, compilar, e instalar em um passo: **cabal install wl-pprint**.
+Nesse capítulo, nossa biblioteca de impressão agradável é baseada em um simples sistema descrito por Philip Wadler em \[[Wadler98](bibliography.#bib.wadler98 "[Wadler98]")\]. Sua biblioteca foi estendida por Daan Leijen; essa versão  está disponível para download em Hackage como `wl-pprint`. Se você usa a ferramenta de linha de comando **cabal**, você pode baixar, compilar, e instalar em um passo: **cabal install wl-pprint**.
 
   
 
@@ -864,7 +989,7 @@ Nesse capítulo, nossa biblioteca de impressão agradável é baseada em um simp
 
 \[[11](#id602026)\] The “3” in `BSD3` refers to the number of clauses in the license. An older version of the BSD license contained 4 clauses, but it is no longer used.
 
-![](/support/figs/rss.png) Want to stay up to date? Subscribe to the comment feed for [this chapter](/feeds/comments/), or the [entire book](/feeds/comments/).
+![](assets/rss.png) Want to stay up to date? Subscribe to the comment feed for [this chapter](/feeds/comments/), or the [entire book](/feeds/comments/).
 
 Copyright 2007, 2008 Bryan O'Sullivan, Don Stewart, and John Goerzen. This work is licensed under a [Creative Commons Attribution-Noncommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/). Icons by [Paul Davey](mailto:mattahan@gmail.com) aka [Mattahan](http://mattahan.deviantart.com/).
 
