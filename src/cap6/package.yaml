@@ -1,0 +1,48 @@
+name:                hs2json
+version:             0.1.0.0
+github:              "githubuser/hs2json"
+license:             BSD3
+author:              "Sérgio Souza Costa"
+maintainer:          "prof.sergio.costa@egmail.com"
+copyright:           "Sérgio Souza Costa"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+synopsis:             My pretty printing library, with JSON support
+#category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/hs2json#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+
+executables:
+  hs2json-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hs2json
+
+tests:
+  hs2json-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hs2json
