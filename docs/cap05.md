@@ -24,7 +24,8 @@ A linguagem fornece dois tipos compostos: um _array_ é uma sequência ordenada 
 
 ### Um tour rápido pelo Stack
 
-(AQUI VOU DESVCREVER UM TUTORIAL RAPIDO DE STACK)
+* [Acessem aqui um pequeno tutorial](https://profsergiocosta.notion.site/Instalando-o-stack-4468b2c248604ae1a71ab2340f44def7)
+
 
 ### Representing JSON data in Haskell
 
